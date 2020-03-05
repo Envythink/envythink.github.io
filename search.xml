@@ -4,260 +4,500 @@
   
     
     <entry>
-      <title>2017073101</title>
-      <link href="/2020/03/05/2017073101/"/>
-      <url>/2020/03/05/2017073101/</url>
+      <title>Python高级编程（33）：一个经典的参数错误</title>
+      <link href="/2017/07/31/2017073101/"/>
+      <url>/2017/07/31/2017073101/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017073001</title>
-      <link href="/2020/03/05/2017073001/"/>
-      <url>/2020/03/05/2017073001/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>我们先来看一个例子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">def add(a, b):</span><br><span class="line">    a += b</span><br><span class="line">    return a</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == "__main__":</span><br><span class="line">    # a, b均为整数</span><br><span class="line">    a = 1</span><br><span class="line">    b = 2</span><br><span class="line">    c = add(a, b)</span><br><span class="line">    print(c)</span><br><span class="line">    print(a, b)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # 3</span><br><span class="line">    # 1  2</span><br><span class="line"></span><br><span class="line">    # a, b均为列表</span><br><span class="line">    a = [1, 2]</span><br><span class="line">    b = [3, 4]</span><br><span class="line">    c = add(a, b)</span><br><span class="line">    print(c)</span><br><span class="line">    print(a, b)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # [1, 2, 3, 4]</span><br><span class="line">    # [1, 2, 3, 4][3, 4]</span><br><span class="line"></span><br><span class="line">    # a, b均为元组</span><br><span class="line">    a = (1, 2)</span><br><span class="line">    b = (3, 4)</span><br><span class="line">    c = add(a, b)</span><br><span class="line">    print(c)</span><br><span class="line">    print(a, b)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # (1, 2, 3, 4)</span><br><span class="line">    # (1, 2)(3, 4)</span><br></pre></td></tr></tbody></table></figure></div><p>当参数是列表的时候，我们的变量发生了变化，不再是传入前的值了。当a和b均是list的时候，a+=b其实是直接在a上进行修改的（准确的说是a的指向发生了变化），这一点值得大家注意。再来看一个例子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br></pre></td><td class="code"><pre><span class="line">class Company(object):</span><br><span class="line">    def __init__(self, name, staffs =[]):</span><br><span class="line">        self.name = name</span><br><span class="line">        self.staffs = staffs</span><br><span class="line"></span><br><span class="line">    def add(self, staff_name):</span><br><span class="line">        self.staffs.append(staff_name)</span><br><span class="line"></span><br><span class="line">    def remove(self, staff_name):</span><br><span class="line">        self.staffs.remove(staff_name)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    # company = Company("EnvyThhink", ['lichee', 'envy', 'hello'])</span><br><span class="line">    # company.remove('hello')</span><br><span class="line">    # print(company.staffs)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # ['lichee', 'envy']</span><br><span class="line">    print(Company.__init__.__defaults__)</span><br><span class="line">    # ([],)</span><br><span class="line">    print("***************************")</span><br><span class="line">    </span><br><span class="line"></span><br><span class="line">    company_2 = Company("company_2")</span><br><span class="line">    company_2.add('test')</span><br><span class="line">    print(company_2.staffs)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # ['test']</span><br><span class="line">    print(Company.__init__.__defaults__)</span><br><span class="line">    # (['test'],)</span><br><span class="line">    print("***************************")</span><br><span class="line"></span><br><span class="line">    company_3 = Company("company_3")</span><br><span class="line">    company_3.add("world")</span><br><span class="line">    print(company_2.staffs)</span><br><span class="line">    print(company_3.staffs)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # ['test', 'world']</span><br><span class="line">    # ['test', 'world']</span><br><span class="line">    print(Company.__init__.__defaults__)</span><br><span class="line">    # (['test', 'world'],)</span><br><span class="line">    print("***************************")</span><br><span class="line"></span><br><span class="line">    print(company_2.staffs is company_3.staffs)</span><br><span class="line">    # 运行结果：</span><br><span class="line">    # True</span><br></pre></td></tr></tbody></table></figure></div><p>造成这个原因有两点：一是在类中参数含有列表，二是类在实例化的时候，使用了默认值，而list是一个可变对象，因此后面的company_2 和company_3使用了同一个值，这就造成了一个冲突。实际上这个默认值，类本身就可以获得，可以使用<code>Company.__init__.__defaults__</code>。没有传递参数时company_2 的参数是默认的，使用了则不是。因此最好不要将列表或者dict作为参数进行传递，很容易发生错误。</p></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072901</title>
-      <link href="/2020/03/05/2017072901/"/>
-      <url>/2020/03/05/2017072901/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017072801</title>
-      <link href="/2020/03/05/2017072801/"/>
-      <url>/2020/03/05/2017072801/</url>
+      <title>Python高级编程（32）：Python中的is和==的区别？</title>
+      <link href="/2017/07/30/2017073001/"/>
+      <url>/2017/07/30/2017073001/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072701</title>
-      <link href="/2020/03/05/2017072701/"/>
-      <url>/2020/03/05/2017072701/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><h3 id="is和-的区别"><a href="#is和-的区别" class="headerlink" title="is和==的区别"></a>is和==的区别</h3><p><strong>1、is 比较的是地址，注意小整数池和字符串，一般重复创建的时候会指向同一个对象。</strong></p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">t1 = 123</span><br><span class="line">t2 = 123</span><br><span class="line">print(t1 is t2)  # True</span><br><span class="line">print(id(t1), id(t2))  # 1789477024 1789477024</span><br><span class="line"></span><br><span class="line">print("*********************************")</span><br><span class="line"></span><br><span class="line">l1 = [1,2,3]</span><br><span class="line">l2 = [1,2,3]  # False，因为会重新声明一个对象</span><br><span class="line"># l2 = l1  # True，因为是赋值符号，就是指针指向</span><br><span class="line">print(l1 is l2)  # False</span><br><span class="line">print(id(l1), id(l2))  # 56509864 56511024</span><br></pre></td></tr></tbody></table></figure></div><p>因为在python中存在intern机制，适用于小整数池和字符串，也就是说创建对象的时候会先在小整数池中查找，如果存在就返回，否则就会新建对象。记住仅仅适用于小整数池和字符串，对于list是不使用的</p><p><strong>2、== 比较的是值，其实==重载了对象的<code>__eq__</code>方法，而这个方法比较的是对象的值。</strong></p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">t1 = 123</span><br><span class="line">t2 = 123</span><br><span class="line">print(t1 == t2)  # True</span><br><span class="line"></span><br><span class="line">print("*********************************")</span><br><span class="line">l1 = [1,2,3]</span><br><span class="line">l2 = [1,2,3]  </span><br><span class="line">print(l1 == l2)  # True</span><br></pre></td></tr></tbody></table></figure></div><p>因为我们在使用==对两个对象进行值判断的时候，其实就是调用了<code>__eq__</code>这个魔法函数，查看一下str中的<code>__eq__</code>魔法函数:</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __eq__(self, *args, **kwargs): # real signature unknown</span><br><span class="line">      """ Return self==value. """</span><br><span class="line">      pass</span><br></pre></td></tr></tbody></table></figure></div><p>再来看一下list对象中的<code>__eq__</code>魔法函数:</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __eq__(self, *args, **kwargs): # real signature unknown</span><br><span class="line">      """ Return self==value. """</span><br><span class="line">      pass</span><br></pre></td></tr></tbody></table></figure></div><p>你会发现两者是一模一样，因此==就是对值进行判断，只要值相等就是True。</p><p>我们再来看一个例子，在判断类的类别时，是使用is，而不是==，原因在于type(obj)返回的是某个类，而类是一个全局唯一的变量，这种做法可以避免很多未知的错误：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">class Person:</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line">person = Person()</span><br><span class="line"></span><br><span class="line">if type(person) is Person:  # 记住这里最好使用is，不要使用==</span><br><span class="line">    print("yes")</span><br></pre></td></tr></tbody></table></figure></div><h3 id="python的intern机制"><a href="#python的intern机制" class="headerlink" title="python的intern机制"></a>python的intern机制</h3><p>由于变量的存储机制，python增加了字符串的intern机制，也就是说值同样的字符串对象（整数也实用）仅仅会保存一份，而且是共用的，这也决定了字符串必须是不可变对象，其实仔细想一想，就和数值类型一样，同样的数值仅仅要保存一份即可了，不是必须用不同对象来区分。</p><p>我们来看几个例子加深我们的认识，开启Python的IDE，必须使用Python自带的交互式环境，不能使用Pycharm：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">>>> a = 'test'</span><br><span class="line">>>> b = 'tes' + 't'</span><br><span class="line">>>> print(id(a), id(b))</span><br><span class="line">>>> print(a is b)</span><br><span class="line"># 运行结果：</span><br><span class="line"># 51379584 51379584</span><br><span class="line"># True</span><br></pre></td></tr></tbody></table></figure></div><p>从结果中可以看出它们实际上是同一个对象，所以用is判断就是正确。</p><hr><p><strong>intern机制</strong>的<strong>优点</strong>是：在创建新的字符串对象时，会先在缓存池里面找是否有已经存在的值相同的对象（标识符，即只包含数字、字母、下划线的字符），如果有则直接拿过来用（引用），避免频繁的创建和销毁内存，提升效率。 </p><p><strong>缺点</strong>是在拼接字符串时或者在改动字符串时会极大的影响性能。原因是字符串在Python当中是不可变对象，所以对字符串的改动不是inplace（原地）操作，需要新开辟内存地址，即新建对象。这也是为什么拼接字符串的时候不建议用‘+’而是用join()。join()是先计算出全部字符串的长度，然后再一一拷贝，仅仅创建一次对象。</p><hr><p>再来看这个例子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">#这里只是演示了包含空格的情况，实际上除了字母，数字，下划线以外的都是这个情况</span><br><span class="line">>>> j = "hello world"  </span><br><span class="line">>>> k = "hello world"</span><br><span class="line">>>> print(id(j), id(k))</span><br><span class="line"># 93423920 95800760</span><br><span class="line">>>> print(j is k)</span><br><span class="line"># False</span><br></pre></td></tr></tbody></table></figure></div><p>你可能会好奇怎么是False，因为这里的字符串里面含有空格，导致不会触发intern机制。 也就是说字符串中没有空格则会默认开启intern机制，有则就不会开启了。</p><p>你现在可能会好奇Python为什么会这么做呢？因为Python的内置函数intern()能显式的对任意字符串进行intern，就说明并不是实现难度的问题，解决这个问题最好是查看Python的源码，可以找到答案，在源代码StringObject.h中的注释能够找到：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/* … … This is generally restricted tostrings that “looklike” Python identifiers, although the intern() builtincan be used to force interning of any string … … */</span><br></pre></td></tr></tbody></table></figure></div><p>也就是说intern机制仅仅对那些看起来像是Python标识符的字符串对象才会触发。</p><p>我们再来看一个例子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">>>> 'tes'+'t' is 'test'</span><br><span class="line">>>> True</span><br><span class="line"></span><br><span class="line">>>> a = 'tes'</span><br><span class="line">>>> a + 't' is 'test'</span><br><span class="line">>>> False</span><br></pre></td></tr></tbody></table></figure></div><p>你可能会问为什么是这样？它们不都只是包含字母吗，没有空格应该是被主动intern的呀？ 的确是不错，但是你忽略了一个事实。在第一个例子中，‘tes’ + ‘t’是在compile-time（编译时）求值的，被替换成了’test’，而在第二个例子中，a + ‘t’是在run-time（运行时）拼接的，导致没有主动触发intern机制。</p><p>我们再来看一下Python中的小整数的例子：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line">>>> a = 257</span><br><span class="line">>>> b= 257</span><br><span class="line">>>> print(id(a), id(b))</span><br><span class="line">94149312 94149488</span><br><span class="line"></span><br><span class="line">>>> a = 256</span><br><span class="line">>>> b = 256</span><br><span class="line">>>> print(id(a), id(b))</span><br><span class="line">1790200048 1790200048</span><br><span class="line"></span><br><span class="line">>>> a = -5</span><br><span class="line">>>> b = -5</span><br><span class="line">>>> print(id(a), id(b))</span><br><span class="line">1790195872 1790195872</span><br><span class="line"></span><br><span class="line">>>> a = -6 </span><br><span class="line">>>> b =-6</span><br><span class="line">>>> print(id(a), id(b))</span><br><span class="line">94148784 94149296</span><br></pre></td></tr></tbody></table></figure></div><p>在Python的小整数池[-5,256]这个范围内也是默认开启intern机制，也就是在创建对象的时候会先判断整数是否在小整数池中，是的话就共用同一个对象，否则就新建对象。</p><h3 id="总结一下"><a href="#总结一下" class="headerlink" title="总结一下"></a>总结一下</h3><p>1、is 比较的是地址，注意小整数池和字符串，一般重复创建的时候会指向同一个对象。<br>2、== 比较的是值，其实==重载了对象的<code>__eq__</code>方法，而这个方法比较的是对象的值。</p><p>3、单词，即Python标识符是不可修改的，默认开启intern机制，是共用对象，当引用计数为0时自动被回收。<br>4、字符串（包含了除Python标识符以外的字符），不可修改，默认没有开启intern机制，也是当引用计数为0时自动被回收。</p><p>5、极少数特殊情况下（如上述最后一个例子时），也不会主动开启intern机制。</p><p>6、在Python的小整数池[-5,256]这个范围内也是默认开启intern机制。</p></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072601</title>
-      <link href="/2020/03/05/2017072601/"/>
-      <url>/2020/03/05/2017072601/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017072501</title>
-      <link href="/2020/03/05/2017072501/"/>
-      <url>/2020/03/05/2017072501/</url>
+      <title>Python高级编程（31）：Python中的变量是什么？</title>
+      <link href="/2017/07/29/2017072901/"/>
+      <url>/2017/07/29/2017072901/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072401</title>
-      <link href="/2020/03/05/2017072401/"/>
-      <url>/2020/03/05/2017072401/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>首先明确Python中的变量和Java中的变量是有本质区别的，在Java中在变量声明的时候需要指定数据类型，然后像虚拟机中申请内存，这个内存的大小其实和数据类型相关，这就好像是一个盒子，这个盒子能装什么其实已经确定下来。但是在Python中却不是这样的，Python中的变量本质上是一个指针,每个指针的大小都一样，它可以指向任意的对象，它保存的是对一个对象的引用。它本身并不会存放对象，它只是代表一个标签，通过这个标签可以找到具体存放对象的地方。你也可以将变量理解为一个便利贴。</p><p>a = 1 或者 a = ‘abc’的过程： 先在内存中创建一个int对象或者str对象，然后他们的值是1和abc，然后将a这个便利贴到它们身上，之后你访问a就相当于是在访问它们，非常类似于对象的引用。Python的动态性就是因为它的所有的变量的大小都是一样的，都代表了一个指针。其变量赋值的过程是，先声明对象，然后再建立关联引用。</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">a = [1,2,3,4]</span><br><span class="line">b = a</span><br><span class="line">print(id(a), id(b))  # b和a对应的是同一个对象</span><br><span class="line">print(a is b)</span><br><span class="line">b.append(5)</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line"># 48842152 48842152</span><br><span class="line"># True</span><br><span class="line"># [1, 2, 3, 4, 5]</span><br></pre></td></tr></tbody></table></figure></div></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072301</title>
-      <link href="/2020/03/05/2017072301/"/>
-      <url>/2020/03/05/2017072301/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017072201</title>
-      <link href="/2020/03/05/2017072201/"/>
-      <url>/2020/03/05/2017072201/</url>
+      <title>Python高级编程（30）：dict和set的实现原理</title>
+      <link href="/2017/07/28/2017072801/"/>
+      <url>/2017/07/28/2017072801/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072101</title>
-      <link href="/2020/03/05/2017072101/"/>
-      <url>/2020/03/05/2017072101/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>我们为什么需要了解dict和set的实现原理呢？因为只有了解了其背后的实现原理，我们才能更好的的知道什么情况下使用dict以及set，这一点很重要，结合实际的情况使用不同的数据结构可能会产生很大的区别。</p><p>先通过一段测试代码了解一下它们性能之间的区别：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br></pre></td><td class="code"><pre><span class="line">from random import randint</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def load_list_data(total_nums, target_nums):</span><br><span class="line">    """</span><br><span class="line">    从文件中读取数据，以list的方式返回</span><br><span class="line">    :param total_nums: 读取的数量</span><br><span class="line">    :param target_nums: 需要查询的数据的数量</span><br><span class="line">    """</span><br><span class="line">    all_data = []</span><br><span class="line">    target_data = []</span><br><span class="line">    file_name = "./test.txt"    # test.txt是包含成千上万的字符的文件，自己可随意设置</span><br><span class="line">    with open(file_name, encoding="utf8", mode="r") as f_open:</span><br><span class="line">        for count, line in enumerate(f_open):</span><br><span class="line">            if count < total_nums:</span><br><span class="line">                all_data.append(line)</span><br><span class="line">            else:</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">    for x in range(target_nums):</span><br><span class="line">        random_index = randint(0, total_nums)</span><br><span class="line">        if all_data[random_index] not in target_data:</span><br><span class="line">            target_data.append(all_data[random_index])</span><br><span class="line">            if len(target_data) == target_nums:</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">    return all_data, target_data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def load_dict_data(total_nums, target_nums):</span><br><span class="line">    """</span><br><span class="line">    从文件中读取数据，以dict的方式返回</span><br><span class="line">    :param total_nums: 读取的数量</span><br><span class="line">    :param target_nums: 需要查询的数据的数量</span><br><span class="line">    """</span><br><span class="line">    all_data = {}</span><br><span class="line">    target_data = []</span><br><span class="line">    file_name = "./test.txt"</span><br><span class="line">    with open(file_name, encoding="utf8", mode="r") as f_open:</span><br><span class="line">        for count, line in enumerate(f_open):</span><br><span class="line">            if count < total_nums:</span><br><span class="line">                all_data[line] = 0</span><br><span class="line">            else:</span><br><span class="line">                break</span><br><span class="line">    all_data_list = list(all_data)</span><br><span class="line">    for x in range(target_nums):</span><br><span class="line">        random_index = randint(0, total_nums-1)</span><br><span class="line">        if all_data_list[random_index] not in target_data:</span><br><span class="line">            target_data.append(all_data_list[random_index])</span><br><span class="line">            if len(target_data) == target_nums:</span><br><span class="line">                break</span><br><span class="line"></span><br><span class="line">    return all_data, target_data</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">def find_test(all_data, target_data):</span><br><span class="line">    # 测试运行时间</span><br><span class="line">    test_times = 100</span><br><span class="line">    total_times = 0</span><br><span class="line">    import time</span><br><span class="line">    for i in range(test_times):</span><br><span class="line">        find = 0</span><br><span class="line">        start_time = time.time()</span><br><span class="line">        for data in target_data:</span><br><span class="line">            if data in all_data:</span><br><span class="line">                find += 1</span><br><span class="line">        last_time = time.time() - start_time</span><br><span class="line">        total_times += last_time</span><br><span class="line">    return total_times/test_times</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == "__main__":</span><br><span class="line">    # all_data, target_data = load_list_data(10000, 1000)</span><br><span class="line">    # all_data, target_data = load_list_data(100000, 1000)</span><br><span class="line">    # all_data, target_data = load_list_data(1000000, 1000)</span><br><span class="line"></span><br><span class="line">    # all_data, target_data = load_dict_data(10000, 1000)</span><br><span class="line">    # all_data, target_data = load_dict_data(100000, 1000)</span><br><span class="line">    # all_data, target_data = load_dict_data(1000000, 1000)</span><br><span class="line">    all_data, target_data = load_dict_data(2000000, 1000)</span><br><span class="line">    last_time = find_test(all_data, target_data)</span><br><span class="line"></span><br><span class="line">    print(last_time)</span><br></pre></td></tr></tbody></table></figure></div><p>上面分别用列表和字典的形式，模拟在规定的数据中，查找指定数量的元素所花费的时间。结论如下：<br><strong>1、dict查找的性能远远大于list</strong><br> <strong>2、在list中随着list数据的增大 查找时间会增大</strong><br><strong>3、在dict中查找元素不会随着dict的增大而增大</strong></p><p><a href="https://upload-images.jianshu.io/upload_images/8964398-f24418e671512c20.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="https://upload-images.jianshu.io/upload_images/8964398-f24418e671512c20.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" class="lazyload"></a></p><p>一个hash值存放一个key:value值。字典内部是通过hash表来映射的，那么什么是hash表呢？通过字典的key算出一个hash值，这个hash值对应表中的一个位置，这个位置存放着字典的key和value，又因为hash表的存放是连续的,类似于数组,它查找和存取是根据偏移量来进行的，因此不需要遍历，就能很快获取数据。</p><p><a href="https://upload-images.jianshu.io/upload_images/8964398-b36137c9beea4369.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="https://upload-images.jianshu.io/upload_images/8964398-b36137c9beea4369.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" class="lazyload"></a></p><p>从上面可以得到下面几点结论：<br><strong>1.  dict的key或者set的值 都必须是可以hash的，不可变对象都是可hash的， str， fronzenset， tuple，以及自己实现的类若实现了 <code>__hash__</code>魔法函数</strong><br><strong>2. dict的内存花销大，存在一些剩余内存，但是查询速度快， 自定义的对象或者python内部的对象其实都是用dict来包装的</strong><br><strong>3. dict的存储顺序和元素添加顺序有关</strong><br><strong>4. 添加数据有可能改变已有数据的顺序（涉及到扩容的情况，也就是插入数据造成内存重新分配的时候）</strong></p><p>在去重的时候，优先选用set去重，因为set占用空间比dict小，而且set可以对集合进行操作。</p></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017072001</title>
-      <link href="/2020/03/05/2017072001/"/>
-      <url>/2020/03/05/2017072001/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017071901</title>
-      <link href="/2020/03/05/2017071901/"/>
-      <url>/2020/03/05/2017071901/</url>
+      <title>Python高级编程（29）：set和frozenset</title>
+      <link href="/2017/07/27/2017072701/"/>
+      <url>/2017/07/27/2017072701/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017071801</title>
-      <link href="/2020/03/05/2017071801/"/>
-      <url>/2020/03/05/2017071801/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>set是集合，frozenset则是不可变集合，集合的特点是无序和不重复，可以用于元素去重操作。</p><p>查看一下set的源码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, seq=()): # known special case of set.__init__</span><br><span class="line">    """</span><br><span class="line">    set() -> new empty set object</span><br><span class="line">    set(iterable) -> new set object</span><br><span class="line">    </span><br><span class="line">    Build an unordered collection of unique elements.</span><br><span class="line">    # (copied from class doc)</span><br><span class="line">    """</span><br><span class="line">    pass</span><br></pre></td></tr></tbody></table></figure></div><p>因此可以使用iterable对象作为参数，构建集合。</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">s1 = set('abcd')</span><br><span class="line">s2 = set(['a', 'b', 'c', 'd'])</span><br><span class="line">s3 = {'a', 'b', 'c'}  # set</span><br><span class="line">print(s1)</span><br><span class="line">print(s2)</span><br><span class="line"></span><br><span class="line">print(s3)</span><br><span class="line">s3.add('d')  # set中添加元素的方法是add</span><br><span class="line">print(s3)</span><br><span class="line"></span><br><span class="line">s4 = frozenset("abcd")  # fronzenset无add方法，一旦初始化，无法进行修改，常用dict的key</span><br><span class="line">print(s4)</span><br><span class="line"></span><br><span class="line">print(type(s1))</span><br><span class="line">print(type(s2))</span><br><span class="line">print(type(s3))</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">{'a', 'd', 'c', 'b'}</span><br><span class="line">{'a', 'd', 'c', 'b'}</span><br><span class="line">{'a', 'c', 'b'}</span><br><span class="line">{'a', 'd', 'c', 'b'}</span><br><span class="line">frozenset({'a', 'd', 'c', 'b'})</span><br><span class="line"><class 'set'></class></span><br><span class="line"><class 'set'></class></span><br><span class="line"><class 'set'></class></span><br></pre></td></tr></tbody></table></figure></div><p>下面介绍一下set中常用的方法，这些也是挺重要的，需要好好理解：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br></pre></td><td class="code"><pre><span class="line">s = set('abcd')</span><br><span class="line"># 1.集合可以添加元素</span><br><span class="line">s.add('f')</span><br><span class="line">print(s)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"># {'d', 'b', 'f', 'a', 'c'}</span><br><span class="line"></span><br><span class="line">s1 = frozenset('abcde')  # frozenset 是不可变的集合,可作为字典的key</span><br><span class="line"># s.add() 错误,不可变集合不能添加数据</span><br><span class="line"></span><br><span class="line"># 2.clear() 清空集合</span><br><span class="line"># 3.copy() 浅拷贝集合</span><br><span class="line"># 4.pop() 弹出最后一个元素</span><br><span class="line"># 5.remove() 删除一个集合元素</span><br><span class="line"># 6.update()像set中添加一个集合</span><br><span class="line">another_set = set('abxy')</span><br><span class="line">s.update(another_set)</span><br><span class="line">print(s)</span><br><span class="line"># 输出结果：</span><br><span class="line"># {'2', 'd', '3', '1', 'b', 'f', 'a', 'c'}</span><br><span class="line"></span><br><span class="line"># 7.difference(找不同)</span><br><span class="line">ret_set = s.difference(another_set)  # s - another_set，接受一个返回值</span><br><span class="line">print(ret_set)</span><br><span class="line"># 输出结果：</span><br><span class="line"># {'d', 'c', 'f'}</span><br><span class="line"></span><br><span class="line"># 8.求交集 &</span><br><span class="line">ret_set = s & another_set</span><br><span class="line">print(ret_set)</span><br><span class="line"># 输出结果：</span><br><span class="line"># {'x', 'a', 'b', 'y'}</span><br><span class="line"></span><br><span class="line"># 9.求并集</span><br><span class="line">ret_set = s | another_set</span><br><span class="line">print(ret_set)</span><br><span class="line"># 输出结果：</span><br><span class="line"># {'c', 'a', 'y', 'f', 'd', 'b', 'x'}</span><br><span class="line"></span><br><span class="line"># 10、in 对应的魔法方法__contains__</span><br><span class="line">if 'a' in ret_set:</span><br><span class="line">    print("yes")</span><br><span class="line"># 输出结果：</span><br><span class="line"># yes</span><br><span class="line"></span><br><span class="line"># 11. 判断是否是子集</span><br><span class="line">if another_set.issubset(s):</span><br><span class="line">    print("yes")</span><br><span class="line"># 输出结果：</span><br><span class="line"># yes</span><br></pre></td></tr></tbody></table></figure></div></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017071701</title>
-      <link href="/2020/03/05/2017071701/"/>
-      <url>/2020/03/05/2017071701/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017071601</title>
-      <link href="/2020/03/05/2017071601/"/>
-      <url>/2020/03/05/2017071601/</url>
+      <title>Python高级编程（28）：dict的子类</title>
+      <link href="/2017/07/26/2017072601/"/>
+      <url>/2017/07/26/2017072601/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
-      
-      
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017071501</title>
-      <link href="/2020/03/05/2017071501/"/>
-      <url>/2020/03/05/2017071501/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>python中一切都可以被继承，dict自然不例外，但是我们并不建议大家去继承Python中的内置的像list，dict等数据结构，特别是用C语言写的数据结构，因为有些操作不会生效。<br><strong>1. 自定义一个字典时，不要直接继承自dict，因为有些操作会不生效</strong></p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class MyDict(dict):</span><br><span class="line">    def __setitem__(self, key, value):</span><br><span class="line">        # 重写父类的setitem方法，似乎并没有什么用</span><br><span class="line">        super(MyDict, self).__setitem__(key, value*5)</span><br><span class="line"></span><br><span class="line"># 首先明确下面两种方式其本质是一致的操作，都会调用__setitem__这个魔法函数</span><br><span class="line">mydict = MyDict(one=2)</span><br><span class="line">print(mydict)</span><br><span class="line">mydict['one'] =2</span><br><span class="line">print(mydict)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">{'one': 2}</span><br><span class="line">{'one': 10}</span><br></pre></td></tr></tbody></table></figure></div><p>也就是是说在某些情况下，用C语言写的Python内置的数据结构并不会去调用我们覆盖的方法，即方法重写失败，因此想要避免这个问题，可以继承collections模块的UserDict。</p><p><strong>2、使用继承UserDict的方式来实现自定义的字典</strong></p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">from collections import UserDict</span><br><span class="line"></span><br><span class="line">class MyDict(UserDict):</span><br><span class="line">    def __setitem__(self, key, value):</span><br><span class="line">        super(MyDict, self).__setitem__(key, value*5)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mydict = MyDict(one=2)</span><br><span class="line">print(mydict)</span><br><span class="line"></span><br><span class="line">mydict['one'] =2</span><br><span class="line">print(mydict)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line"># {'one': 10}</span><br><span class="line"># {'one': 10}</span><br></pre></td></tr></tbody></table></figure></div><p>我们可以对比一下，C语言写的dict中的<code>__setitem__</code>魔法函数，和用Python写的collections模块中UserDict的魔法函数<code>__setitem__</code>的区别：</p><p><strong>C语言写的dict中的<code>__setitem__</code>魔法函数</strong>：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">def __setitem__(self, *args, **kwargs): # real signature unknown</span><br><span class="line">   """ Set self[key] to value. """</span><br><span class="line">    pass</span><br></pre></td></tr></tbody></table></figure></div><hr><p><strong>Python写的collections模块中UserDict的<code>__setitem__</code>魔法函数</strong>：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">def __setitem__(self, key, item): </span><br><span class="line">    self.data[key] = item</span><br></pre></td></tr></tbody></table></figure></div><p>这两者是有区别的。<br><strong>3、创建带有默认值的字典，使用collections模块中的defaultdict</strong><br>这里主要介绍defaultdict的实现原理，字典之所以可以实现带有默认值，因为它内部实现了<code>__missing__</code>这个魔法方法,在UserDict类里面的<code>__getitem__</code>方法会调用<code>__missing__</code>方法。</p><p>我们查看一下UserDict的源码，发现先判断key是否存在data中，不存在则判断是否具有<code>__missing__</code>魔法函数，而defaultdict其实就是重写了<code>__missing__</code>魔法函数这个魔法函数：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">def __getitem__(self, key):</span><br><span class="line">       if key in self.data:</span><br><span class="line">           return self.data[key]</span><br><span class="line">       if hasattr(self.__class__, "__missing__"):</span><br><span class="line">           return self.__class__.__missing__(self, key)</span><br><span class="line">       raise KeyError(key)</span><br></pre></td></tr></tbody></table></figure></div><p>查看collections模块中的defaultdict的源码，发现它确实重写了<code>__missing__</code>这个魔法函数：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def __missing__(self, key): # real signature unknown; restored from __doc__</span><br><span class="line">       """</span><br><span class="line">       __missing__(key) # Called by __getitem__ for missing key; pseudo-code:</span><br><span class="line">         if self.default_factory is None: raise KeyError((key,))</span><br><span class="line">         self[key] = value = self.default_factory()</span><br><span class="line">         return value</span><br><span class="line">       """</span><br><span class="line">       pass</span><br></pre></td></tr></tbody></table></figure></div><p>而且，若key不存在，则会调用这个default_factory()方法，查看一下它的源码:</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">default_factory = property(lambda self: object(), lambda self, v: None, lambda self: None)  # default</span><br><span class="line">"""Factory for default value called by __missing__()."""</span><br></pre></td></tr></tbody></table></figure></div><p>它会将这个值赋值给对象，property这个属性方法会在后面的元类编程中介绍。</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">from collections import defaultdict</span><br><span class="line"></span><br><span class="line">my_dict = defaultdict(dict)</span><br><span class="line">print(my_dict)</span><br><span class="line"></span><br><span class="line">my_dict["name"] = "hello"  # 这个defaultdict检测key不存在，就会调用__missing__魔法函数</span><br><span class="line">print(my_dict)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line"># defaultdict(<class 'dict'>, {})</class></span><br><span class="line"># defaultdict(<class 'dict'>, {'name': 'hello'})</class></span><br></pre></td></tr></tbody></table></figure></div></body></html>]]></content>
       
       
-      
-    </entry>
-    
-    
-    
-    <entry>
-      <title>2017071401</title>
-      <link href="/2020/03/05/2017071401/"/>
-      <url>/2020/03/05/2017071401/</url>
-      
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
       
       
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017071301</title>
-      <link href="/2020/03/05/2017071301/"/>
-      <url>/2020/03/05/2017071301/</url>
+      <title>Python高级编程（27）：dict的常用方法</title>
+      <link href="/2017/07/25/2017072501/"/>
+      <url>/2017/07/25/2017072501/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>本篇我们来聊一下Python中dict的常用方法，这个还是挺重要的，所以可以多花点时间学习一下。</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br></pre></td><td class="code"><pre><span class="line">a = {</span><br><span class="line">    'xiaoming': {'sex': 'male'},</span><br><span class="line">    'xiaobai': {'sex': 'female'}</span><br><span class="line">}</span><br><span class="line"></span><br><span class="line"># clear()清空字典</span><br><span class="line"># a.clear()</span><br><span class="line"># print(a)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># copy() 浅拷贝</span><br><span class="line"># new_copy_a = a.copy()</span><br><span class="line"># new_copy_a['xiaoming']['sex']= 'female'</span><br><span class="line"># print(new_copy_a)</span><br><span class="line"># print(a)</span><br><span class="line"></span><br><span class="line"># copy,浅拷贝,只拷贝了最外层的对象的引用,如果浅拷贝的</span><br><span class="line"># 时候有可变对象的应用,则如果修改了原来的值,则可变对象的值也就跟着改变.</span><br><span class="line"># 比如上面的a字典,key的拷贝不会出现问题.但是value的值本身也是一个引用类型,</span><br><span class="line"># 它是可变的,拷贝的时候只是拷贝了这个内部字典的应用.所以如果它修改了,则原来的那个</span><br><span class="line"># 对象也会跟着修改.</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line"># {'xiaoming': {'sex': 'female'}, 'xiaobai': {'sex': 'female'}}</span><br><span class="line"># {'xiaoming': {'sex': 'female'}, 'xiaobai': {'sex': 'female'}}</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">import copy</span><br><span class="line">new_deepcopy_a =copy.deepcopy(a)</span><br><span class="line">new_deepcopy_a['xiaoming']['sex']= 'female'</span><br><span class="line">print(a)</span><br><span class="line">print(new_deepcopy_a)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line"># {'xiaoming': {'sex': 'male'}, 'xiaobai': {'sex': 'female'}}</span><br><span class="line"># {'xiaoming': {'sex': 'female'}, 'xiaobai': {'sex': 'female'}}</span><br></pre></td></tr></tbody></table></figure></div><hr><p>创建字典的方式：1、d = {key1:value1,key2:value2} ;2、dict([(key1,value1),(key2,value2)]) ;3、关键词参数：dict(key1=value1,key2=value2)</p><hr><p>字典也是可以使用del关键词来删除元素和整个字典的；字典也有许多内建的方法，但是不可以像列表、元组那样频繁使用；</p><hr><p>dict.clear()方法用于删除字典中内的所有项（项就是键值对），输出打印dict.clear(obj)显示None，注意这一点和直接把空字典赋值的区别。</p><hr><p><strong>深复制</strong>：from copy import deepcopy；deepcopy()方法，也就是说原样本通过深复制出来的复制品无论怎样修改，对于原样本没有任何关系。</p><p><strong>浅复制</strong>：dict.copy()，原样本通过浅复制出来的复制品，如果是对于不可变对象的修改，那么原样本不会发生变化；对于可变对象的修改，原样本也会随之发生变化。</p><hr><p>dict.fromkeys(seq[,value])方法，该方法用于创建一个新的字典，以序列seq中的元素做字典的键，value为字典所有键对应的初始值，如果value参数不传值，则默认为None。该方法返回结果是一个字典。fromkeys()方法使用给定的键值建立新的字典，每个键默认对应的值为None。</p><hr><p>dict.get(key,default=None)方法，用于返回指定键的值，如果值不在字典中就返回默认值None。使用其他方法试图访问字典中不存在的键值对时会出错，而使用get方法就不会，而是返回一个None对象。</p><hr><p>dict.items()方法，以列表返回可遍历的（键，值）元组数组，该方法不需要参数。直接输出打印dict.items()的结果是：dict_items([(“key1”,”value1”), (“key2”,”value2”)])。</p><hr><p>dict.keys()方法，以列表返回一个字典所有的键，该方法不需要参数。直接输出打印dict.keys()的结果是：dict_keys([“key1”, “key2”])。</p><hr><p>dict.values()方法，以列表返回一个字典所有的值，该方法不需要参数。直接输出打印dict. values ()的结果是：dict_values([“value1”, “value2”])。<strong>（注意返回的列表里面可以有重复值）</strong></p><hr><p>dict.setdefault()方法,该方法和get()方法类似，用于获得与给定相关联的值。如果键不存在于字典中，就会更新字典，添加键并将值设为默认值。Dict.setdefault(key, default=None)其中key代表查找的键值，default代表键不存在时设置的默认键值，该方法没有任何返回值。</p><hr><p>字典不属于序列，因此字典的合并必须使用dict.update(dict2)方法，用于将字典dict2的键值对更新到dict里面。直接输出打印dict. update(dict2)的结果是：None。注意如果后面待添加的字典里面和前面具有相同的键，则后面的键会将前面的键进行覆盖。</p><hr><p>update可以将一个字典，一个赋值表达式，或者一个元组（嵌套元组），列表（嵌套元组）合并到字典中，具体操作如下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">b = {'name': 'envy'}</span><br><span class="line">b.update({'age': 19})</span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line">b.update(sex ="male", score = 100)</span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line">b.update([('money', 69)])</span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line">b.update((('school', 'nanjing'),))</span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">{'name': 'envy', 'age': 19}</span><br><span class="line">{'name': 'envy', 'age': 19, 'sex': 'male', 'score': 100}</span><br><span class="line">{'name': 'envy', 'age': 19, 'sex': 'male', 'score': 100, 'money': 69}</span><br><span class="line">{'name': 'envy', 'age': 19, 'sex': 'male', 'score': 100, 'money': 69, 'school': 'nanjing'}</span><br></pre></td></tr></tbody></table></figure></div><p>上面为什么是需要嵌套元组，可以查看dict的源码了解一下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def update(self, E=None, **F): # known special case of dict.update</span><br><span class="line">    """</span><br><span class="line">    D.update([E, ]**F) -> None.  Update D from dict/iterable E and F.</span><br><span class="line">    If E is present and has a .keys() method, then does:  for k in E: D[k] = E[k]</span><br><span class="line">    If E is present and lacks a .keys() method, then does:  for k, v in E: D[k] = v</span><br><span class="line">    In either case, this is followed by: for k in F:  D[k] = F[k]</span><br><span class="line">    """</span><br><span class="line">    pass</span><br></pre></td></tr></tbody></table></figure></div><p>列表是没有key的，因此无法满足要求。</p></body></html>]]></content>
       
       
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
     
     
     <entry>
-      <title>2017071202</title>
-      <link href="/2020/03/05/2017071202/"/>
-      <url>/2020/03/05/2017071202/</url>
+      <title>Python高级编程（26）：dict的abc继承关系</title>
+      <link href="/2017/07/24/2017072401/"/>
+      <url>/2017/07/24/2017072401/</url>
       
-        <content type="html"><![CDATA[<html><head></head><body></body></html>]]></content>
+        <content type="html"><![CDATA[<html><head></head><body><p>Python字典中的dict其实是一种Mapping类型，我们可以使用isinstance判断一下，发现是真的：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">from _collections_abc import Mapping, MutableMapping</span><br><span class="line"></span><br><span class="line">print(type(dict))  # type类型</span><br><span class="line"></span><br><span class="line">print(isinstance(dict, MutableMapping)) </span><br><span class="line"> # False，因为isinsatance的第一个参数是object而不是一个类</span><br><span class="line"></span><br><span class="line">a ={}</span><br><span class="line">print(isinstance(a, MutableMapping))  </span><br><span class="line"># True，a 并不是继承MutableMapping，而是实现了MutableMapping中的方法</span><br></pre></td></tr></tbody></table></figure></div><p>我们可以查看MutableMapping的源码，可以发现MutableMapping只是将dict注册进去而已</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">MutableMapping.register(dict)</span><br></pre></td></tr></tbody></table></figure></div><p>具体的点击<a href="https://segmentfault.com/q/1010000016983193" target="_blank" rel="noopener">这里</a></p></body></html>]]></content>
       
       
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（25）：列表推导式、生成器表达式、字典推导式</title>
+      <link href="/2017/07/23/2017072301/"/>
+      <url>/2017/07/23/2017072301/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><h2 id="列表（生成）推导式"><a href="#列表（生成）推导式" class="headerlink" title="列表（生成）推导式"></a>列表（生成）推导式</h2><p>我们有一个需求，输出10以内的所有奇数：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">old_list = []</span><br><span class="line">for i in range(10):</span><br><span class="line">    if i % 2 ==1:</span><br><span class="line">        old_list.append(i)</span><br><span class="line"></span><br><span class="line">print(old_list)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 3, 5, 7, 9]</span><br></pre></td></tr></tbody></table></figure></div><p>现在我们对其进行修改，利用列表生成式来实现相同的功能：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">a = [i for i in range(10) if i % 2 ==1]</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 3, 5, 7, 9]</span><br></pre></td></tr></tbody></table></figure></div><p>是不是很简单，我们加一点困难，返回那些奇数的平方，同样也是使用列表生成式来完成：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def sequreitem(item):</span><br><span class="line">    return item*item</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a = [sequreitem(i) for i in range(10) if i % 2 ==1]</span><br><span class="line">b = [i**2 for i in range(10) if i % 2 == 1]</span><br><span class="line">print(a)</span><br><span class="line">print(b)</span><br></pre></td></tr></tbody></table></figure></div><p>这样看起来也是很简单的，但是一旦有更多的逻辑，我们就不要用了，因为代码的可读性是非常重要的。列表生成式的性能高于列表操作，如果能用就尽量使用好了。</p><h2 id="生成器表达式"><a href="#生成器表达式" class="headerlink" title="生成器表达式"></a>生成器表达式</h2><p>首先我们不要轻易理解（）为tuple或者set，有了这一点后面就好说了。我们尝试将<code>[sequreitem(i) for i in range(10) if i % 2 ==1]</code>里面的[ ]修改为（），然后我们对比打印输出：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line"></span><br><span class="line">def sequreitem(item):</span><br><span class="line">    return item*item</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">a = [sequreitem(i) for i in range(10) if i % 2 ==1]</span><br><span class="line">print(type(a))</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line">b = (sequreitem(i) for i in range(10) if i % 2 ==1)</span><br><span class="line">print(type(b))</span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"><class 'list'></class></span><br><span class="line">[1, 9, 25, 49, 81]</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"><class 'generator'></class></span><br><span class="line"><generator object <genexpr> at 0x00EE2630></generator></span><br></pre></td></tr></tbody></table></figure></div><p>看到没，我们通过把[ ]修改为（），然后就把一个list对象转变成了一个generator对象，然后输出打印的只是他它在内存中的地址。我们可以利用list()方法，将生成器转变成list：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">b = (sequreitem(i) for i in range(10) if i % 2 ==1)</span><br><span class="line">print(type(b))</span><br><span class="line">print(list(b))</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 9, 25, 49, 81]</span><br></pre></td></tr></tbody></table></figure></div><h2 id="字典推导式"><a href="#字典推导式" class="headerlink" title="字典推导式"></a>字典推导式</h2><p>字典推导式和我们的列表生成式非常相似，我们现在需要将下面字典中的key与value进行对换：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">dict_test = { "Tom":89, "Jan":90, "Bob":93, "Jac":100}</span><br><span class="line">reversed_dict = { value:key for key,value in dict_test.items()}</span><br><span class="line">print(type(reversed_dict))</span><br><span class="line">print(reversed_dict)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"><class 'dict'></class></span><br><span class="line">{89: 'Tom', 90: 'Jan', 93: 'Bob', 100: 'Jac'}</span><br></pre></td></tr></tbody></table></figure></div><h2 id="集合推导式"><a href="#集合推导式" class="headerlink" title="集合推导式"></a>集合推导式</h2><p>集合推导式和我们的字典生成式非常相似，我们现在需要将上面字典中的key单独分开，成为一个集合：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set_test = { key for key,value in dict_test.items()}  # 注意这里不能只写key，不写value</span><br><span class="line">print(type(set_test))</span><br><span class="line">print(set_test)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"><class 'set'></class></span><br><span class="line">{'Jac', 'Tom', 'Jan', 'Bob'}</span><br></pre></td></tr></tbody></table></figure></div><p>有人说这样做太麻烦了，可以使用这个：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">set_tt = {key for key in dict_test.keys()}</span><br><span class="line">print(type(set_tt))</span><br><span class="line">print(set_tt)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"><class 'set'></class></span><br><span class="line">{'Jac', 'Tom', 'Jan', 'Bob'}</span><br></pre></td></tr></tbody></table></figure></div><p>是的，这样确实可以，但是这个灵活性不好，它不允许我们添加我们自己的业务逻辑，而上面那种却是万能的。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（24）：什么时候我们不该使用列表?</title>
+      <link href="/2017/07/22/2017072201/"/>
+      <url>/2017/07/22/2017072201/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>尽管我们在大多情况之下喜欢使用列表，但是有的时候我们不该使用列表，而是转向使用更高级的Python内置的数据类型，这里主要说array和deque。</p><p><a href="https://upload-images.jianshu.io/upload_images/8964398-7d70ff6ab68bf369.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="https://upload-images.jianshu.io/upload_images/8964398-7d70ff6ab68bf369.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" class="lazyload"></a></p><p>上面这个图片就是展示了Python中用C语言写的列表所具有的全部方法，我们从这就能知道所有的信息。前面说过列表是一种容器序列，可以存放不同数据类型的对象。这个数组array就只能存放指定类型的数据类型对象了。</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">import array</span><br><span class="line"># array和list的一个重要区别， array只能存放指定的数据类型</span><br><span class="line">my_array = array.array("i")   # 这里的i就表明这个数组就只能存放int类型的对象</span><br><span class="line">my_array.append(1)  # 运行正常</span><br><span class="line">my_array.append("abc")  # 运行报错</span><br><span class="line"></span><br><span class="line"># 报错内容：</span><br><span class="line">    my_array.append("abc")</span><br><span class="line">TypeError: an integer is required (got type str)</span><br></pre></td></tr></tbody></table></figure></div><p>参考文章：<br>[ - ]:<a href="https://docs.python.org/3/library/array.html" target="_blank" rel="noopener">array文档</a></p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（22）：实现可切片的对象</title>
+      <link href="/2017/07/20/2017072001/"/>
+      <url>/2017/07/20/2017072001/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>我们来看一段代码，注意一下这里的start和end指的都是索引号，不是值（如[3:6]就是指索引号为3/4/5的元素，索引号从0开始）：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"># 模式[start:end:step]</span><br><span class="line">"""</span><br><span class="line">    其中，第一个数字start表示切片开始位置，默认为0；</span><br><span class="line">    第二个数字end表示切片截止（但不包含）位置（默认为列表长度）；</span><br><span class="line">    第三个数字step表示切片的步长（默认为1）。</span><br><span class="line">    当start为0时可以省略，当end为列表长度时可以省略，</span><br><span class="line">    当step为1时可以省略，并且省略步长时可以同时省略最后一个冒号。</span><br><span class="line">    另外，当step为负整数时，表示反向切片，这时start应该比end的值要大才行。</span><br><span class="line">"""</span><br><span class="line">aList = [3, 4, 5, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">print (aList[::])  # 返回包含原列表中所有元素的新列表</span><br><span class="line">print (aList[::-1])  # 返回包含原列表中所有元素的逆序列表</span><br><span class="line">print (aList[::2])  # 隔一个取一个，获取偶数位置的元素</span><br><span class="line">print (aList[1::2])  # 隔一个取一个，获取奇数位置的元素</span><br><span class="line">print (aList[3:6])  # 指定切片的开始和结束位置</span><br><span class="line">print(aList[0:100])  # 切片结束位置大于列表长度时，从列表尾部截断</span><br><span class="line">print(aList[100:] ) # 切片开始位置大于列表长度时，返回空列表</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[3, 4, 5, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">[17, 15, 13, 11, 9, 7, 6, 5, 4, 3]</span><br><span class="line">[3, 5, 7, 11, 15]</span><br><span class="line">[4, 6, 9, 13, 17]</span><br><span class="line">[6, 7, 9]</span><br><span class="line">[3, 4, 5, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">[]</span><br></pre></td></tr></tbody></table></figure></div><p>看完上面的我们再来看下面的，注意各步之间无任何关联，各步均和第一步产生反应：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">aList = [3, 4, 5, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line"></span><br><span class="line">aList[len(aList):] = [9]  # 在列表尾部增加元素，[3, 4, 5, 6, 7, 9, 11, 13, 15, 17, 9]</span><br><span class="line">aList[:0] = [1, 2]  # 在列表头部插入元素，[1, 2, 3, 4, 5, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">aList[3:3] = [4]  # 在列表中间位置插入元素，[3, 4, 5, 4, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">aList[:3] = [1, 2]  # 替换列表元素，等号两边的列表长度相等，[1, 2, 6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">aList[3:] = [4, 5, 6]  # 等号两边的列表长度也可以不相等，[3, 4, 5, 4, 5, 6]</span><br><span class="line">aList[::2] = [0] * 5  # 隔一个修改一个,[0] * 3 其实就是[0,0,0]，</span><br><span class="line"># 注意切片后的列表中元素的个数是否与待修改元素一致，[0, 4, 0, 6, 0, 9, 0, 13, 0, 17]</span><br><span class="line"></span><br><span class="line">aList[::2] = ['a', 'b', 'c', 'd', 'e']  # 隔一个修改一个，运行结果如下</span><br><span class="line"># ['a', 4, 'b', 6, 'c', 9, 'd', 13, 'e', 17]</span><br><span class="line"></span><br><span class="line">aList[::2] = [1,2]  # 左侧切片不连续，等号两边列表长度必须相等，这个运行会出错</span><br><span class="line">aList[:3] = []  # 删除列表中前3个元素，[6, 7, 9, 11, 13, 15, 17]</span><br><span class="line"></span><br><span class="line">del aList[:3]  # 切片元素连续，[6, 7, 9, 11, 13, 15, 17]</span><br><span class="line">del aList[::2]  # 切片元素不连续，隔一个删一个，[4, 6, 9, 13, 17]</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"></span><br><span class="line"> aList[::2] = [1,2]  # 左侧切片不连续，等号两边列表长度必须相等，这个运行会出错</span><br><span class="line">ValueError: attempt to assign sequence of size 2 to extended slice of size 5</span><br></pre></td></tr></tbody></table></figure></div><p>我们来仔细看一下到底发生了什么：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">aList = [1, 2, 4, 4, 5, 6]</span><br><span class="line">aList[::2] = [0] * 3  # 隔一个修改一个,[0] * 3 其实就是[0,0,0]</span><br><span class="line">print (aList)</span><br><span class="line"></span><br><span class="line">aList[::2] = ['a', 'b', 'c']  # 隔一个修改一个</span><br><span class="line">print(aList)  </span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"></span><br><span class="line">[0, 2, 0, 4, 0, 6]</span><br><span class="line">['a', 2, 'b', 4, 'c', 6]</span><br></pre></td></tr></tbody></table></figure></div><p>现在我们是需要自己来定义一个可以像列表那样的，支持各种切片处理的对象（我们实现一个不可变的对象）。我们查看源码，看这个Sequence里面包含了哪些魔法函数，我们先把里面的魔法函数都复制一遍：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from Lib import _collections_abc</span><br></pre></td></tr></tbody></table></figure></div><p>将光标放在_collections_abc上面，然后按住Ctrl，单击鼠标左键就可以查看源码了：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">__all__ = ["Awaitable", "Coroutine",</span><br><span class="line">           "AsyncIterable", "AsyncIterator", "AsyncGenerator",</span><br><span class="line">           "Hashable", "Iterable", "Iterator", "Generator", "Reversible",</span><br><span class="line">           "Sized", "Container", "Callable", "Collection",</span><br><span class="line">           "Set", "MutableSet",</span><br><span class="line">           "Mapping", "MutableMapping",</span><br><span class="line">           "MappingView", "KeysView", "ItemsView", "ValuesView",</span><br><span class="line">           "Sequence", "MutableSequence",</span><br><span class="line">           "ByteString",</span><br><span class="line">           ]</span><br></pre></td></tr></tbody></table></figure></div><p>然后我们类似操作选择点击Sequence，它就是不可变的，右边的MutableSequence就是可变的，其实就是在他的基础上进行了一些封装，功能多了而已。发现它实现了4个魔法函数，我们把它们写到Group里面：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line">class Group:</span><br><span class="line">    # 支持切片操作</span><br><span class="line">    def __init__(self, group_name, company_name, staffs):</span><br><span class="line">        self.group_name = group_name</span><br><span class="line">        self.company_name= company_name</span><br><span class="line">        self.staffs = staffs</span><br><span class="line"></span><br><span class="line">    def __getitem__(self, item):</span><br><span class="line">       return self.staffs[item]</span><br><span class="line"></span><br><span class="line">    def __iter__(self):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def __contains__(self, item):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def __reversed__(self):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">staffs = ["hello", "envse" , "lichee" ]</span><br><span class="line">group = Group(group_name="kbthink", company_name="envse", staffs=staffs)</span><br><span class="line">group[:2]</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">['hello', 'envse']</span><br></pre></td></tr></tbody></table></figure></div><p>发现运行没有报错，说明它就已经支持我们的切片操作了，因为里面具有<code>__getitem__()</code>这个魔法函数。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（23）：bisect维护已排序序列</title>
+      <link href="/2017/07/20/2017072101/"/>
+      <url>/2017/07/20/2017072101/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line">import bisect</span><br><span class="line">from collections import deque</span><br><span class="line"></span><br><span class="line"># 用来处理已排序的序列，用来维持已排序的序列， 升序</span><br><span class="line"># 二分查找</span><br><span class="line">inter_list = deque()</span><br><span class="line">bisect.insort(inter_list, 3)</span><br><span class="line">bisect.insort(inter_list, 2)</span><br><span class="line">bisect.insort(inter_list, 5)</span><br><span class="line">bisect.insort(inter_list, 1)</span><br><span class="line">bisect.insort(inter_list, 6)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">print(bisect.bisect_left(inter_list, 3))</span><br><span class="line"># 学习成绩</span><br><span class="line">print(inter_list)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">2</span><br><span class="line">deque([1, 2, 3, 5, 6])</span><br></pre></td></tr></tbody></table></figure></div><p>我们只需要记住几点：<br>1、bisect = bisect_right 和 insort = insort_right，而且insort 返回插入后的新列表，而bisect 则是返回在列表中的位置（索引号）。</p><p>具体的可以看这里：<a href="https://blog.csdn.net/nightcharm/article/details/79325731" target="_blank" rel="noopener">bisect——模块</a></p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（21）：list中+、+=、extend的方法区别</title>
+      <link href="/2017/07/19/2017071901/"/>
+      <url>/2017/07/19/2017071901/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>我们知道在list中，有+、+=、和extend，但是它这3个的区别你知道么？</p><p>+：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a = [1,2 ,3]</span><br><span class="line">c = a + [5,6,7]</span><br><span class="line">print(c)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 2, 3, 5, 6, 7]</span><br></pre></td></tr></tbody></table></figure></div><p>+=：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a = [1,2 ,3]</span><br><span class="line">a += [5,6,7]</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 2, 3, 5, 6, 7]</span><br></pre></td></tr></tbody></table></figure></div><p>你肯定会说这个没啥好说的，那么我们修改一下，将这个列表 [5,6,7]修改为元组（5,6,7），然后我们再分别使用+和+=试试：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 使用+操作</span><br><span class="line">a = [1,2 ,3]</span><br><span class="line">c = a + (5,6,7)</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">TypeError: can only concatenate list (not "tuple") to list</span><br><span class="line"></span><br><span class="line"></span><br><span class="line"></span><br><span class="line"># 使用+=操作</span><br><span class="line">a = [1,2 ,3]</span><br><span class="line">a +=  (5,6,7)</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 2, 3, 5, 6, 7]</span><br></pre></td></tr></tbody></table></figure></div><p>所以看到没，我们这个+=可以连接不同类型的数据类型，知道为什么么，因为它里面包含了一个魔法函数<code>__iadd__()</code>，通过源码我们发现里面包含了我们的extend：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">_collection_abc.py</span><br><span class="line"></span><br><span class="line">    def __iadd__(self, values):</span><br><span class="line">        self.extend(values)</span><br><span class="line">        return self</span><br></pre></td></tr></tbody></table></figure></div><p>我们再来看一下我们的extend方法，只要是iterable就可以放在里面，前面也说过我们的序列类型都是支持可迭代的：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">def extend(self, values):</span><br><span class="line">       'S.extend(iterable) -- extend sequence by appending elements from the iterable'</span><br><span class="line">       for v in values:</span><br><span class="line">           self.append(v)</span><br></pre></td></tr></tbody></table></figure></div><p>所以我们现在来看一下这个extend的用法：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">a = [1,2 ,3]</span><br><span class="line">a.extend(range(3))</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 2, 3, 0, 1, 2]</span><br></pre></td></tr></tbody></table></figure></div><p>有很多人喜欢赋值对象，我们也来看看：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">a = [1,2 ,3]</span><br><span class="line">b = a.extend(range(3))</span><br><span class="line"></span><br><span class="line">print(b)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">None</span><br></pre></td></tr></tbody></table></figure></div><p>所以你注意到没有，我们这里的extend是直接对这个a对象进行操作的，然后就临时存在了内存里面，你这是去引用是找不到的，注意一下这个地方。现在就有人想起了list的append()方法，行这里我们也来试一试：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">a = [1,2 ,3]</span><br><span class="line">a.append(range(3))</span><br><span class="line">print(a)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[1, 2, 3, range(0, 3)]</span><br></pre></td></tr></tbody></table></figure></div><p>我们还是来对比一下它们的源码吧：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">def extend(self, values):</span><br><span class="line">'S.extend(iterable) -- extend sequence by appending elements from the iterable'</span><br><span class="line">for v in values:</span><br><span class="line">    self.append(v)</span><br><span class="line"></span><br><span class="line">def append(self, value):</span><br><span class="line">'S.append(value) -- append value to the end of the sequence'</span><br><span class="line">self.insert(len(self), value)</span><br></pre></td></tr></tbody></table></figure></div><p>看到没有append插入的只是一个值而已，而我们的extend却是一个可迭代对象。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（20）：python中序列类型的abc继承关系</title>
+      <link href="/2017/07/18/2017071801/"/>
+      <url>/2017/07/18/2017071801/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">from Lib import _collections_abc</span><br></pre></td></tr></tbody></table></figure></div><p>我们所有关于序列类型的模块都在abc这个里面，前面也说过python是基于协议开发的语言，我们现在又要谈到我们的鸭子模型了。只要具有相应的魔法函数，它就具有了相应的功能：</p><p>如果我们要定制一个不可变的容器，如String，那么代码中就不能有修改容器数据的方法，如<code>__setitem__()</code>, <code>__delitem__()</code>；</p><p>如果希望定制的容器支持reversed()这个内置函数，那么容器中需定义<code>__reversed__()</code>方法，从而提供对内置函数reversed()的支持；</p><p>在容器中，查询容器”容量”的方法是通过len()这个内置函数来实现，所以容器中需要定义<code>__len__()</code>方法；</p><p>如果希望容器支持读，写和删除功能，那么就要实现对应的方法：<code>__getitem__()</code>, <code>__setitem__()</code>, <code>__delitem__()</code>；</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（19）：python中的序列分类</title>
+      <link href="/2017/07/17/2017071701/"/>
+      <url>/2017/07/17/2017071701/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>python中的序列其实就是一种协议，Python是基于协议而开发的。我们依据两个维度来将序列进行分类，一个是按照是否必须存储同一类型分为容器序列和扁平序列；另一个则是序列是否可变，分为：可变序列和不可变序列。</p><p>容器序列：list、tuple、deque；<br>扁平序列：str、bytes、bytearray、array.array。</p><p>容器序列就是可以存储不同类型数据结构的对象，只是一个容器而已：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">a_list = []</span><br><span class="line">a_list.append(123)</span><br><span class="line">a_list.append("nihao")</span><br><span class="line">print(a_list)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">[123, 'nihao']</span><br></pre></td></tr></tbody></table></figure></div><p>而扁平序列就是只能存储同一数据类型的对象。</p><p>可变序列：list， deque，bytearray、array</p><p>不可变序列：str、tuple、bytes<br>可变序列就是允许你往里面添加数据，不可变序列就是不允许你修改里面的内容。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（18）：contextlib简化上下文管理器</title>
+      <link href="/2017/07/16/2017071601/"/>
+      <url>/2017/07/16/2017071601/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>本来我们这个应该是和前面的with语句放在一块的，但是我想多写一篇，目的就是为了突出使用contextlib这个模块以后，我们的上下文管理器简化了很多。</p><p>我们还是先来看一段代码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">import contextlib</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">@contextlib.contextmanager</span><br><span class="line">def file_open(file_name):</span><br><span class="line">    print("file open")  # 此处代码就相当于之前的enter魔法函数实现的代码</span><br><span class="line">    yield {}  # 必须是yield一个生成器，可以没有{}，但是yield关键词必须有</span><br><span class="line">    print("file end")   # 此处代码就相当于之前的exit魔法函数实现的代码</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">with file_open("envse.txt")as file_read:</span><br><span class="line">    print("file is reading")</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">file open</span><br><span class="line">file is reading</span><br><span class="line">file end</span><br></pre></td></tr></tbody></table></figure></div><p>这是不是和我们前面的输出很相似，是的，这就是contextlib的好处，而且它可以把我们这个函数包装成一个上下文管理器对象，里面利用了我们生成器的一些特性。我们现在就是要搞清楚里面为什么是生成器，最好的方法就是直接阅读源码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">def contextmanager(func):</span><br><span class="line">    """@contextmanager decorator.</span><br><span class="line"></span><br><span class="line">    Typical usage:</span><br><span class="line"></span><br><span class="line">        @contextmanager</span><br><span class="line">        def some_generator(<arguments>):</arguments></span><br><span class="line">            <setup></setup></span><br><span class="line">            try:</span><br><span class="line">                yield <value></value></span><br><span class="line">            finally:</span><br><span class="line">                <cleanup></cleanup></span><br><span class="line"></span><br><span class="line">    This makes this:</span><br><span class="line"></span><br><span class="line">        with some_generator(<arguments>) as <variable>:</variable></arguments></span><br><span class="line">            </span><br><span class="line"></span><br><span class="line">    equivalent to this:</span><br><span class="line"></span><br><span class="line">        <setup></setup></span><br><span class="line">        try:</span><br><span class="line">            <variable> = <value></value></variable></span><br><span class="line">            </span><br><span class="line">        finally:</span><br><span class="line">            <cleanup></cleanup></span><br><span class="line">    """</span><br></pre></td></tr></tbody></table></figure></div><p>看到没有，这个函数的作用就是：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">with some_generator(<arguments>) as <variable>:</variable></arguments></span><br><span class="line">    </span><br></pre></td></tr></tbody></table></figure></div><p>所以我们刚才强调为什么必须是生成器的原因就在这里：<code>some_generator</code>，所以没事可以多看源码，可以提高自身能力。</p><p>参考文章：<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-pythonwith/" target="_blank" rel="noopener">浅谈 Python 的 with 语句</a></p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（17）：python中的with语句</title>
+      <link href="/2017/07/15/2017071501/"/>
+      <url>/2017/07/15/2017071501/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>要使用 with 语句，首先要明白上下文管理器这一概念。有了上下文管理器，with 语句才能工作。</p><p>上下文管理协议（Context Management Protocol）：包含方法 <code>__enter__()</code>和<code>__exit__()</code>，支持该协议的对象要实现这两个方法。</p><p>上下文管理器（Context Manager）：支持上下文管理协议的对象，这种对象实现了<br><code>__enter__()</code>和<code>__exit__()</code>方法。上下文管理器定义执行 with 语句时要建立的运行时上下文，负责执行 with 语句块上下文中的进入与退出操作。通常使用 with 语句调用上下文管理器，也可以通过直接调用其方法来使用。说白了就是你只要是包含了<code>__enter__()</code>和<code>__exit__()</code>这两个魔法函数，我就可以把你当做一个上下文管理器（鸭子类型）来操作。</p><p>我们先来看一段代码，给这个函数实现上下文管理协议：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">class Sample:</span><br><span class="line">    def __enter__(self):</span><br><span class="line">        # 获取资源</span><br><span class="line">        print("enter")</span><br><span class="line">        return self</span><br><span class="line"></span><br><span class="line">    def __exit__(self, exc_type, exc_val, exc_tb):</span><br><span class="line">        # 释放资源</span><br><span class="line">        print("exit")</span><br><span class="line"></span><br><span class="line">    def doSomething(self):</span><br><span class="line">        print(" I am doingsomething")</span><br><span class="line"></span><br><span class="line">sample = Sample()</span><br><span class="line">sample.doSomething()</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line"> I am doingsomething</span><br></pre></td></tr></tbody></table></figure></div><p>这是按照我们正常的实例化对象的操作，但是我们还没有调用因魔法函数而增强的功能，如何调用呢？使用with语句就可以了：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">with Sample() as sample:</span><br><span class="line">    sample.doSomething()</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">enter</span><br><span class="line">I am doingsomething</span><br><span class="line">exit</span><br></pre></td></tr></tbody></table></figure></div><p>看到没有，这里我们其实也是实例化了Sample的对象，不过是使用with来完成的，然后它就自动调用了我们2个魔法函数。不知道你注意没有，这个I am doingsomething是在中间输出的，你可能会问为啥不是最后呢？（按照调用的顺序就应该是这样啊）其实不是的，因为你前面虽说是获取了资源，但是你所获取的资源并没有完全加载完，然后就去释放资源啊，所以肯定就是这样了。</p><p>参考文章：<a href="https://www.ibm.com/developerworks/cn/opensource/os-cn-pythonwith/" target="_blank" rel="noopener">浅谈 Python 的 with 语句</a></p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（16）：mixin继承</title>
+      <link href="/2017/07/14/2017071401/"/>
+      <url>/2017/07/14/2017071401/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>mixin混合模式的特点：<br>1、mixin类功能单一；<br>2、不和基类关联，可以和任意基类进行组合，基类可以不和mixin关联就能初始化成功；<br>3、在mixin中，不要使用super这种用法；最后尽量以mixin结尾</p><p>参考文章：<br><a href="http://python.jobbole.com/84052/" target="_blank" rel="noopener">Python mixin模式</a></p><p><a href="https://www.jianshu.com/p/dae61c60f323" target="_blank" rel="noopener">Python中的Mixin模式</a></p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（15）：super真的是调用父类吗？</title>
+      <link href="/2017/07/13/2017071301/"/>
+      <url>/2017/07/13/2017071301/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>这一部分非常重要，我相信很多人心中一直觉得super函数就是调用父类，但是结果是这样吗，我们来好好聊一下这个super。我们先来看一段代码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">class A:</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("A")</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class B(A):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("B")</span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    b = B()</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">B</span><br></pre></td></tr></tbody></table></figure></div><p>这个是没有问题的，很好理解，我们接着来看下一段代码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class A:</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("A")</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class B(A):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("B")</span><br><span class="line">        super().__init__()</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">B</span><br><span class="line">A</span><br></pre></td></tr></tbody></table></figure></div><p>有人说这不就是调用了父类的方法么，我暂且不说话。并向你扔了2个问题：<br>1、既然我们重写了B的构造方法，那么为什么还要去调用super?<br>2、super的执行顺序到底是怎样的？</p><p>我们先来看第一个问题：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">from threading import Thread</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Mythread(Thread):</span><br><span class="line">    def __init__(self, name, user):</span><br><span class="line">        self.user = user</span><br><span class="line">        # self.name = name</span><br><span class="line">        super().__init__(name = name)</span><br></pre></td></tr></tbody></table></figure></div><p>这里我们想自己定义一个线程，我们发现在Thread这个函数里面就已经包含了name这个属性：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">def __init__(self, group=None, target=None, name=None,args=(), kwargs=None, *, daemon=None):</span><br></pre></td></tr></tbody></table></figure></div><p>这样我们完全可以使用父类Thread的name属性啊，为啥自己还要定义一个呢？自己定义一个虽说不是不可以，但是我们重点是要了解super的用法。</p><p>接下来看第二个问题：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br></pre></td><td class="code"><pre><span class="line">class A:</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("A")</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class B(A):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("B")</span><br><span class="line">        super().__init__()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class C(A):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("C")</span><br><span class="line">        super().__init__()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class D(B, C):</span><br><span class="line">    def __init__(self):</span><br><span class="line">        print("D")</span><br><span class="line">        super(D, self).__init__()</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    d = D()</span><br></pre></td></tr></tbody></table></figure></div><p>假如super方法是调用父类的话，那么输出结果应该是D–>B–>A–>C，真的是这样吗，我们打印一下，结果却是D–>B–>C–>A，所以就不是调用父类的方法了，而是调用的顺序是根据前面的mro算法来的，不信我们可以打印一下：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(D.__mro__)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">(<class '__main__.d'>, <class '__main__.b'>, <class '__main__.c'>, <class '__main__.a'>, <class 'object'>)</class></class></class></class></class></span><br></pre></td></tr></tbody></table></figure></div><p>看到没有，一模一样，所以super调用的不是父类，而是根据mro顺序来进行调用的。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
+      <title>Python高级编程（14）：python对象的自省机制</title>
+      <link href="/2017/07/12/2017071202/"/>
+      <url>/2017/07/12/2017071202/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><p>自省是通过一定的机制查询到对象的内部结构 ,Python中提供了很多的方法来查询对象的内部结构，比如： hasattr:查询对象是否有一个特性的属性 ；getattr:获取对象的属性 ；setattr:设置对象的属性 ；delattr:从一个对象中删除属性，这些都是比较常规的方法，我们今天主要来讲一下<code>__dict__</code>和<code>dir()</code>这两个方法，我们先来看一段代码：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># 自省是通过一定的机制查询到对象的内部结构</span><br><span class="line">class Person:</span><br><span class="line">    name = "user"</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class Student(Person):</span><br><span class="line">    def __init__(self, school_name):</span><br><span class="line">        self.school_name = school_name</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">if __name__ == '__main__':</span><br><span class="line">    user = Student("家里蹲大学")</span><br><span class="line"></span><br><span class="line">    # 通过__dict__来查询属性</span><br><span class="line">    print(user.__dict__)</span><br><span class="line">    print(user.name)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">{'school_name': '家里蹲大学'}</span><br><span class="line">user</span><br></pre></td></tr></tbody></table></figure></div><p>看到这里你可能就会想，为什么这个name属性没有进入我们这个dict里面去呢？那是因为这个name是我们Person这个对象的属性，并不是实例化对象的，之所以打印user.name会出现这个属性，是因为我们在前面说过mro，对象本身不具有就会向上查找，看它的类是不是具有（name属性不属于实例化的对象，只是你可以调用而已）</p><p>既然如此，我们来看看Person这个对象，看它具有什么属性（输出一个字典）：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(Person.__dict__)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">{'__module__': '__main__', 'name': 'user', '__dict__': <attribute '__dict__' of 'person' objects>, '__weakref__': <attribute '__weakref__' of 'person' objects>, '__doc__': None}</attribute></attribute></span><br></pre></td></tr></tbody></table></figure></div><p>看到没有，里面就有name这个属性了，要知道类是比对象丰富的多，所以具有的属性多也很正常，但在这里我们最关心的还是这个name属性的归属问题。</p><p>我们再来看看这个，我们发现我们是可以直接对其属性进行操作的：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">user.__dict__["address"] = "上海市"</span><br><span class="line">print(user.address)</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">上海市</span><br></pre></td></tr></tbody></table></figure></div><p>现在我们试试另一个函数<code>dir()</code>，它可以列出所有对象名的属性，比前面的<code>__dict__</code>魔法函数的功能更加强大，不过只会列出属性名，而不会列出属性的值（一个列表）：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">print(dir(user))</span><br><span class="line"></span><br><span class="line"># 输出结果：</span><br><span class="line">['__class__', '__delattr__', '__dict__', '__dir__', '__doc__', '__eq__', '__format__', '__ge__', '__getattribute__', '__gt__', '__hash__', '__init__', '__init_subclass__', '__le__', '__lt__', '__module__', '__ne__', '__new__', '__reduce__', '__reduce_ex__', '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__', '__weakref__', 'address', 'name', 'school_name']</span><br></pre></td></tr></tbody></table></figure></div><p>也就是说Python的对象其实就是在我们基本的数据结构dict上面进行了一些更高层次的封装，所以我们可以通过对dict的操作从而达到操作对象的目的。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> pythonbase </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> python基础 </tag>
+            
+        </tags>
       
     </entry>
     
