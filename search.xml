@@ -4,6 +4,31 @@
   
     
     <entry>
+      <title>Spring Cloud Alibaba介绍？</title>
+      <link href="/2020/03/01/spring-cloud-alibaba-introdution/"/>
+      <url>/2020/03/01/spring-cloud-alibaba-introdution/</url>
+      
+        <content type="html"><![CDATA[<html><head></head><body><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>在前面我们学习的都是Netflix或者Spring官方社区提供的微服务组件，也就是通常意义上的Spring Cloud技术栈，但是在一开始就提到过实现微服务不一定需要使用Spring Cloud技术栈，还可以使用国内阿里巴巴公司开源的另一套方案，不过现在这套方案已经成功纳入Spring Cloud体系，并成为Spring Cloud Alibaba项目。</p><h3 id="Spring-Cloud-Alibaba简介"><a href="#Spring-Cloud-Alibaba简介" class="headerlink" title="Spring Cloud Alibaba简介"></a>Spring Cloud Alibaba简介</h3><p>Spring Cloud Alibaba致力于提供微服务开发的一站式解决方案。此项目包含开发分布式应用微服务的必需组件，方便开发者通过Spring Cloud编程模型轻松使用这些组件来开发分布式应用服务。</p><p>Spring Cloud Alibaba项目由两部分组成：阿里云产品组件和阿里巴巴开源组件，它旨在为Java开发人员在使用阿里巴巴产品的同时，通过利用Spring框架的设计模式和抽象能力，注入Spring Boot和Spring Cloud的优势。</p><p>请注意版本问题，Spring Cloud Alibaba项目的版本号格式为x.x.x的形式，其中x的数值类型为数字，从0开始取值，且不限于0~9这个范围。项目处于孵化器阶段时，第一位版本号固定使用0，即版本号为0.x.x的格式。而由于Spring Boot2和Spring Boot1在Actuator模块的接口和注解上有很大变化，且spring-cloud-commons从1.x.x版本升级到2.0.0版本也有较大的变化，因此Spring Cloud Alibaba采取跟SpringBoot版本号一致的版本，也就是1.5.x版本适用于Spring Boot 1.5.x版本；2.2.x版本适用于Spring Boot 2.2.x版本。可以发现这里Spring Cloud Alibaba的版本最新为2.2.3，因此笔者这里主要使用的Spring Boot版本为2.2.10，因为nacos对版本有要求：</p><p><a href="https://upload-images.jianshu.io/upload_images/8964398-b99daab6b674c1a2.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="https://upload-images.jianshu.io/upload_images/8964398-b99daab6b674c1a2.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" class="lazyload"></a></p><h3 id="阿里云产品组件"><a href="#阿里云产品组件" class="headerlink" title="阿里云产品组件"></a>阿里云产品组件</h3><p>首先明确阿里云产品组件的命名前缀为<code>spring-cloud-alicloud</code>，其次它目前主要提供以下3个特性：<br><strong>（1）应用发现服务。</strong>阿里云应用发现服务ANS，除了应用发现的基本功能外，提供了更低成本的 SaaS 化应用发现服务，同时在接口的调用中加入了加密逻辑，更好地保护你的服务。<br><strong>（2）配置管理服务。</strong>阿里云配置管理服务ACM，加强了安全的配置管理，并且还包含了完整的推送轨迹查询。<br><strong>（3）对象存储服务。</strong>阿里云云存储服务OSS，支持在任何应用、任何时间、任何地点存储和访问任意类型的数据， 只需要自动注入一个 OSS Client，即可直接使用存储与下载功能。</p><p>需要说明的是这个阿里云产品组件都是商业服务，需要付费，不是开源产品，因此我们更多的则是关注下面即将介绍的阿里巴巴开源组件。</p><h3 id="阿里巴巴开源组件内容"><a href="#阿里巴巴开源组件内容" class="headerlink" title="阿里巴巴开源组件内容"></a>阿里巴巴开源组件内容</h3><p>（1）<strong><a href="https://github.com/alibaba/Sentinel" target="_blank" rel="noopener">Sentinel</a></strong>：把流量作为切入点，从流量控制、熔断降级、系统负载保护等多个维度保护服务的稳定性。中文文档点击 <a href="https://github.com/alibaba/Sentinel/wiki/%E4%BB%8B%E7%BB%8D" target="_blank" rel="noopener">这里</a>。<br>（2）<strong><a href="https://github.com/alibaba/Nacos" target="_blank" rel="noopener">Nacos</a></strong>：一个更易于构建云原生应用的动态服务发现、配置管理和服务管理平台。<br>（3）<strong><a href="https://rocketmq.apache.org/" target="_blank" rel="noopener">RocketMQ</a></strong>：一款开源的分布式消息系统，基于高可用分布式集群技术，提供低延时的、高可靠的消息发布与订阅服务。<br>（4）<strong><a href="https://github.com/apache/dubbo" target="_blank" rel="noopener">Dubbo</a></strong>：Apache Dubbo是一款高性能 Java RPC 框架。中文官网点击 <a href="http://dubbo.apache.org/zh-cn/" target="_blank" rel="noopener">这里</a>。<br>（5）<strong><a href="https://github.com/seata/seata" target="_blank" rel="noopener">Seata</a></strong>：阿里巴巴开源产品，一个易于使用的高性能微服务分布式事务解决方案。<br>（6）<strong><a href="https://www.aliyun.com/product/oss" target="_blank" rel="noopener">Alibaba Cloud OSS</a></strong>: 阿里云对象存储服务（Object Storage Service，简称 OSS），是阿里云提供的海量、安全、低成本、高可靠的云存储服务。您可以在任何应用、任何时间、任何地点存储和访问任意类型的数据。<br>（7）<strong><a href="https://help.aliyun.com/document_detail/43136.html" target="_blank" rel="noopener">Alibaba Cloud SchedulerX</a></strong>: 阿里中间件团队开发的一款分布式任务调度产品，提供秒级、精准、高可靠、高可用的定时（基于 Cron 表达式）任务调度服务。<br>（8）<strong><a href="https://www.aliyun.com/product/sms" target="_blank" rel="noopener">Alibaba Cloud SMS</a></strong>: 覆盖全球的短信服务，友好、高效、智能的互联化通讯能力，帮助企业迅速搭建客户触达通道。</p><h3 id="阿里巴巴开源组件主要功能"><a href="#阿里巴巴开源组件主要功能" class="headerlink" title="阿里巴巴开源组件主要功能"></a>阿里巴巴开源组件主要功能</h3><p>首先明确阿里巴巴开源组件的命名前缀为<code>spring-cloud-alibaba</code>，其次它目前主要提供以下8个功能：<br><strong>（1）服务注册与发现。</strong>适配Spring Cloud服务注册与发现标准，默认集成了Ribbon的支持。<br><strong>（2）服务限流降级。</strong>默认支持 WebServlet、WebFlux、OpenFeign、RestTemplate、Spring Cloud Gateway, Zuul、Dubbo和RocketMQ限流降级功能的接入，可以在运行时通过控制台实时修改限流降级规则，还支持查看限流降级Metrics监控。<br><strong>（3）分布式配置管理。</strong>支持分布式系统中的外部化配置，配置更改时自动刷新。<br><strong>（4）消息驱动能力。</strong>基于Spring Cloud Stream为微服务应用构建消息驱动能力。<br><strong>（5）分布式事务</strong>。使用 <code>@GlobalTransactional</code>注解， 高效并且对业务零侵入地解决分布式事务问题。<br><strong>（6）阿里云对象存储。</strong>阿里云提供的海量、安全、低成本、高可靠的云存储服务。支持在任何应用、任何时间、任何地点存储和访问任意类型的数据。<br><strong>（7）分布式任务调度。</strong>提供秒级、精准、高可靠、高可用的定时（基于Cron表达式）任务调度服务。同时提供分布式的任务执行模型，如网格任务。网格任务支持海量子任务均匀分配到所有Worker（schedulerx-client）上执行。<br><strong>（8）阿里云短信服务。</strong>覆盖全球的短信服务，友好、高效、智能的互联化通讯能力，帮助企业迅速搭建客户触达通道。</p><h3 id="如何构建使用"><a href="#如何构建使用" class="headerlink" title="如何构建使用"></a>如何构建使用</h3><p>首先点击 <a href="https://github.com/alibaba/spring-cloud-alibaba/blob/master/README-zh.md" target="_blank" rel="noopener">这里</a>，查看对应的中文文档，其实本文很多内容就摘自该文档，如下所示：</p><p><a href="https://upload-images.jianshu.io/upload_images/8964398-69f32e776c7b9ff0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" data-fancybox="group" data-caption class="fancybox"><img alt title data-src="https://upload-images.jianshu.io/upload_images/8964398-69f32e776c7b9ff0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240" class="lazyload"></a></p><p>（1）master分支对应的是Spring Cloud Greenwich，最低支持JDK1.8；<br>（2）finchley分支对应的是Spring Cloud Finchley，最低支持JDK1.8。<br>（3）1.x分支对应的是Spring Cloud Edgware，最低支持JDK 1.7。</p><p>可以发现这里支持的版本明显比之前在学习Spring Cloud组件时使用的版本要低很多，在前面我们使用的是<code>Hoxton.SR7</code>版本，这个版本在笔者写这套笔记的时候已经不是最新的了，而这里的Spring Cloud Alibaba要求的版本最高还是Greenwich，也就是前面所说Spring Boot的版本要求大于等于2.2.0.RELEASE但是要小于2.3.0.M1。</p><p>Spring Cloud 使用Maven来构建，最快的使用方式是将<a href="https://github.com/alibaba/spring-cloud-alibaba" target="_blank" rel="noopener">spring-cloud-alibaba项目</a>克隆到本地，然后执行<code>./mvnw install</code>命令即可将项目安装到本地Maven仓库中。</p><h3 id="如何引入依赖"><a href="#如何引入依赖" class="headerlink" title="如何引入依赖"></a>如何引入依赖</h3><p>之前在使用Spring Cloud技术栈的时候我们都是在pom.xml依赖文件中使用了如下的配置：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><dependencymanagement></dependencymanagement></span><br><span class="line">      <dependencies></dependencies></span><br><span class="line">          <dependency></dependency></span><br><span class="line">              <groupid>org.springframework.cloud</groupid></span><br><span class="line">              <artifactid>spring-cloud-dependencies</artifactid></span><br><span class="line">              <version>${spring-cloud.version}</version></span><br><span class="line">              <type>pom</type></span><br><span class="line">              <scope>import</scope></span><br><span class="line">          </span><br><span class="line">      </span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure></div><p>现在开发者如果需要使用已发布的Spring Cloud Alibaba版本，可以在<code>dependencyManagement</code>中添加如下配置：</p><div class="code-area-wrap"><div class="highlight-tools"><i class="fa fa-angle-down code-expand" aria-hidden="true"></i><div class="code_lang">Code</div><div class="copy-notice"></div><i class="fa fa-clipboard" aria-hidden="true"></i></div><figure class="highlight plain"><table><tbody><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line"><dependencymanagement></dependencymanagement></span><br><span class="line">    <dependencies></dependencies></span><br><span class="line">        <dependency></dependency></span><br><span class="line">            <groupid>com.alibaba.cloud</groupid></span><br><span class="line">            <artifactid>spring-cloud-alibaba-dependencies</artifactid></span><br><span class="line">            <version>2.2.3.RELEASE</version></span><br><span class="line">            <type>pom</type></span><br><span class="line">            <scope>import</scope></span><br><span class="line">        </span><br><span class="line">    </span><br><span class="line"></span><br></pre></td></tr></tbody></table></figure></div><p>然后在<code>dependencies</code>中添加自己所需使用的依赖即可使用，将允许开发者省略任何Maven依赖项的版本，而是将版本控制委派给BOM。</p><p>最后没事可以多点击 <a href="https://spring-cloud-alibaba-group.github.io/github-pages/hoxton/zh-cn/index.html" target="_blank" rel="noopener">这里</a> 学习Spring Cloud Alibaba组件更多内容。</p></body></html>]]></content>
+      
+      
+      <categories>
+          
+          <category> springcloud </category>
+          
+      </categories>
+      
+      
+        <tags>
+            
+            <tag> springcloud-alibaba </tag>
+            
+        </tags>
+      
+    </entry>
+    
+    
+    
+    <entry>
       <title>这就是java中的注解</title>
       <link href="/2018/01/10/java-advanced-4-annatation/"/>
       <url>/2018/01/10/java-advanced-4-annatation/</url>
@@ -94,12 +119,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -118,12 +137,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -144,12 +157,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -168,12 +175,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -194,12 +195,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -218,12 +213,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -244,12 +233,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -268,12 +251,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -294,12 +271,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -318,12 +289,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -344,12 +309,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -368,12 +327,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -394,12 +347,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -418,12 +365,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -444,12 +385,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -468,12 +403,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -494,12 +423,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -518,12 +441,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -544,12 +461,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -568,12 +479,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -594,12 +499,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -618,12 +517,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -644,12 +537,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -668,12 +555,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -694,12 +575,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -718,12 +593,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -744,12 +613,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -768,12 +631,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -794,12 +651,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -818,12 +669,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
@@ -844,12 +689,6 @@
       </categories>
       
       
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
-      
     </entry>
     
     
@@ -868,12 +707,6 @@
           
       </categories>
       
-      
-        <tags>
-            
-            <tag> python基础 </tag>
-            
-        </tags>
       
     </entry>
     
