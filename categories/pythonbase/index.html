@@ -151,13 +151,13 @@
     <li class="">
       <a href="/">Overview</a></li>
     <li class="">
-      <a href="/archives">Posts <span class="counter">154</span></a>
+      <a href="/archives">Posts <span class="counter">1</span></a>
     </li>
     <li class="selected">
       <a href="/categories">Categories <span
-                class="counter">12</span></a></li>
+                class="counter">1</span></a></li>
     <li class="">
-      <a href="/tags">Tags <span class="counter">13</span></a></li>
+      <a href="/tags">Tags <span class="counter">1</span></a></li>
   </ul>
 </nav>
 
@@ -165,10 +165,9 @@
       <ul class="archive-list">
         
         <li class="archive-list-item">
-          <h2><a href="/2017/07/31/2017073101/">Python高级编程（33）：一个经典的参数错误</a></h2>
+          <h2><a href="/2017/07/05/2017070601/">Python高级编程（1）：如何理解Python中的一切皆对象？</a></h2>
           <p>
-                 我们先来看一个例子： 
-     Code             1   2   3   4   5   6   7   8   9   10   11   12   13   14   15   16   17   18   19   20   21   22   23   24   ...
+                 如何理解Python中一切皆对象这一说法呢？其实不光是Python，很多语言都号称是一切皆对象，这里就拿Java来说吧。其实Java的一切皆对象是伪装的，比如int(Java八种基本数据类型之一)在持久化的时候，就需要包装成Integer类对象。但是在python里面，一切皆对象却是真正做...
           </p>
           <ul class="tag-list clearfix">
             
@@ -182,207 +181,7 @@
               
             </span>
             <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501500184000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/30/2017073001/">Python高级编程（32）：Python中的is和==的区别？</a></h2>
-          <p>
-                   is和==的区别   1、is 比较的是地址，注意小整数池和字符串，一般重复创建的时候会指向同一个对象。  
-     Code             1   2   3   4   5   6   7   8   9   10   11   12       t1 = 123   ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501413784000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/29/2017072901/">Python高级编程（31）：Python中的变量是什么？</a></h2>
-          <p>
-                 首先明确Python中的变量和Java中的变量是有本质区别的，在Java中在变量声明的时候需要指定数据类型，然后像虚拟机中申请内存，这个内存的大小其实和数据类型相关，这就好像是一个盒子，这个盒子能装什么其实已经确定下来。但是在Python中却不是这样的，Python中的变量本质上是一个指针...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501327384000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/28/2017072801/">Python高级编程（30）：dict和set的实现原理</a></h2>
-          <p>
-                 我们为什么需要了解dict和set的实现原理呢？因为只有了解了其背后的实现原理，我们才能更好的的知道什么情况下使用dict以及set，这一点很重要，结合实际的情况使用不同的数据结构可能会产生很大的区别。 
- 先通过一段测试代码了解一下它们性能之间的区别： 
-     Code       ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501240984000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/27/2017072701/">Python高级编程（29）：set和frozenset</a></h2>
-          <p>
-                 set是集合，frozenset则是不可变集合，集合的特点是无序和不重复，可以用于元素去重操作。 
- 查看一下set的源码： 
-     Code             1   2   3   4   5   6   7   8   9       def __init__(self, ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501154584000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/26/2017072601/">Python高级编程（28）：dict的子类</a></h2>
-          <p>
-                 python中一切都可以被继承，dict自然不例外，但是我们并不建议大家去继承Python中的内置的像list，dict等数据结构，特别是用C语言写的数据结构，因为有些操作不会生效。  1. 自定义一个字典时，不要直接继承自dict，因为有些操作会不生效  
-     Code      ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1501068184000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/25/2017072501/">Python高级编程（27）：dict的常用方法</a></h2>
-          <p>
-                 本篇我们来聊一下Python中dict的常用方法，这个还是挺重要的，所以可以多花点时间学习一下。 
-     Code             1   2   3   4   5   6   7   8   9   10   11   12   13   14   15   16   17...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1500981784000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/24/2017072401/">Python高级编程（26）：dict的abc继承关系</a></h2>
-          <p>
-                 Python字典中的dict其实是一种Mapping类型，我们可以使用isinstance判断一下，发现是真的： 
-     Code             1   2   3   4   5   6   7   8   9   10       from _collections_ab...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1500895384000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/23/2017072301/">Python高级编程（25）：列表推导式、生成器表达式、字典推导式</a></h2>
-          <p>
-                   列表（生成）推导式  我们有一个需求，输出10以内的所有奇数： 
-     Code             1   2   3   4   5   6   7   8   9       old_list = []   for i in range(10):       if i %...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1500808984000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2017/07/22/2017072201/">Python高级编程（24）：什么时候我们不该使用列表?</a></h2>
-          <p>
-                 尽管我们在大多情况之下喜欢使用列表，但是有的时候我们不该使用列表，而是转向使用更高级的Python内置的数据类型，这里主要说array和deque。 
-     
- 上面这个图片就是展示了Python中用C语言写的列表所具有的全部方法，我们从这就能知道所有的信息。前面说过列表是一种容器序列...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/python%E5%9F%BA%E7%A1%80/">python基础</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/pythonbase/"><i class="fa fa-folder-open"></i> pythonbase</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1500722584000).fromNow()}}</span>
+            <span>Published {{moment(1499263222000).fromNow()}}</span>
           </div>
         </li>
         
@@ -400,7 +199,7 @@
       <i class="fa fa-github"></i>
     </a>
     <ul class="footer-social-link">
-      <li>© 2017-2020 余思-EnvyZhan 版权所有 </li>
+      <li>Copyright©2017-2020 EnvyZhan. All Rights Reserved.</li>
       <li><a href="http://envyzhan.club">Home</a></li>
       
       <li><a href="https://github.com/envythink" target="_blank" rel="noopener">Github</a></li>
@@ -408,10 +207,7 @@
       <li><a href="https://weibo.com/u/2809144261" target="_blank" rel="noopener">Weibo</a></li>
       
     </ul>
-    <div class="footer-theme-info">
-      Theme <a href="//github.com/sabrinaluo/hexo-theme-replica" target="_blank" rel="noopener">Replica</a>
-      by <a href="//github.com/sabrinaluo" target="_blank" rel="noopener">Hiitea</a> ❤ Powered by Hexo
-    </div>
+    
     </div>
     
   </footer>

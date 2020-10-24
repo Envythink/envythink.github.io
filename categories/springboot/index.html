@@ -8,7 +8,7 @@
   <meta name="viewport"
         content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>
-    余思
+    SpringBoot | 余思
   </title>
   <meta name="description" content="成长路上的点滴记录">
   
@@ -79,9 +79,7 @@
 </nav>
 
 <div class="main-container">
-  
-
-<div class="container-lg">
+  <div class="container-lg">
   
 
 <div class="blog-intro">
@@ -148,250 +146,26 @@
     
 <nav class="blog-detail-nav desktop-only">
   <ul class="clearfix">
-    <li class="">
+    <li class="selected">
       <a href="/">Overview</a></li>
     <li class="">
-      <a href="/archives">Posts <span class="counter">154</span></a>
+      <a href="/archives">Posts <span class="counter">1</span></a>
     </li>
-    <li class="selected">
-      <a href="/categories">Categories <span
-                class="counter">12</span></a></li>
     <li class="">
-      <a href="/tags">Tags <span class="counter">13</span></a></li>
+      <a href="/categories">Categories <span
+                class="counter">1</span></a></li>
+    <li class="">
+      <a href="/tags">Tags <span class="counter">1</span></a></li>
   </ul>
 </nav>
 
     <div class="body-secondary">
-      <ul class="archive-list">
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/27/2020082701/">SpringBoot企业微信点餐系统（12）：部署</a></h2>
-          <p>
-                 接下来介绍如何在本地服务器上部署项目，这里采用jar的形式进行部署。首先进入到项目目录执行打包语句 mvn clean package -Dmaven.test.skip=true 来跳过测试环节进行打包： 
-     
- 可以看到项目打包成功了，打包后的文件存在于target文件夹内，且...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1598505061000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/20/2020082001/">SpringBoot企业微信点餐系统（11）：mybatis使用和分布式锁</a></h2>
-          <p>
-                   mybatis使用  接下来介绍mybatis的使用，具体包括mybatis基于注解方式的使用和基于xml配置文件方式的使用。 
-   mybatis基于注解方式使用   插入操作 。第一步，在pom.xml配置文件中新增mybatis依赖： 
-     Code           ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1597900261000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/04/2020080401/">SpringBoot企业微信点餐系统（10）：卖家登录登出开发</a></h2>
-          <p>
-                   卖家登录功能开发  由于使用到了redis，因此需要引入redis相关的依赖。在pom.xml文件中引入如下依赖： 
-     Code             1   2   3   4   5                                 org.springfr...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1596528661000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/03/2020080301/">SpringBoot企业微信点餐系统（9）：卖家端开发（下）</a></h2>
-          <p>
-                   商品上下架开发  其实所谓的上下架操作，就是对于商品productStatus字段的修改罢了。通过检查发现之前在ProductInfoService接口中并没有定义商品的上下架方法，因此新增商品的上下架方法： 
-     Code             1   2   3   4  ...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1596442861000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/02/2020080201/">SpringBoot企业微信点餐系统（8）：卖家端开发（上）</a></h2>
-          <p>
-                   写在前面  接下来正式进入卖家端的开发环节，主要实现Dao层设计与开发、Service层设计与开发、Controller层设计与开发，这是一个非常经典的MVC模型。当然由于前面对于商品已经进行了Dao层设计，因此后续就可以省略了。 
-     
- 上面是卖家端的页面，可以发现卖家端除了...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1596356461000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/08/01/2020080101/">SpringBoot企业微信点餐系统（7）：微信支付（下）</a></h2>
-          <p>
-                   微信支付异步通知  在第六篇讲到支付成功后，订单的状态还停留在未支付状态，原因在于第10步异步通知商户支付结果没有设置。当接收到异步支付结果后，确认这个订单已经支付，且没有任何问题的时候，就可以将订单的状态修改为已支付状态。接下来要干的事情就是接收微信支付的异步通知，且将订单的支付状态...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1596252071000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/02/20/2020022001/">SpringBoot企业微信点餐系统（6）：微信支付（中）</a></h2>
-          <p>
-                 前面只是项目的前端和后端调试，接下来正式进入到微信支付开发的环节。首先查看微信支付官方文档，点击  这里  查看微信支付官方文档，切记一定要多看看官方文档，特别是这个流程图： 
-     
- 这里面涉及到的东西很多，非常复杂，建议使用第三方的SDK来实现。点击  这里 。其实微信支付模块非...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1582168871000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/02/18/2020021801/">SpringBoot企业微信点餐系统（5）：微信支付（上）</a></h2>
-          <p>
-                 本篇笔记主要记录了微信授权、微信支付和微信退款相关的知识。第一步是进行微信授权，只有授权成功后才能得到OpenID，你可以通过手工方式或者利用第三方SDK的方式来进行微信授权。 必须使用微信开发者工具进行调试，不要使用Postman，否则看不到结果。  
-   微信授权    手动获取微信...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1581992590000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/02/16/2020021601/">SpringBoot企业微信点餐系统（4）：订单（下）</a></h2>
-          <p>
-                 接下来开始进行订单部分中Controller层设计与开发，这是一个非常经典的MVC模型，这里就同时对 order_master 和 order_detail 表进行设计。 
-   创建订单 create  打开controller包，在里面新建 BuyerOrderController 类...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1581819790000).fromNow()}}</span>
-          </div>
-        </li>
-        
-        <li class="archive-list-item">
-          <h2><a href="/2020/02/14/2020021401/">SpringBoot企业微信点餐系统（3）：订单（上）</a></h2>
-          <p>
-                 接下来开始进行订单部分的开发，比类目和商品较为复杂。首先进行买家端的开发，主要实现Dao层设计与开发、Service层设计与开发，这是一个非常经典的MVC模型，这里就同时对 order_master 和 order_detail 表进行设计。 
-   Entity层  在dataobjec...
-          </p>
-          <ul class="tag-list clearfix">
-            
-            <li class="tag-list-item"><a href="/tags/springboot%E5%AE%9E%E6%88%98/">springboot实战</a></li>
-            
-          </ul>
-          <div class="post-info">
-            <span>
-              
-              <a class="category-link" href="/categories/springboot/"><i class="fa fa-folder-open"></i> springboot</a>
-              
-            </span>
-            <span><i class="fa fa-tag"></i> 1 </span>
-            <span>Published {{moment(1581648010000).fromNow()}}</span>
-          </div>
-        </li>
-        
-      </ul>
+
+      
+      
     </div>
   </div>
 </div>
-
 </div>
 
 <div class="footer-wrapper container">
@@ -401,7 +175,7 @@
       <i class="fa fa-github"></i>
     </a>
     <ul class="footer-social-link">
-      <li>© 2017-2020 余思-EnvyZhan 版权所有 </li>
+      <li>Copyright©2017-2020 EnvyZhan. All Rights Reserved.</li>
       <li><a href="http://envyzhan.club">Home</a></li>
       
       <li><a href="https://github.com/envythink" target="_blank" rel="noopener">Github</a></li>
@@ -409,10 +183,7 @@
       <li><a href="https://weibo.com/u/2809144261" target="_blank" rel="noopener">Weibo</a></li>
       
     </ul>
-    <div class="footer-theme-info">
-      Theme <a href="//github.com/sabrinaluo/hexo-theme-replica" target="_blank" rel="noopener">Replica</a>
-      by <a href="//github.com/sabrinaluo" target="_blank" rel="noopener">Hiitea</a> ❤ Powered by Hexo
-    </div>
+    
     </div>
     
   </footer>
