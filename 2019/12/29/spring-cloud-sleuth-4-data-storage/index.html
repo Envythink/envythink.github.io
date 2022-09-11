@@ -1,0 +1,313 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Sleuth数据存储 | 余思博客</title><meta name="keywords" content="springcloud"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面默认情况下，Zipkin Server会将跟踪信息存储在内存中，但是当用户每次重启Zipkin Server时，都会将之前收集的跟踪信息进行删除，并且当有大量跟踪信息时存储在内存中肯定是不行的，因此正确的做法是将数据持久化到外部存储磁盘中，使用MySQL来进行存储，也可以将其输出到ElasticSearch中存储存储，这两种方式本文都会详细介绍。 数据持久化持久化到MySQL中MySQL简">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Sleuth数据存储">
+<meta property="og:url" content="http://envyzhan.asia/2019/12/29/spring-cloud-sleuth-4-data-storage/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面默认情况下，Zipkin Server会将跟踪信息存储在内存中，但是当用户每次重启Zipkin Server时，都会将之前收集的跟踪信息进行删除，并且当有大量跟踪信息时存储在内存中肯定是不行的，因此正确的做法是将数据持久化到外部存储磁盘中，使用MySQL来进行存储，也可以将其输出到ElasticSearch中存储存储，这两种方式本文都会详细介绍。 数据持久化持久化到MySQL中MySQL简">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2019-12-29T11:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T10:08:56.322Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2019/12/29/spring-cloud-sleuth-4-data-storage/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Sleuth数据存储',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 18:08:56'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Sleuth数据存储</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-12-29T11:23:04.000Z" title="发表于 2019-12-29 19:23:04">2019-12-29</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T10:08:56.322Z" title="更新于 2021-03-01 18:08:56">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Sleuth数据存储"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>默认情况下，Zipkin Server会将跟踪信息存储在内存中，但是当用户每次重启Zipkin Server时，都会将之前收集的跟踪信息进行删除，并且当有大量跟踪信息时存储在内存中肯定是不行的，因此正确的做法是将数据持久化到外部存储磁盘中，使用MySQL来进行存储，也可以将其输出到ElasticSearch中存储存储，这两种方式本文都会详细介绍。</p>
+<h1 id="数据持久化"><a href="#数据持久化" class="headerlink" title="数据持久化"></a>数据持久化</h1><h3 id="持久化到MySQL中"><a href="#持久化到MySQL中" class="headerlink" title="持久化到MySQL中"></a>持久化到MySQL中</h3><h5 id="MySQL简介"><a href="#MySQL简介" class="headerlink" title="MySQL简介"></a>MySQL简介</h5><p>MySQL是一款优秀的开源关系型数据库，因其速度、可靠性和适应性而备受关注。大多数人都认为在不需要事务化处理的情况下，MySQL是管理内容最好的选择。</p>
+<h5 id="持久化到MySQL流程"><a href="#持久化到MySQL流程" class="headerlink" title="持久化到MySQL流程"></a>持久化到MySQL流程</h5><p>请注意zipkin默认是支持HTTP实现的收集，因此需要将现在基于RabbitMQ消息中间件实现的方式注释掉，后期会介绍如何将基于消息中间件的收集持久化到MySQL数据库中。</p>
+<p><strong>第一步，在MySQL中创建用于Zipkin存储的Schema。</strong>由于笔者使用的zipkin-server版本是2.12.6，因此首先需要点击 <a target="_blank" rel="noopener" href="https://github.com/openzipkin/zipkin/tree/2.12.6/zipkin-storage/mysql-v1">这里</a>选择自己对应版本的readme.md文档进行阅读，往下看到Applying the schema部分，找到最后两行代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">$ mysql -uroot -e &quot;create database if not exists zipkin&quot;</span><br><span class="line">$ mysql -uroot -Dzipkin &lt; zipkin-storage/mysql-v1/src/main/resources/mysql.sql</span><br></pre></td></tr></table></figure>
+<p>这两行代码告诉我们两个信息，第一需要创建名称为zipkin的数据库，第二需要使用<code>zipkin-storage/mysql-v1/src/main/resources/mysql.sql</code>文件来创建zipkin数据库中对应的表结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br></pre></td><td class="code"><pre><span class="line">CREATE TABLE IF NOT EXISTS zipkin_spans (</span><br><span class="line">  `trace_id_high` BIGINT NOT NULL DEFAULT 0 COMMENT &#x27;If non zero, this means the trace uses 128 bit traceIds instead of 64 bit&#x27;,</span><br><span class="line">  `trace_id` BIGINT NOT NULL,</span><br><span class="line">  `id` BIGINT NOT NULL,</span><br><span class="line">  `name` VARCHAR(255) NOT NULL,</span><br><span class="line">  `parent_id` BIGINT,</span><br><span class="line">  `debug` BIT(1),</span><br><span class="line">  `start_ts` BIGINT COMMENT &#x27;Span.timestamp(): epoch micros used for endTs query and to implement TTL&#x27;,</span><br><span class="line">  `duration` BIGINT COMMENT &#x27;Span.duration(): micros used for minDuration and maxDuration query&#x27;</span><br><span class="line">) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARACTER SET=utf8 COLLATE utf8_general_ci;</span><br><span class="line"></span><br><span class="line">ALTER TABLE zipkin_spans ADD UNIQUE KEY(`trace_id_high`, `trace_id`, `id`) COMMENT &#x27;ignore insert on duplicate&#x27;;</span><br><span class="line">ALTER TABLE zipkin_spans ADD INDEX(`trace_id_high`, `trace_id`, `id`) COMMENT &#x27;for joining with zipkin_annotations&#x27;;</span><br><span class="line">ALTER TABLE zipkin_spans ADD INDEX(`trace_id_high`, `trace_id`) COMMENT &#x27;for getTracesByIds&#x27;;</span><br><span class="line">ALTER TABLE zipkin_spans ADD INDEX(`name`) COMMENT &#x27;for getTraces and getSpanNames&#x27;;</span><br><span class="line">ALTER TABLE zipkin_spans ADD INDEX(`start_ts`) COMMENT &#x27;for getTraces ordering and range&#x27;;</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS zipkin_annotations (</span><br><span class="line">  `trace_id_high` BIGINT NOT NULL DEFAULT 0 COMMENT &#x27;If non zero, this means the trace uses 128 bit traceIds instead of 64 bit&#x27;,</span><br><span class="line">  `trace_id` BIGINT NOT NULL COMMENT &#x27;coincides with zipkin_spans.trace_id&#x27;,</span><br><span class="line">  `span_id` BIGINT NOT NULL COMMENT &#x27;coincides with zipkin_spans.id&#x27;,</span><br><span class="line">  `a_key` VARCHAR(255) NOT NULL COMMENT &#x27;BinaryAnnotation.key or Annotation.value if type == -1&#x27;,</span><br><span class="line">  `a_value` BLOB COMMENT &#x27;BinaryAnnotation.value(), which must be smaller than 64KB&#x27;,</span><br><span class="line">  `a_type` INT NOT NULL COMMENT &#x27;BinaryAnnotation.type() or -1 if Annotation&#x27;,</span><br><span class="line">  `a_timestamp` BIGINT COMMENT &#x27;Used to implement TTL; Annotation.timestamp or zipkin_spans.timestamp&#x27;,</span><br><span class="line">  `endpoint_ipv4` INT COMMENT &#x27;Null when Binary/Annotation.endpoint is null&#x27;,</span><br><span class="line">  `endpoint_ipv6` BINARY(16) COMMENT &#x27;Null when Binary/Annotation.endpoint is null, or no IPv6 address&#x27;,</span><br><span class="line">  `endpoint_port` SMALLINT COMMENT &#x27;Null when Binary/Annotation.endpoint is null&#x27;,</span><br><span class="line">  `endpoint_service_name` VARCHAR(255) COMMENT &#x27;Null when Binary/Annotation.endpoint is null&#x27;</span><br><span class="line">) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARACTER SET=utf8 COLLATE utf8_general_ci;</span><br><span class="line"></span><br><span class="line">ALTER TABLE zipkin_annotations ADD UNIQUE KEY(`trace_id_high`, `trace_id`, `span_id`, `a_key`, `a_timestamp`) COMMENT &#x27;Ignore insert on duplicate&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`trace_id_high`, `trace_id`, `span_id`) COMMENT &#x27;for joining with zipkin_spans&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`trace_id_high`, `trace_id`) COMMENT &#x27;for getTraces/ByIds&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`endpoint_service_name`) COMMENT &#x27;for getTraces and getServiceNames&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`a_type`) COMMENT &#x27;for getTraces and autocomplete values&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`a_key`) COMMENT &#x27;for getTraces and autocomplete values&#x27;;</span><br><span class="line">ALTER TABLE zipkin_annotations ADD INDEX(`trace_id`, `span_id`, `a_key`) COMMENT &#x27;for dependencies job&#x27;;</span><br><span class="line"></span><br><span class="line">CREATE TABLE IF NOT EXISTS zipkin_dependencies (</span><br><span class="line">  `day` DATE NOT NULL,</span><br><span class="line">  `parent` VARCHAR(255) NOT NULL,</span><br><span class="line">  `child` VARCHAR(255) NOT NULL,</span><br><span class="line">  `call_count` BIGINT,</span><br><span class="line">  `error_count` BIGINT</span><br><span class="line">) ENGINE=InnoDB ROW_FORMAT=COMPRESSED CHARACTER SET=utf8 COLLATE utf8_general_ci;</span><br><span class="line"></span><br><span class="line">ALTER TABLE zipkin_dependencies ADD UNIQUE KEY(`day`, `parent`, `child`);</span><br></pre></td></tr></table></figure>
+<p>将下来按照上述要求执行上述两行命令即可创建对于的Schema，创建后的三个表的数据结构如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-35b093ce884535ec.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2c9c8870ddc547d1.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8eef7fdf73e87f9f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><strong>第二步，配置参数启动zipkin-server。</strong>由于我们使用的是官方推荐的zipkin-server，且已经打包成了jar包，因此直接修改其代码是不现实的，但是通常而言我们只是对于一些配置信息会发生修改，而对于项目依赖jar包几乎不会修改，因此可以通过在启动的时候设置参数来达到自定义配置这一目的。下面是mysql相关的一些参数，如下表所示，这些都是可以配置的参数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>STORAGE_TYPE</code></td>
+<td align="center">存储类型，支持mysql和elasticsearch</td>
+</tr>
+<tr>
+<td align="center"><code>MYSQL_HOST</code></td>
+<td align="center">mysql的主机IP</td>
+</tr>
+<tr>
+<td align="center"><code>MYSQL_TCP_PORT</code></td>
+<td align="center">mysql的端口号</td>
+</tr>
+<tr>
+<td align="center"><code>MYSQL_DB</code></td>
+<td align="center">mysql对应的数据库，注意名称必须为zipkin</td>
+</tr>
+<tr>
+<td align="center"><code>MYSQL_USER</code></td>
+<td align="center">mysql的用户名</td>
+</tr>
+<tr>
+<td align="center"><code>MYSQL_PASS</code></td>
+<td align="center">mysql的用户密码</td>
+</tr>
+</tbody></table>
+<p>因此开发者可以使用诸如如下命令来手动启动zipkin-server：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start /min java -jar D:\SpringCloud\cloudgo\zipkin-server\zipkin-server-2.12.6-exec.jar --STORAGE_TYPE=mysql --MYSQL_HOST=127.0.0.1 --MYSQL_TCP_PORT=3306 --MYSQL_DB=zipkin --MYSQL_USER=root --MYSQL_PASS=root</span><br></pre></td></tr></table></figure>
+<p><strong>第三步，测试。</strong>依次启动eureka-server服务注册中心、zipkin-server、trace-one项目、trace-two项目，然后在浏览器地址栏中访问<code>http://localhost:5001/trace-one</code>，可以发现trace-one和trace-two项目的控制台中都已经输出了相应的信息，最后查看数据库，可以发现zipkin_annotations和zipkin_spans这两张数据表中都有了相应的数据：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-afcbef0e7611421d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f3a9b7d2049cf8e9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>zipkin_annotations和zipkin_spans这两张表内的数据在前面收集原理分析的时候进行了研究，也验证了前面原理分析的正确性。</p>
+<h3 id="持久化到ElasticSearch中"><a href="#持久化到ElasticSearch中" class="headerlink" title="持久化到ElasticSearch中"></a>持久化到ElasticSearch中</h3><h5 id="ElasticSearch简介"><a href="#ElasticSearch简介" class="headerlink" title="ElasticSearch简介"></a>ElasticSearch简介</h5><p>Elasticsearch是一个基于Lucene构建的开源、分布式、RESTful 接口全文搜索引擎，同时Elasticsearch还是一个分布式文档数据库，其中每个字段均可被索引，而且每个字段的数据均可被搜索，ES能够横向扩展至数以百计的服务器存储以及处理PB级的数据。可以在极短的时间内存储、搜索和分析大量的数据。总它具有以下功能：<br>（1）分布式实时文件存储，并将每一个字段都编入索引，使其可以被搜索；（2）实时分析的分布式搜索引擎；（3）可以扩展到上百台服务器，处理PB级别的结构化或非结构化数据。</p>
+<p>由于它比较突出的三个功能，因此ElasticSearch主要的使用场景有以下三个：（1）适用于大型分布式日志分析系统ELK，其中ELasticSearch用于提供搜索和存储日志，Logstash用于收集日志；Kibana用于展示数据。（2）大型电商系统中的搜索功能；（3）网盘的搜索引擎等。</p>
+<p>在Elasticsearch中存储的是文档，它是最小的存储单位，使用JSON作为文档序列化的格式，Elasticsearch与关系型数据库之间的对应关系如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">类型</th>
+<th align="center">名词1</th>
+<th align="center">名词2</th>
+<th align="center">名词3</th>
+<th align="center">名词4</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">关系型数据库</td>
+<td align="center">数据库</td>
+<td align="center">数据表</td>
+<td align="center">行</td>
+<td align="center">列</td>
+</tr>
+<tr>
+<td align="center">Elasticsearch</td>
+<td align="center">索引(Index)</td>
+<td align="center">类型(Type)</td>
+<td align="center">文档(Docments)</td>
+<td align="center">字段(Fields)</td>
+</tr>
+</tbody></table>
+<p>通过了解以上一些信息对于后续学习Zipkin Server如何将基于HTTP实现的收集信息持久化到Elasticsearch中。</p>
+<h5 id="持久化到Elasticsearch流程"><a href="#持久化到Elasticsearch流程" class="headerlink" title="持久化到Elasticsearch流程"></a>持久化到Elasticsearch流程</h5><p><strong>第一步，阅读文档获取信息。</strong>由于笔者使用的zipkin-server版本是2.12.6，因此首先需要点击 <a target="_blank" rel="noopener" href="https://github.com/openzipkin/zipkin/tree/2.12.6/zipkin-storage">这里</a>选择elasticsearch对应版本的readme.md文档进行阅读，首先看到storage-elasticsearch-http部分，它要求ElasticSearch的版本为2.x，5.x and 6.x，因此不能选择7.x版本进行安装。</p>
+<p><strong>第二步，安装ElasticSearch。</strong>关于ELasticSearch的安装这里就忽略，建议选择使用6.x版本，笔者选择使用6.7.0的版本。</p>
+<p><strong>第三步，安装elasticsearch-head插件。</strong>为了能直观感受到ElasticSearch中的数据，此处需要安装elasticsearch-head插件，请注意该插件要求nodejs版本大于6，可以使用<code>node -v</code>命令来查看当前系统nodejs版本的信息。之后依次执行如下命令来安装和启动csearch-head插件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">git clone git://github.com/mobz/elasticsearch-head.git</span><br><span class="line">cd elasticsearch-head</span><br><span class="line">npm install</span><br><span class="line">npm run start</span><br></pre></td></tr></table></figure>
+<p>之后打开浏览器，访问<code>http://localhost:9100/</code>链接即可：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0616232959b5820c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>但是目前Web页面显示集群未连接，但是此时ElasticSearch和Head插件都已经启动了，所以问题在于两者还未完成通信（存在跨域问题），因此需要停掉正在运行的ElasticSearch，同时进入到其config包内，修改其elasticsearch.yml配置文件，在其末尾添加如下两行代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">http.cors.enabled: true</span><br><span class="line">http.cors.allow-origin: &quot;*&quot;</span><br></pre></td></tr></table></figure>
+<p>最后保存退出，重启ElasticSearch和Head插件，注意顺序不能搞错，然后再去浏览器访问<code>http://localhost:9100</code>地址，此时页面如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-e7545047f867b6cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><strong>第四步，下载<code>zipkin-server-2.x.x-exec.jar</code>包。</strong>接下来开发者需要点击 <a target="_blank" rel="noopener" href="https://github.com/openzipkin/zipkin/tags">这里</a>，然后选择对应的zip版本进行下载之后会得到对应的jar包。</p>
+<p><strong>第五步，配置参数启动zipkin-server。</strong>由于我们使用的是官方推荐的zipkin-server，且已经打包成了jar包，因此直接修改其代码是不现实的，但是通常而言我们只是对于一些配置信息会发生修改，而对于项目依赖jar包几乎不会修改，因此可以通过在启动的时候设置参数来达到自定义配置这一目的。下面是ElasticSearch相关的一些参数，如下表所示，这些都是可以配置的参数：</p>
+<table>
+<thead>
+<tr>
+<th align="center">参数</th>
+<th align="center">描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>STORAGE_TYPE</code></td>
+<td align="center">存储类型，支持mysql和elasticsearch</td>
+</tr>
+<tr>
+<td align="center"><code>ES_HOSTS</code></td>
+<td align="center">elasticsearch的主机IP和端口号</td>
+</tr>
+<tr>
+<td align="center"><code>ES_USERNAME</code></td>
+<td align="center">elasticsearch的用户名</td>
+</tr>
+<tr>
+<td align="center"><code>ES_PASSWORD</code></td>
+<td align="center">elasticsearch的用户密码</td>
+</tr>
+</tbody></table>
+<p>关于MySQL和ElasticSearch的更多相关配置参数，可以点击 <a target="_blank" rel="noopener" href="https://github.com/openzipkin/zipkin/tree/master/zipkin-server">这里</a>进行查看。</p>
+<p>由于笔者的ELasticSearch全都是采用默认配置，因此是没有用户和密码等信息，开发者可以使用诸如如下命令来手动启动zipkin-server：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">start /min java -jar D:\SpringCloud\cloudgo\zipkin-server\zipkin-server-2.12.6-exec.jar --STORAGE_TYPE=elasticsearch ES_HOSTS=http://127.0.0.1:9200</span><br></pre></td></tr></table></figure>
+<p><strong>第六步，测试</strong>。依次启动eureka-server服务注册中心、zipkin-server、trace-one项目、trace-two项目，然后在浏览器地址栏中访问<code>http://localhost:5001/trace-one</code>，可以发现trace-one和trace-two项目的控制台中都已经输出了相应的信息，最后通过查看ElasticSearch的head插件，可以确认数据已经都存入到ElasticSearch中：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8fb90144054a6ee5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-43497f92c33ebc89.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f1eed4567c93028f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="API接口"><a href="#API接口" class="headerlink" title="API接口"></a>API接口</h3><p>zipkin不仅提供了UI模块让用户可以使用Web页面来方便地查看跟踪信息，它还提供了丰富的RESTful API接口供用户在第三方系统中调用来定制自己的跟踪信息展示或监控。我们可以在Zipkin Server启动时的控制台或日志中找到Zipkin服务端提供的RESTful API定义，由于笔者使用的是2.12.6，因此也可以从trace-one或者trace-two项目的输出控制台中得到：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-312a24918af6d42e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>也就是说Zipkin Server提供的API接口都是以<code>/api/v2</code>路径作为前缀，具体的功能如下所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">接口路径</th>
+<th align="center">请求方式</th>
+<th align="center">接口描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>/dependencies</code></td>
+<td align="center">GET</td>
+<td align="center">用于获取通过收集到的Span分析出的依赖关系</td>
+</tr>
+<tr>
+<td align="center"><code>/services</code></td>
+<td align="center">GET</td>
+<td align="center">用于获取服务列表</td>
+</tr>
+<tr>
+<td align="center"><code>/spans</code></td>
+<td align="center">GET</td>
+<td align="center">根据服务名来获取所有的Span名</td>
+</tr>
+<tr>
+<td align="center"><code>/spans</code></td>
+<td align="center">POST</td>
+<td align="center">向Zipkin Server上传Span</td>
+</tr>
+<tr>
+<td align="center"><code>/trace/&#123;traceId&#125;</code></td>
+<td align="center">GET</td>
+<td align="center">根据TraceID获取指定跟踪信息的Span列表</td>
+</tr>
+<tr>
+<td align="center"><code>/traces</code></td>
+<td align="center">GET</td>
+<td align="center">根据指定条件查询并返回符合条件的trace清单</td>
+</tr>
+</tbody></table>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-496cbbf776aee27c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>更多关于接口的请求参数和请求返回格式等细节说明可以访问Zipkin的 <a target="_blank" rel="noopener" href="http://zipkin.io/zipkin-api/">官方API页面</a>来查看，以帮助我们根据自身系统架构来访问Zipkin Server以定制自己的Dashboard或者监控系统。在前面也提到过Zipkin的UI模块也是基于RESTful API接口来实现的，可以通过浏览器的开发者模式来查看每个页面发起的请求，并以此作为调用样例来参考。</p>
+<p>这样关于SpringCloud Sleuth分布式服务跟踪，数据存储的相关内容就学习到这里。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2019/12/29/spring-cloud-sleuth-4-data-storage/">http://envyzhan.asia/2019/12/29/spring-cloud-sleuth-4-data-storage/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud/">springcloud</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/01/05/devops-cicd-1-gitlab-install/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CICD平台搭建：Gitlab安装</div></div></a></div><div class="next-post pull-right"><a href="/2019/12/28/spring-cloud-sleuth-3-integrating-zipkin/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Sleuth整合Zipkin</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2019/12/22/spring-cloud-bus-2-integrating-rabbitmq/" title="Bus整合RabbitMQ"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-22</div><div class="title">Bus整合RabbitMQ</div></div></a></div><div><a href="/2019/12/12/spring-cloud-config-1-basic-use/" title="Config基础使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-12</div><div class="title">Config基础使用</div></div></a></div><div><a href="/2019/12/14/spring-cloud-config-2-detailed-explanation-of-server/" title="Config服务端详解"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-14</div><div class="title">Config服务端详解</div></div></a></div><div><a href="/2019/12/16/spring-cloud-config-3-health-monitoring/" title="Config健康监测"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-16</div><div class="title">Config健康监测</div></div></a></div><div><a href="/2019/11/01/spring-cloud-eureka-1-introdution/" title="Spring Cloud Eureka介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-01</div><div class="title">Spring Cloud Eureka介绍</div></div></a></div><div><a href="/2019/11/03/spring-cloud-eureka-2-service-register-center/" title="搭建Eureka服务注册中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-03</div><div class="title">搭建Eureka服务注册中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number"></span> <span class="toc-text">数据持久化</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%88%B0MySQL%E4%B8%AD"><span class="toc-number">1.</span> <span class="toc-text">持久化到MySQL中</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#MySQL%E7%AE%80%E4%BB%8B"><span class="toc-number">1.0.1.</span> <span class="toc-text">MySQL简介</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%88%B0MySQL%E6%B5%81%E7%A8%8B"><span class="toc-number">1.0.2.</span> <span class="toc-text">持久化到MySQL流程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%88%B0ElasticSearch%E4%B8%AD"><span class="toc-number">2.</span> <span class="toc-text">持久化到ElasticSearch中</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#ElasticSearch%E7%AE%80%E4%BB%8B"><span class="toc-number">2.0.1.</span> <span class="toc-text">ElasticSearch简介</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%8C%81%E4%B9%85%E5%8C%96%E5%88%B0Elasticsearch%E6%B5%81%E7%A8%8B"><span class="toc-number">2.0.2.</span> <span class="toc-text">持久化到Elasticsearch流程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API%E6%8E%A5%E5%8F%A3"><span class="toc-number">3.</span> <span class="toc-text">API接口</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

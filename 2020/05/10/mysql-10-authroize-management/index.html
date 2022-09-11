@@ -1,0 +1,218 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>MySQL用户权限管理 | 余思博客</title><meta name="keywords" content="mysql"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在实际工作中可能会遇到当管理员创建了一个用户之后，但是该用户却无法登陆系统，没有对应的权限，通过本篇文章的学习，开发者就能解决这个问题。 本文的主要内容如下：（1）MySQL权限工作原理；（2）查看所有用户；（3）创建新用户；（4）修改用户密码；（5）给用户授权；（6）查看用户权限；（7）撤销用户权限；（8）授权原则介绍；（9）文章总结。 MySQL权限工作原理MySQL出于安全性考量，采">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL用户权限管理">
+<meta property="og:url" content="http://envyzhan.asia/2020/05/10/mysql-10-authroize-management/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在实际工作中可能会遇到当管理员创建了一个用户之后，但是该用户却无法登陆系统，没有对应的权限，通过本篇文章的学习，开发者就能解决这个问题。 本文的主要内容如下：（1）MySQL权限工作原理；（2）查看所有用户；（3）创建新用户；（4）修改用户密码；（5）给用户授权；（6）查看用户权限；（7）撤销用户权限；（8）授权原则介绍；（9）文章总结。 MySQL权限工作原理MySQL出于安全性考量，采">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-05-10T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-12-14T14:37:01.708Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/05/10/mysql-10-authroize-management/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySQL用户权限管理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-14 22:37:01'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">MySQL用户权限管理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-05-10T11:23:04.000Z" title="发表于 2020-05-10 19:23:04">2020-05-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-14T14:37:01.708Z" title="更新于 2020-12-14 22:37:01">2020-12-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/mysql/">mysql</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="MySQL用户权限管理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在实际工作中可能会遇到当管理员创建了一个用户之后，但是该用户却无法登陆系统，没有对应的权限，通过本篇文章的学习，开发者就能解决这个问题。</p>
+<p>本文的主要内容如下：（1）MySQL权限工作原理；（2）查看所有用户；（3）创建新用户；（4）修改用户密码；（5）给用户授权；（6）查看用户权限；（7）撤销用户权限；（8）授权原则介绍；（9）文章总结。</p>
+<h3 id="MySQL权限工作原理"><a href="#MySQL权限工作原理" class="headerlink" title="MySQL权限工作原理"></a>MySQL权限工作原理</h3><p>MySQL出于安全性考量，采用“主机名+用户名”这一双重验证机制来判断一个用户的身份。在互联网中，仅仅通过用户名来判断一个用户的身份，这是非常复杂的操作，但是开发者可以通过IP或者主机名来判断一台机器，且如果某位用户是通过这个机器访问的，那么就可以识别成功为一个用户。因此，当一个用户对MySQL发送指令的时候，MySQL就通过“主机名+用户名”这一机制来判断用户身份，进而验证用户权限。</p>
+<p>MySQL权限验证分为两个阶段，第一个阶段：连接数据库，此时MySQL会根据用户名和用户来源（IP或者主机名）来判断用户是否有权限连接；第二阶段：对MySQL服务器发起请求操作，如create table、select、delete、update、create index等操作，此时MySQL会判断用户是否有权限来操作这些命令。</p>
+<p>请注意在MySQL中，用户及权限信息放在名为mysql的数据库中，当MySQL启动时，这些内容会被读进内存并立即生效，因此开发者如果想通过直接操作这些表来修改用户及权限信息，那么就必须重启MySQL服务，或者执行<code>flush privileges;</code>命令来刷新配置，这样才能生效。</p>
+<p>因为用户登录之后，MySQL会和当前用户之间建立一个连接，此时用户相关的权限信息都保存在这个连接中，存放于内存中，此时如果管理员在其他地方修改了当前用户的权限信息，那么这些变更的权限会在下一次登录时才会生效。</p>
+<h3 id="查看MySQL中所有的用户"><a href="#查看MySQL中所有的用户" class="headerlink" title="查看MySQL中所有的用户"></a>查看MySQL中所有的用户</h3><p>前面说了用户信息及权限保存在mysql数据库中的user表内，接下使用<code>select user,host,password_last_changed from mysql.user;</code>命令来查看所有用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select user,host,password_last_changed from user;\G</span><br><span class="line">+---------------+-----------+-----------------------+</span><br><span class="line">| user          | host      | password_last_changed |</span><br><span class="line">+---------------+-----------+-----------------------+</span><br><span class="line">| root          | localhost | 2019-10-29 16:25:31   |</span><br><span class="line">| mysql.session | localhost | 2019-10-29 16:21:59   |</span><br><span class="line">| mysql.sys     | localhost | 2019-10-29 16:21:59   |</span><br><span class="line">| root          | %         | 2019-10-30 16:21:20   |</span><br><span class="line">+---------------+-----------+-----------------------+</span><br><span class="line">4 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="创建新用户"><a href="#创建新用户" class="headerlink" title="创建新用户"></a>创建新用户</h3><p>创建新用户的格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user 用户名[@主机名] [identified by &#x27;密码&#x27;];</span><br></pre></td></tr></table></figure>
+<p>请注意，主机名默认为%，表示这个用户可以从任何一台机器连接到mysql服务器；密码可以省略，表示该用户无密码就能登录到MySQL，这个不安全，一般不建议这么操作。</p>
+<p>例子1：不指定主机名称，表示这个用户可以从任何一台机器连接到mysql服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; select user,host from user;</span><br><span class="line">+---------------+-----------+</span><br><span class="line">| user          | host      |</span><br><span class="line">+---------------+-----------+</span><br><span class="line">| root          | %         |</span><br><span class="line">| mysql.session | localhost |</span><br><span class="line">| mysql.sys     | localhost |</span><br><span class="line">| root          | localhost |</span><br><span class="line">+---------------+-----------+</span><br><span class="line">4 rows in set (0.03 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; select user,host from user;</span><br><span class="line">+---------------+-----------+</span><br><span class="line">| user          | host      |</span><br><span class="line">+---------------+-----------+</span><br><span class="line">| envy1         | %         |</span><br><span class="line">| root          | %         |</span><br><span class="line">| mysql.session | localhost |</span><br><span class="line">| mysql.sys     | localhost |</span><br><span class="line">| root          | localhost |</span><br><span class="line">+---------------+-----------+</span><br><span class="line">5 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">mysql&gt; exit</span><br><span class="line">Bye</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">C:\WINDOWS\system32&gt;mysql -uenvy1</span><br><span class="line">Welcome to the MySQL monitor.  Commands end with ; or \g.</span><br><span class="line">Your MySQL connection id is 43</span><br><span class="line">Server version: 5.7.27 MySQL Community Server (GPL)</span><br><span class="line"></span><br><span class="line">Copyright (c) 2000, 2019, Oracle and/or its affiliates. All rights reserved.</span><br><span class="line"></span><br><span class="line">Oracle is a registered trademark of Oracle Corporation and/or its</span><br><span class="line">affiliates. Other names may be trademarks of their respective</span><br><span class="line">owners.</span><br><span class="line">Type &#x27;help;&#x27; or &#x27;\h&#x27; for help. Type &#x27;\c&#x27; to clear the current input statement.</span><br><span class="line">mysql&gt;</span><br></pre></td></tr></table></figure>
+<p>在上面我们创建了用户名为envy1的无密码用户，没有指定主机，使用了默认的%，这表示envy1用户可以从任何机器登录到mysql中。</p>
+<p>例子2：指定主机名称为localhost，表示这个用户只能登录本机的mysql：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user &#x27;envy2&#x27;@&#x27;localhost&#x27; identified by &#x27;envy123&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>例子3：不指定主机名称，但设置密码，表示这个用户可以从任何机器连接到mysql服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user &#x27;envy3&#x27;@&#x27;%&#x27; identified by &#x27;envy123&#x27;;</span><br></pre></td></tr></table></figure>
+
+<p>例子4：指定主机IP地址段，且设置密码，表示这个用户可以只能从指定主机IP地址段连接到mysql服务器：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create user &#x27;envy4&#x27;@&#x27;192.168.73.%&#x27; identified by &#x27;envy123&#x27;;</span><br></pre></td></tr></table></figure>
+<h3 id="修改用户密码"><a href="#修改用户密码" class="headerlink" title="修改用户密码"></a>修改用户密码</h3><p>一般来说，修改用户密码有两种方式，下面分别进行学习：<br>（1）通过管理员来修改用户密码信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">set password for &#x27;用户名&#x27;@&#x27;主机&#x27; = password(&#x27;密码&#x27;);</span><br></pre></td></tr></table></figure>
+<p>如使用<code>set password for &#39;envy1&#39;@&#39;%&#39;=password(&#39;envy123&#39;);</code>来修改envy1用户的密码。</p>
+<p>（2）通过修改<code>mysql.user</code>数据表来修改用户密码信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">use mysql;</span><br><span class="line">update user set authentication_string = password(&#x27;envy123&#x27;) where user = &#x27;envy1&#x27; and host = &#x27;%&#x27;;</span><br><span class="line">flush privileges;</span><br></pre></td></tr></table></figure>
+<p>请注意，如果采用第二种方式，通过表的方式来修改用户密码，那么需要在执行命令之后执行<code>flush privileges;</code>命令，这样修改的信息才能生效。</p>
+<p>还有一个问题就是在MySQL5.7之后，密码已经使用authentication_string字段来表示了，不再使用之前的password字段。</p>
+<h3 id="给用户授权"><a href="#给用户授权" class="headerlink" title="给用户授权"></a>给用户授权</h3><p>用户创建完成后，需要给用户授权，否则用户是无法进行任何操作的，有和没有一样。</p>
+<p>开发者可以使用如下命令来给用户授权：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant privileges ON database.table TO &#x27;username&#x27;[@&#x27;host&#x27;] [with grant option];</span><br></pre></td></tr></table></figure>
+<p>简单解释一下上述参数：<br>（1）privileges是权限列表，可以是all，表示所有的权限，也可以是select、insert等权限，注意多个权限之间使用逗号进行分隔；<br>（2）ON用来指定权限针对哪些库和表，其格式为<code>数据库.表名</code> ，如果后面使用<code>*. *</code>，则表示所有数据库所有表；<br>（3）TO表示将权限赋予某个用户，其格式为<code>username@host</code>，请注意<code>@</code>前面为用户名称，后面是限制的主机，可以是IP、IP段、域名或者<code>%</code>(<code>%</code>表示任何地方)。<br>（4）<code>with grant option</code>这个选项表示该用户可以将自己拥有的权限授权给别人。这一点非常重要，在实际工作中，笔者经常发现有人在创建操作用户的时候不指定<code>with grant option</code>选项，这样导致后来该用户不能使用GRANT命令创建用户或者给其它用户授权。</p>
+<p>需要注意的是，开发者可以使用GRANT命令来重复给用户添加权限，也就是权限叠加。如先给用户添加了select权限，之后又给它添加了insert权限，那么这个用户就同时具有了select和insert权限。</p>
+<p>例子1：给envy1用户授权可以操作所有库的所有表的所有权限，相当于DBA角色了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant all on *.* to &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+<p>例子2：给envy1用户授权，使其可以对hello库中所有的表执行select操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant select  on hello.* to &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+<p>例子3：给envy1用户授权，使其可以对hello库中所有的表执行select和update操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant select,update  on hello.* to &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+<p>例子4：给envy1用户授权，使其只能对mysql库中user表的user和host字段执行select操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant select(user,host)on mysql.user to &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+<h3 id="查看用户权限"><a href="#查看用户权限" class="headerlink" title="查看用户权限"></a>查看用户权限</h3><p>前面我们给用户赋予了权限，那么接下来就学习如何查看用户的权限。</p>
+<p>查看用户权限的语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">show grants for &#x27;username&#x27;[@&#x27;host&#x27;];</span><br></pre></td></tr></table></figure>
+<p>上面的主机host可以缺省，其默认值为%。</p>
+<p>举个例子，查看envy1用户的权限信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show grants for &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">| Grants for envy1@%                                         |</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">| GRANT ALL PRIVILEGES ON *.* TO &#x27;envy1&#x27;@&#x27;%&#x27;                 |</span><br><span class="line">| GRANT SELECT (host, user) ON `mysql`.`user` TO &#x27;envy1&#x27;@&#x27;%&#x27; |</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>当然了，如果开发者是想查看当前登录用户的权限，可以直接使用<code>show grants;</code>命令，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show grants;</span><br><span class="line">+---------------------------------------------------------------------+</span><br><span class="line">| Grants for root@localhost                                           |</span><br><span class="line">+---------------------------------------------------------------------+</span><br><span class="line">| GRANT ALL PRIVILEGES ON *.* TO &#x27;root&#x27;@&#x27;localhost&#x27; WITH GRANT OPTION |</span><br><span class="line">| GRANT PROXY ON &#x27;&#x27;@&#x27;&#x27; TO &#x27;root&#x27;@&#x27;localhost&#x27; WITH GRANT OPTION        |</span><br><span class="line">+---------------------------------------------------------------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="撤销用户权限"><a href="#撤销用户权限" class="headerlink" title="撤销用户权限"></a>撤销用户权限</h3><p>当用户身份发生变更以后，那么它所具有的权限就需要发生变更，需要撤销相应的用户权限。撤销用户权限命令的语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">revoke privileges ON database.table FROM &#x27;username&#x27;[@&#x27;host&#x27;];</span><br></pre></td></tr></table></figure>
+<p>一般在撤销用户权限之前，首先需要使用前面介绍的<code>show grants for &#39;username&#39;[@&#39;host&#39;];</code>来查看用户所具有的权限，然后才使用revoke命令来撤销用户对应的权限。</p>
+<p>举个例子，现在撤销envy1用户对于mysql数据库user表中host字段的查询权限，相应的操作如下所示：</p>
+<p>第一步，使用如下命令查看envy1用户所具有的权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show grants for &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">| Grants for envy1@%                                         |</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">| GRANT ALL PRIVILEGES ON *.* TO &#x27;envy1&#x27;@&#x27;%&#x27;                 |</span><br><span class="line">| GRANT SELECT (host, user) ON `mysql`.`user` TO &#x27;envy1&#x27;@&#x27;%&#x27; |</span><br><span class="line">+------------------------------------------------------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>第二步，撤销envy1用户对于mysql数据库user表中host字段的查询权限：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"> revoke select(host) ON mysql.user FROM &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br><span class="line">Query OK, 0 rows affected (0.10 sec)</span><br></pre></td></tr></table></figure>
+<p>第三步，再次查看用户权限，验证撤销权限操作是否成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; show grants for &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">| Grants for envy1@%                                   |</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">| GRANT ALL PRIVILEGES ON *.* TO &#x27;envy1&#x27;@&#x27;%&#x27;           |</span><br><span class="line">| GRANT SELECT (user) ON `mysql`.`user` TO &#x27;envy1&#x27;@&#x27;%&#x27; |</span><br><span class="line">+------------------------------------------------------+</span><br><span class="line">2 rows in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>可以看到第二步的撤销权限操作的确操作成功了。</p>
+<h3 id="删除用户"><a href="#删除用户" class="headerlink" title="删除用户"></a>删除用户</h3><p>有的时候，当不需要某个用户时，就需要及时将该用户删除掉，这里学习两种方式来删除用户。</p>
+<p><strong>方式1：使用drop方式进行删除，用户下次登录就会生效。</strong>使用命令如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop user &#x27;username&#x27;[@&#x27;host&#x27;];</span><br></pre></td></tr></table></figure>
+<p>举个例子，使用drop方式来删除envy1用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; drop user &#x27;envy1&#x27;@&#x27;%&#x27;;</span><br><span class="line">Query OK, 0 rows affected (0.10 sec)</span><br></pre></td></tr></table></figure>
+<p><strong>方式2：通过删除数据表数据的方式来删除用户信息。</strong>请注意这种方式最后需要执行<code>flush privileges;</code>命令来刷新用户权限，因为前面也说过启动的时候权限存在内存中，通过修改表的方式必须刷新才能生效。</p>
+<p>举个例子，通过删除数据表中数据方式来删除envy2用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; delete from mysql.user where user=&#x27;envy2&#x27; and host = &#x27;%&#x27;;</span><br><span class="line">Query OK, 0 rows affected (0.09 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; flush privileges;</span><br><span class="line">Query OK, 0 rows affected (0.21 sec)</span><br></pre></td></tr></table></figure>
+<h3 id="授权原则介绍"><a href="#授权原则介绍" class="headerlink" title="授权原则介绍"></a>授权原则介绍</h3><p>接下来笔者结合实际的工作经历，来谈一谈授权的一些原则：<br>（1）在创建用户的时候需要限制用户的登录主机，通常是限制IP或者IP段；<br>（2）初始化数据库的时候，会删除没有密码的用户；但是安装完数据库的时候，又会创建一些没有密码的用户；<br>（3）需要给每个用户设置不同密码复杂度的密码，并定期进行修改；<br>（4）在给用户授权的时候，尽量授予能满足要求的最小权限，不要过度授权，防止发生一些难以预料的问题；<br>（5）定期清理不需要的用户，撤销权限或者删除用户；<br>（6）用户权限粒度尽量设置的较为细致，不要图省事省力。</p>
+<h3 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h3><p>本篇主要介绍了上述内容，下面针对一些比较容易出错的问题，再次进行梳理：<br>（1）在MySQL数据库中，用户及权限信息存在于mysql.user表中；<br>（2）本文所涉及到的携带主机的指令中，主机可以缺省，此时默认为<code>%</code>，表示所有机器都可以登录；<br>（3）MySQL出于安全性考量，采用“主机名+用户名”这一双重验证机制来判断一个用户的身份；<br>（4）通过命令的方式来操作用户和权限，不需要刷新，下次登录就能生效；<br>（5）通过操作mysql数据库中相应表的方式来操作用户和权限，必须使用<code>flush privileges</code>命令来刷新，之后下次登录才会生效。这两种方式的区别一定要注意。</p>
+<p>那么这样关于用户权限管理的学习就到此为止，后续开始学习其他知识。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/05/10/mysql-10-authroize-management/">http://envyzhan.asia/2020/05/10/mysql-10-authroize-management/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/mysql/">mysql</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/05/15/mysql-12-dql-in/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">数据查询语言（DQL）---连接查询</div></div></a></div><div class="next-post pull-right"><a href="/2020/05/09/mysql-9-group-by-and-having/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">数据查询语言（DQL）---group by和having分组查询</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/05/01/mysql-1-introduction/" title="MySQL概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-01</div><div class="title">MySQL概述</div></div></a></div><div><a href="/2020/05/22/mysql-14-how-to-use-null/" title="NULL使用记录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-22</div><div class="title">NULL使用记录</div></div></a></div><div><a href="/2020/05/24/mysql-15-how-to-learn-view/" title="视图学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-24</div><div class="title">视图学习</div></div></a></div><div><a href="/2020/05/27/mysql-16-how-to-learn-variable/" title="变量学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-27</div><div class="title">变量学习</div></div></a></div><div><a href="/2020/05/28/mysql-17-procedure-and-function/" title="存储过程和自定义函数"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-28</div><div class="title">存储过程和自定义函数</div></div></a></div><div><a href="/2020/05/30/mysql-19-how-to-learn-cursor/" title="游标学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-30</div><div class="title">游标学习</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MySQL%E6%9D%83%E9%99%90%E5%B7%A5%E4%BD%9C%E5%8E%9F%E7%90%86"><span class="toc-number">1.0.1.</span> <span class="toc-text">MySQL权限工作原理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8BMySQL%E4%B8%AD%E6%89%80%E6%9C%89%E7%9A%84%E7%94%A8%E6%88%B7"><span class="toc-number">1.0.2.</span> <span class="toc-text">查看MySQL中所有的用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E6%96%B0%E7%94%A8%E6%88%B7"><span class="toc-number">1.0.3.</span> <span class="toc-text">创建新用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E7%94%A8%E6%88%B7%E5%AF%86%E7%A0%81"><span class="toc-number">1.0.4.</span> <span class="toc-text">修改用户密码</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%99%E7%94%A8%E6%88%B7%E6%8E%88%E6%9D%83"><span class="toc-number">1.0.5.</span> <span class="toc-text">给用户授权</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90"><span class="toc-number">1.0.6.</span> <span class="toc-text">查看用户权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%92%A4%E9%94%80%E7%94%A8%E6%88%B7%E6%9D%83%E9%99%90"><span class="toc-number">1.0.7.</span> <span class="toc-text">撤销用户权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E7%94%A8%E6%88%B7"><span class="toc-number">1.0.8.</span> <span class="toc-text">删除用户</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%88%E6%9D%83%E5%8E%9F%E5%88%99%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.0.9.</span> <span class="toc-text">授权原则介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-number">1.0.10.</span> <span class="toc-text">文章总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

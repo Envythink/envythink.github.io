@@ -1,0 +1,239 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>CICD平台搭建：Ansible安装 | 余思博客</title><meta name="keywords" content="cicd"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在前面系统学习了gitlab的相关知识点和安装、配置、流程等demo演示，接下来介绍Ansible这个工具。在此之前可以设想一下十年前的我们是如何对产品进行部署测试的？如果那时候你公司有开发能力，可能会研发出一套部署测试脚本或者系统，去线上部署自己的产品。又或者通过自己的运维团队和开发团队协同将产品部署到线上，但是在很多情况下运维人员只是做一些基础的搭建服务器等工作，而更多涉及到测试部署的工作都是">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CICD平台搭建：Ansible安装">
+<meta property="og:url" content="http://envyzhan.asia/2020/01/09/devops-cicd-3-ansible-install/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="在前面系统学习了gitlab的相关知识点和安装、配置、流程等demo演示，接下来介绍Ansible这个工具。在此之前可以设想一下十年前的我们是如何对产品进行部署测试的？如果那时候你公司有开发能力，可能会研发出一套部署测试脚本或者系统，去线上部署自己的产品。又或者通过自己的运维团队和开发团队协同将产品部署到线上，但是在很多情况下运维人员只是做一些基础的搭建服务器等工作，而更多涉及到测试部署的工作都是">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-01-09T07:45:10.000Z">
+<meta property="article:modified_time" content="2020-11-01T14:36:37.096Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="cicd">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/01/09/devops-cicd-3-ansible-install/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CICD平台搭建：Ansible安装',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-11-01 22:36:37'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CICD平台搭建：Ansible安装</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-01-09T07:45:10.000Z" title="发表于 2020-01-09 15:45:10">2020-01-09</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-11-01T14:36:37.096Z" title="更新于 2020-11-01 22:36:37">2020-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/devops/">devops</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CICD平台搭建：Ansible安装"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>在前面系统学习了gitlab的相关知识点和安装、配置、流程等demo演示，接下来介绍Ansible这个工具。在此之前可以设想一下十年前的我们是如何对产品进行部署测试的？如果那时候你公司有开发能力，可能会研发出一套部署测试脚本或者系统，去线上部署自己的产品。又或者通过自己的运维团队和开发团队协同将产品部署到线上，但是在很多情况下运维人员只是做一些基础的搭建服务器等工作，而更多涉及到测试部署的工作都是靠开发人员来完成的，这使得开发人员压力山大。开发人员都有一套自己解决部署问题的黑盒，虽然问题完成了，但是问题也同样明显，大家没有一套统一解决问题的框架或者说是部署工具。如果没有一份详细的部署文档去解释开发人员的部署架构原理，那么可能在后期给该工具使用的运维人员带来巨大的时间成本。</p>
+<p>而Ansible的出现就是为了解决这个问题，它可以让我们放弃自己原来开发的部署工具。Ansible是一个开源的部署工具，开发语言为Python，并以playbook作为基础部署架构，仅仅依赖系统标配的ssh连接与授权管理，就可以实现远程节点的快速部署。它的模块化部署管理，兼容Linux与Windows平台，所以说Ansible是一个支持全平台，无需编译，仅需要SSH通道的开源部署工具。Ansible的作用就是推送Playbook进行远程节点的快速部署。</p>
+<h3 id="Ansible-Chef-Saltstack-Puppet对比"><a href="#Ansible-Chef-Saltstack-Puppet对比" class="headerlink" title="Ansible/Chef/Saltstack/Puppet对比"></a>Ansible/Chef/Saltstack/Puppet对比</h3><p>那么你可能就要问了，为什么选择Ansible，而不是Chef、Saltstack、Puppet等这些部署工具呢？</p>
+<p>**Chef(厨师)**是一个用Ruby语言编写的自动化部署工具，是典型的C/S架构，因此需要在待部署的目标机器上安装客户端，与服务器端进行通信，才能实现Chef服务器端recipe脚本推送，进而达到远程部署的目的。Chef本身依赖GIt实现版本控制功能，且recipe食谱编写需要良好的编程基础，由于它的语言结构与Ruby类似，所以如果你是运维出身或者没有Ruby相关的编程经验，并不推荐你使用它，因为它的门槛有一点高。</p>
+<p><strong>Saltstack</strong>是一个用Python语言编写的自动化部署工具，也是典型的C/S架构，因此需要在待部署的目标机器上安装客户端，与服务器端进行通信，进而实现远程部署的目的。加之它的YAML编写规范，不过它的优点在于内部有一个异步服务器，可以为客户端加快文件服务速度，加之它模块化配置管理适用于在大规模的集群下部署，这也是Saltstack在Ansible之前大家广为使用的一款自动化部署工具。</p>
+<p>**Puppet(木偶)**是一个用Ruby语言编写的自动化部署工具，也是典型的C/S架构，因此需要在待部署的目标机器上安装客户端，与服务器端进行通信，进而实现远程部署的目的。采取Ruby语法格式的配置文件，因此如果你是运维出身或者没有Ruby相关的编程经验，并不推荐你使用它。</p>
+<p>Ansible是一个用Python语言编写的自动化部署工具，无客户端，模块化配置管理，以及Playbook脚本简易的编写规范，它的脚本语言较Chef更易于上手，较Saltstack更缩短运维的时间成本，这些都是我们选用Ansible的理由，但是我个人认为最重要的一点就是Ansible非常符合近几年流行且提倡的敏捷开发概念，我们需要软件开发周期中部署这一环节有一个快速敏捷、高效的工具去加快我们的产品交互，又能兼容我们主流云计算下所使用的基础设施及工具，所以这里选用Ansible作为我们部署的核心工具。</p>
+<h1 id="Ansible的优势和应用场景"><a href="#Ansible的优势和应用场景" class="headerlink" title="Ansible的优势和应用场景"></a>Ansible的优势和应用场景</h1><h3 id="Ansible的优势"><a href="#Ansible的优势" class="headerlink" title="Ansible的优势"></a>Ansible的优势</h3><p>Ansible的优势有以下几点：<strong>1、轻量级无客户端（Agentless）。</strong>轻量级大大降低了运维成本和潜在的系统安全问题，以及系统资源损耗。Ansible不使用客户端，而是调用SSH连接工具去实现通信的原因在于它较低了部署的难度，如果你之前搞过运维，那么你肯定知道我们如果给系统安装客户端工具，就意味着我们打开了部署机器与服务器端部署的端口，并无形的占用了系统的CPU、内存、磁盘等资源。假设我们的系统运行在一台安装了java的主机上，我们在安装java软件的同时又安装了某部署客户端，这势必就存在了一个潜在的安全问题，我们给系统留了一个后门，这个后门会不会被人利用用来攻击我们的产品主机，作为Ansible使用的ssh系统连接工具，实现部署通讯，则完美地解决了这个潜在的安全问题的同时，还减轻了我们多余的系统资源损耗。<strong>2、Ansible开源免费、学习成本低、快速上手。</strong>Ansible开源免费使得一些大中小公司都可以把它作为自动化部署工具，它的语法结构非常简单，非常适合初学者快速上手。<strong>3、Ansible使用Playbook作为核心配置架构，统一的脚本格式批量化部署。</strong>Ansible将自己YAML脚本的编写架构命名为Playbook，这样就给大家定义了一个统一的编写框架，使我们就可以遵循官方的说明与语法文档对我们的产品逻辑进行编写。<strong>4、Ansible完善的模块化扩展，支持目前主流的开发场景。</strong>不管你使用的是Linux系统还是Windows系统，不管你开发使用的是java语言还是python语言，不管你的业务逻辑复杂还是简单，Ansible都已经预先准备好了相应的模块化扩展，去匹配你的部署需要，保证Ansible具有一个庞大的平台去兼容所有产品不同的技术细节。<strong>5、Ansible具有强大的稳定性和兼容性。</strong>Ansible具有强大的稳定性和兼容性得益于它本身的开发语言为Linux系统默认自带的python开发语言，以及自带的默认通信工具ssh远程连接工具，依托默认语言和工具，所以Ansible就可以不需要安装额外的工具就拥有了其他工具无法比拟的稳定性和兼容性优势。<strong>6、Ansible具有活跃的官方讨论社区，便于troubleshotting(重大问题)与debug讨论。</strong>Ansible具有活跃的官方讨论社区，便于troubleshotting(重大问题)与debug讨论，保证我们有一个较为可靠的技术支持平台，可以说Ansible适用于目前市面上大家所能见到的所有系统。Ansible自带的系统级别模块可以轻易地去处理我们场景的部署问题，而且它的可扩展性允许我们可以自己编写Python模块去实现对某一实例的模块化配置管理，加之Ansible传输依赖是Linux原生的ssh协议，我们几乎不会吹飞之力就能在需要的场景下使用Ansible作为我们的部署工具。</p>
+<p>也就是Ansible的出现可以说是在原来部署工具的基础上提高了部署效率，变得更加容易上手，以及较高的扩展性，使得它天生就符合我们敏捷开发所提倡的迅速、敏捷、高效的特质，因此是作为Jenkins+Ansible+Gitlab自动化部署的不二选择。</p>
+<h1 id="Ansible配合Virtualenv安装配置"><a href="#Ansible配合Virtualenv安装配置" class="headerlink" title="Ansible配合Virtualenv安装配置"></a>Ansible配合Virtualenv安装配置</h1><p>接下来将通过demo演示来介绍Ansible配合Virtualenv在CentOS7系统上如何进行安装和配置。在日常的自动化部署工作中，保证Ansible在一个稳定版本下去应用于我们的产品交付，是我们作为运维工作人员需要关注的问题。Ansible作为一个用Python编写的工具，我们应当按照一个较为稳定的Python语言作为环境依赖，并在其Python包管理工具下安装我们项目需要定制的Python模块。假设此时我们的系统中有其他工具也会使用到Python，这就会造成Python版本的混乱，如何保证我们项目所依赖的Python仅仅为自己使用呢？此时可以使用Virtualenv工具来保证Ansible所使用的Python环境是独立的。注意这里是Python3.6和Ansible2.5搭配使用，然后使用Virtualenv来保证该系统仅被Ansible2.5使用。</p>
+<h3 id="CentOS7安装Ansible2-5-Python3-6步骤"><a href="#CentOS7安装Ansible2-5-Python3-6步骤" class="headerlink" title="CentOS7安装Ansible2.5+Python3.6步骤"></a>CentOS7安装Ansible2.5+Python3.6步骤</h3><p>Ansible在CentOS7上安装有两种模式：<strong>第一种、YUM包管理安装。</strong>使用的命令为：<code>yum -y install ansible</code>，安装完成后Ansible就成了一个系统全局下的工具，此时系统下任意用户都可以使用它，虽然这种安装非常便捷，但也缺点明显突出。假设我们当前系统下的其他用户安装了针对其他工具的Python安装模块，那么就会与Ansible下的Python模块相冲突，造成潜在的安全问题，原因就是在全局状态下，Python的模块安装后都会保存在同一个Python扩展目录下，当我们的Ansible用到的模块与其他工具用到的模块一致时，但版本不同，这样势必会造成Python模块管理混乱，最终影响到我们产品的部署交付。所以Ansible公司为了解决这类问题，特意在官方github下面保存了Ansible的源代码仓库，我们可以克隆该仓库到CentOS7主机中，配合Virtualenv去实现Ansible特定版本的独立环境创建，以保证Ansible在一个独立的Python环境下运转，这就是<strong>第二种方式：Git源代码安装（推荐）。</strong>使用的命令为：<code>git clone https://github.com/ansible/ansible.git</code>。话不多说，正式进入到搭建工作中。</p>
+<p><strong>第一步，</strong>在CentOS7系统内预先安装Python3.6版本。</p>
+<p><strong>第二步，</strong>在CentOS7系统内安装Virtualenv虚拟环境，用来隔离Python与Ansible的环境。使用<code>pip install virtualenv</code>命令即可实现快速安装。</p>
+<p><strong>第三步，</strong>在CentOS7系统内创建Ansible账户，并使用该账户安装Python3.6版本Virtualenv的实例。可以使用<code>useradd deploy</code>命令去创建一个名为deploy的Ansible账户，并使用<code>su - deploy</code>命令进入该账户的系统命令行界面，进入到deploy账户的命令行以后，使用<code>virtualenv -p /usr/local/bin/python3.6 .py3-a2.5-env </code>命令创建python3.6版本下的虚拟环境，其中的<code>-p /usr/local/bin/python3.6</code>用来指定Python的版本为python3.6的版本，<code>.py3-a2.5-env </code>用来表明我们去创建一个该名称下的Virtualenv实例目录。</p>
+<p><strong>第四步，</strong>在安装Python3.6和Virtualenv以后，需要使用Git源代码来安装Ansible2.5版本，可以先进入第三步中创建的Virtualenv实例目录，使用命令为<code>cd /home/deploy/.py3-a2.5-env</code>，然后使用<code>git clone https://github.com/ansible/ansible.git</code>命令去克隆安装Ansible源代码到本地，接着使用<code>cd ansible</code>命令进入ansible目录，然后使用<code>git checkout stable-2.5</code>命令切换ansible安装版本为稳定的2.5版本。</p>
+<p><strong>第五步，</strong>在安装完Ansible2.5版本后，需要加载Python3.6的Virtualenv虚拟环境，可以使用命令<code>source /home/deploy/.py3-a2.5-env/bin/active</code>去加载我们的Python3.6Virtualenv虚拟环境。</p>
+<p><strong>第六步，</strong>在加载完Python3.6的Virtualenv虚拟环境后，需要去安装Ansible下的Python依赖包，可以使用如下命令去下载安装一些依赖包，以保证Ansible能正常加载使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">pip install paramiko PyYAML jinja2</span><br></pre></td></tr></table></figure>
+
+<p><strong>第七步，</strong>在安装Ansible的依赖包后，就可以直接在Python3.6的Virtualenv虚拟环境下加载ansible2.5，使用的命令为<code>source /home/deploy/.py3-a2.5-env/ansible/hacking/env-setup -q</code>。</p>
+<p><strong>第八步，</strong>在加载完ansible2.5版本后，需要使用<code>ansible --version</code>命令来验证ansible2.5是否安装成功。出现版本信息即表示ansible安装成功。</p>
+<h3 id="CentOS7安装Ansible2-5-Python3-6实操"><a href="#CentOS7安装Ansible2-5-Python3-6实操" class="headerlink" title="CentOS7安装Ansible2.5+Python3.6实操"></a>CentOS7安装Ansible2.5+Python3.6实操</h3><p>注意你可以将ansible和gitlab搭建在同一台虚拟机上，或者是分开搭建都是可以的。<br><strong>第零步，环境预配置。</strong>首先启动本地虚拟机，然后获取到它的IP地址，然后打开git bash或者xshell工具，使用<code>ssh@IP</code>命令登录到该虚拟机。开始执行一系列命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld  #关闭firewalld防火墙</span><br><span class="line">systemctl disable firewalld  # 禁用防火墙开机启动服务</span><br><span class="line">vi /etc/sysconfig/selinux  # 设置selinux值为disabled</span><br><span class="line">reboot # 重启系统</span><br><span class="line">getenforce # 检查selinux策略是否已为disabled状态</span><br></pre></td></tr></table></figure>
+
+<p><strong>第一步，</strong>在CentOS7系统内预先安装Python3.6版本。使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget http://www.python.org/ftp/python/3.6.5/Python-3.6.5.tar.xz</span><br></pre></td></tr></table></figure>
+
+<p>如果现实无法连接到Python官网，原因你懂得，因此可以使用其他源进行安装，这里推荐一个可以使用命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">wget https://npm.taobao.org/mirrors/python/3.6.5/Python-3.6.5.tar.xz</span><br></pre></td></tr></table></figure>
+
+<p>然后使用<code>tar xf Python-3.6.5.tar.xz</code>命令去解压当前的Python编译包。接着使用命令<code>cd Python-3.6.5</code>进入到该Python包内。先使用<code>yum -y install openssl-devel</code>命令来安装openssl依赖，然后使用<code>./configure --prefix=/usr/local/ --with-ensurepip=install --with-ssl --enable-shared LDFLAGS=&quot;-Wl,-rpath /usr/local/lib&quot;</code>命令去设定当前Python编译的一些参数值。<code>--prefix=/usr/local</code>表示将当前Python3.6.5安装到<code>/usr/local</code>目录下，<code>--with-ensurepip</code>用来安装pip包管理工具，<code>--enable-shared</code>参数用来配置Python3.6.5匹配当前系统的参数，<code>--with-ssl</code>参数用来设置默认安装的软件涉及到ssl的功能时是可用的。如果在安装过程出现下面的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-683308c6a74f3f0c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>说明本机缺少gcc编译环境，可以使用<code>yum install -y gcc</code>命令来安装gcc编译环境，然后再次执行上述编译命令。解决BUG后继续在Python-3.6.5包内执行<code>make &amp;&amp; make altinstall</code>命令去完成编译(执行需要一定时间，请耐心等待)，并将编译好的文件安装到<code>/usr/local</code>目录下，如果最后出现下面的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zipimport.ZipImportError: can&#x27;t decompress data; zlib not available</span><br><span class="line">make: *** [altinstall] 错误 1</span><br></pre></td></tr></table></figure>
+
+<p>说明当前环境缺少zlib依赖包，可以使用<code>yum install zlib* -y</code>命令来安装依赖，之后继续执行<code>make &amp;&amp; make altinstall</code>命令，当出现下图所示结果时，则表明Python3.6.5已经成功安装在<code>/usr/local</code>目录下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f5a193fa2d4a352b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><strong>第二步，</strong>在CentOS7系统内安装Virtualenv虚拟环境，用来隔离Python与Ansible的环境。由于此处安装的是Python3.6.5的版本，因此对应的pip包管理工具的名称为pip3.6，所以先使用<code>which pip3.6</code>命令查看pip3.6这个命令的路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost Python-3.6.5]# which pip3.6</span><br><span class="line">/usr/local/bin/pip3.6</span><br></pre></td></tr></table></figure>
+
+<p>既然已经知道了pip3.6工具的对应路径，那么可以给这个pip3.6工具设置一个软连接（所谓的软连接其实就是windows下的快捷方式），使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost Python-3.6.5]# ln -s /usr/local/bin/pip3.6 /usr/local/bin/pip</span><br></pre></td></tr></table></figure>
+
+<p>这样我们就可以使用pip来代替pip3.6，但实际上调用的还是pip3.6这个包管理工具。接着使用<code>pip install virtualenv</code>命令去安装virtualenv依赖工具，如果下载速度非常慢，建议使用下面的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost Python-3.6.5]# pip install virtualenv -i http://pypi.douban.com/simple --trusted-host pypi.douban.com</span><br></pre></td></tr></table></figure>
+
+<p><strong>第三步，</strong>在CentOS7系统内创建Ansible账户，并使用该账户安装Python3.6版本Virtualenv的实例。可以使用<code>useradd deploy</code>命令去创建一个名为deploy的Ansible账户:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost Python-3.6.5]# useradd deploy</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>并使用<code>su - deploy</code>命令进入该账户的系统命令行界面：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@localhost Python-3.6.5]# su - deploy</span><br><span class="line">[deploy@localhost ~]$ </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>进入到deploy账户的命令行以后，使用<code>virtualenv -p /usr/local/bin/python3.6 .py3-a2.5-env </code>命令创建python3.6版本下的虚拟环境，其中的<code>-p /usr/local/bin/python3.6</code>用来指定Python的版本为python3.6的版本，<code>.py3-a2.5-env </code>用来表明我们去创建一个该名称下的Virtualenv实例目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[deploy@localhost ~]$ virtualenv -p /usr/local/bin/python3.6 .py3-a2.5-env</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>而且你看到它会输出这么一条信息<code>creator CPython3Posix(dest=/home/deploy/.py3-a2.5-env, clear=False, global=False)</code>，说明我们这个虚拟环境存在于<code>/home/deploy/</code>目录下。</p>
+<p><strong>第四步，</strong>在安装Python3.6和Virtualenv以后，需要使用Git源代码来安装Ansible2.5版本，可以先进入第三步中创建的Virtualenv实例目录，使用命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[deploy@localhost ~]$ cd /home/deploy/.py3-a2.5-env/</span><br><span class="line">[deploy@localhost .py3-a2.5-env]$ </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>先使用<code>which git</code>命令检查你是否已经安装了git，如果没有则需要退出deploy用户，使用root账户进行安装，相应的安装步骤如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">[deploy@localhost .py3-a2.5-env]$ which git  # 检查是否安装git</span><br><span class="line">/usr/bin/which: no git in ......</span><br><span class="line">[deploy@localhost .py3-a2.5-env]$ su - root  # 以root身份登入</span><br><span class="line">[root@localhost ~]# yum -y install git nss curl  # 安装git及其依赖</span><br><span class="line">[root@localhost ~]# su - deploy  # 以deploy身份登入</span><br><span class="line">[deploy@localhost ~]$ </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>然后使用下面的命令去克隆安装Ansible源代码到本地：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[deploy@localhost ~]$ git clone https://github.com/ansible/ansible.git</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>第五步，</strong>使用<code>source /home/deploy/.py3-a2.5-env/bin/activate</code>命令去加载我们的Python3.6Virtualenv虚拟环境。（前面出现<code>(.py3-a2.5-env) </code>则表示已经进入到我们的虚拟环境之中）</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[deploy@localhost ~]$ source /home/deploy/.py3-a2.5-env/bin/activate</span><br><span class="line">(.py3-a2.5-env) [deploy@localhost ~]$ </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>第六步，</strong>在加载完Python3.6的Virtualenv虚拟环境后，需要去安装Ansible下的Python依赖包，可以使用如下命令去下载安装一些依赖包，以保证Ansible能正常加载使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install paramiko PyYAML jinja2</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果下载速度非常慢，那么可以使用镜像，则相应的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">pip install paramiko PyYAML jinja2 -i http://pypi.douban.com/simple --trusted-host pypi.douban.com</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>第七步，</strong>需要将前面下载的ansible源代码移动到Python3.6的Virtualenv虚拟环境下。先使用<code>ll</code>查看一下该文件的权限是不是775，且用户和组均为deploy：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ~]$ ll</span><br><span class="line">总用量 4</span><br><span class="line">drwxrwxr-x 13 deploy deploy 4096 4月  22 19:41 ansible</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>如果不是，用root用户赋予该文件及其子文件775权限和更改文件及其子文件用户及组，使用的命令为<code>chmod -R 775 ansible</code>和<code>chown -R deploy.deploy ansible</code>。之后开始移动ansible文件，使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ~]$ mv ansible .py3-a2.5-env/</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p><strong>第八步，</strong>，使用下面的命令进入到Python3.6的Virtualenv虚拟环境下，并进入到ansible这个源代码目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ~]$ cd .py3-a2.5-env/ansible/</span><br><span class="line">(.py3-a2.5-env) [deploy@localhost ansible]$ </span><br></pre></td></tr></table></figure>
+
+<p>然后使用下面的命令切换ansible安装版本为稳定的2.5版本。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ansible]$ git checkout stable-2.5</span><br></pre></td></tr></table></figure>
+
+<p>在安装Ansible的依赖包后，就可以直接在Python3.6的Virtualenv虚拟环境下加载ansible2.5，使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ansible]$ source /home/deploy/.py3-a2.5-env/ansible/hacking/env-setup -q</span><br></pre></td></tr></table></figure>
+
+<p><strong>第九步，</strong>在加载完ansible2.5版本后，需要使用<code>ansible --version</code>命令来验证ansible2.5是否安装成功。出现版本信息即表示ansible安装成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(.py3-a2.5-env) [deploy@localhost ansible]$ ansible --version</span><br><span class="line">ansible 2.5.15 (stable-2.5 4f5084d9d2) last updated 2019/04/23 18:20:44 (GMT +800)</span><br><span class="line">  config file = None</span><br><span class="line">  configured module search path = [&#x27;/home/deploy/.ansible/plugins/modules&#x27;, &#x27;/usr/share/ansible/plugins/modules&#x27;]</span><br><span class="line">  ansible python module location = /home/deploy/.py3-a2.5-env/ansible/lib/ansible</span><br><span class="line">  executable location = /home/deploy/.py3-a2.5-env/ansible/bin/ansible</span><br><span class="line">  python version = 3.6.5 (default, Apr 22 2019, 15:23:54) [GCC 4.8.5 20150623 (Red Hat 4.8.5-39)]</span><br><span class="line">(.py3-a2.5-env) [deploy@localhost ansible]$ </span><br><span class="line"></span><br></pre></td></tr></table></figure>
+
+<p>至此我们已经在Ansible主机下完成了Python3.6虚拟环境下安装ansible2.5版本，确保ansible在一个独立的环境下正常稳定的运转。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/01/09/devops-cicd-3-ansible-install/">http://envyzhan.asia/2020/01/09/devops-cicd-3-ansible-install/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cicd/">cicd</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/01/11/devops-cicd-4-ansbile-playbook-introdution/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CICD平台搭建：Ansible playbooks介绍</div></div></a></div><div class="next-post pull-right"><a href="/2020/01/07/devops-cicd-2-gitlab-used/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">CICD平台搭建：Gitlab应用</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/01/07/devops-cicd-2-gitlab-used/" title="CICD平台搭建：Gitlab应用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-07</div><div class="title">CICD平台搭建：Gitlab应用</div></div></a></div><div><a href="/2020/01/16/devops-cicd-7-jenkins-used/" title="CICD平台搭建：Jenkins应用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-16</div><div class="title">CICD平台搭建：Jenkins应用</div></div></a></div><div><a href="/2020/01/05/devops-cicd-1-gitlab-install/" title="CICD平台搭建：Gitlab安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-05</div><div class="title">CICD平台搭建：Gitlab安装</div></div></a></div><div><a href="/2020/01/13/devops-cicd-5-jenkins-install/" title="CICD平台搭建：Jenkins安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-13</div><div class="title">CICD平台搭建：Jenkins安装</div></div></a></div><div><a href="/2020/01/15/devops-cicd-6-jenkins-job-install/" title="CICD平台搭建：Jenkins Job安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-15</div><div class="title">CICD平台搭建：Jenkins Job安装</div></div></a></div><div><a href="/2020/01/11/devops-cicd-4-ansbile-playbook-introdution/" title="CICD平台搭建：Ansible playbooks介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-11</div><div class="title">CICD平台搭建：Ansible playbooks介绍</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ansible-Chef-Saltstack-Puppet%E5%AF%B9%E6%AF%94"><span class="toc-number">1.</span> <span class="toc-text">Ansible&#x2F;Chef&#x2F;Saltstack&#x2F;Puppet对比</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ansible%E7%9A%84%E4%BC%98%E5%8A%BF%E5%92%8C%E5%BA%94%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number"></span> <span class="toc-text">Ansible的优势和应用场景</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Ansible%E7%9A%84%E4%BC%98%E5%8A%BF"><span class="toc-number">1.</span> <span class="toc-text">Ansible的优势</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Ansible%E9%85%8D%E5%90%88Virtualenv%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="toc-number"></span> <span class="toc-text">Ansible配合Virtualenv安装配置</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CentOS7%E5%AE%89%E8%A3%85Ansible2-5-Python3-6%E6%AD%A5%E9%AA%A4"><span class="toc-number">1.</span> <span class="toc-text">CentOS7安装Ansible2.5+Python3.6步骤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CentOS7%E5%AE%89%E8%A3%85Ansible2-5-Python3-6%E5%AE%9E%E6%93%8D"><span class="toc-number">2.</span> <span class="toc-text">CentOS7安装Ansible2.5+Python3.6实操</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

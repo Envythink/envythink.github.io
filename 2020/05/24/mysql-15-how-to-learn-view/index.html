@@ -1,0 +1,228 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>视图学习 | 余思博客</title><meta name="keywords" content="mysql"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面本篇来学习视图，对于开发人员来说这个在实际工作中用的不是很多，但是对于BI大数据人员来说，使用的频率还是较高的，因此本篇来学习一下MySQL中视图的相关内容。 本文的主要内容如下：（1）视图概念；（2）使用场景；（3）视图和表的区别；（4）视图好处；（5）创建视图；（6）修改视图；（7）删除视图；（8）查询视图结构；（9）更新视图；（10）文章总结。 需求说明假设你在一个电商公司任职，领导">
+<meta property="og:type" content="article">
+<meta property="og:title" content="视图学习">
+<meta property="og:url" content="http://envyzhan.asia/2020/05/24/mysql-15-how-to-learn-view/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面本篇来学习视图，对于开发人员来说这个在实际工作中用的不是很多，但是对于BI大数据人员来说，使用的频率还是较高的，因此本篇来学习一下MySQL中视图的相关内容。 本文的主要内容如下：（1）视图概念；（2）使用场景；（3）视图和表的区别；（4）视图好处；（5）创建视图；（6）修改视图；（7）删除视图；（8）查询视图结构；（9）更新视图；（10）文章总结。 需求说明假设你在一个电商公司任职，领导">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-05-24T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-12-14T14:41:13.049Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/05/24/mysql-15-how-to-learn-view/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '视图学习',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-14 22:41:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">视图学习</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-05-24T11:23:04.000Z" title="发表于 2020-05-24 19:23:04">2020-05-24</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-14T14:41:13.049Z" title="更新于 2020-12-14 22:41:13">2020-12-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/mysql/">mysql</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="视图学习"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本篇来学习视图，对于开发人员来说这个在实际工作中用的不是很多，但是对于BI大数据人员来说，使用的频率还是较高的，因此本篇来学习一下MySQL中视图的相关内容。</p>
+<p>本文的主要内容如下：（1）视图概念；（2）使用场景；（3）视图和表的区别；（4）视图好处；（5）创建视图；（6）修改视图；（7）删除视图；（8）查询视图结构；（9）更新视图；（10）文章总结。</p>
+<h1 id="需求说明"><a href="#需求说明" class="headerlink" title="需求说明"></a>需求说明</h1><p>假设你在一个电商公司任职，领导想知道当月订单总金额、订单数量、购买年龄层次、购买者男女比例等？对于领导来说，他只关心数据，并不关心你如何实现的？因此你不能将写好的SQL语句给它，但是你却需要显示结果？此时就可以使用本篇讲到的视图，使用视图可以隐藏SQL执行的细节，只展示最终的运行结果。</p>
+<h1 id="视图"><a href="#视图" class="headerlink" title="视图"></a>视图</h1><h3 id="概念"><a href="#概念" class="headerlink" title="概念"></a>概念</h3><p>视图是MySQL5出现的一种虚拟表，行和列的数据来源于定义视图时使用的表，也就是说视图的数据是在使用视图时动态生成的，视图只保存了SQL的执行逻辑，不保存SQL的执行结果。</p>
+<h3 id="使用场景"><a href="#使用场景" class="headerlink" title="使用场景"></a>使用场景</h3><p>当多个地方需要使用到相同的查询结果时，且该查询结果较为复杂的时候，此时就可以使用视图来隐藏其复杂的具体实现细节。</p>
+<h3 id="视图和表的区别"><a href="#视图和表的区别" class="headerlink" title="视图和表的区别"></a>视图和表的区别</h3><p>接下来聊一聊视图和表的区别，这里主要从语法格式、保存内容和使用操作等三个方面来进行对比：</p>
+<table>
+<thead>
+<tr>
+<th align="center">名称</th>
+<th align="center">语法格式</th>
+<th align="center">保存内容</th>
+<th align="center">使用操作</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">视图</td>
+<td align="center"><code>create view</code></td>
+<td align="center">仅保存SQL逻辑</td>
+<td align="center">增删改查，实际上只使用查询</td>
+</tr>
+<tr>
+<td align="center">表</td>
+<td align="center"><code>create table</code></td>
+<td align="center">保存数据</td>
+<td align="center">增删改查</td>
+</tr>
+</tbody></table>
+<h3 id="好处"><a href="#好处" class="headerlink" title="好处"></a>好处</h3><p>使用视图不仅简化了复杂的SQL操作，还隔离了原始表，使用视图无需接触原始表，提高了数据的安全性。</p>
+<h3 id="数据准备"><a href="#数据准备" class="headerlink" title="数据准备"></a>数据准备</h3><p>为了后续学习的必要，这里先准备了五张表，这5张表在企业中用的较多，分别是：部门表(departments)、员工信息表(employees)、职位表(jobs)、位置表(locations)和薪资等级表(job_grades)。</p>
+<p>第一步，创建对应的数据表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br></pre></td><td class="code"><pre><span class="line">drop database if exists `hellobook`;</span><br><span class="line"></span><br><span class="line">create database `hellobook`;</span><br><span class="line"></span><br><span class="line">USE `hellobook`;</span><br><span class="line"></span><br><span class="line">/*部门表*/</span><br><span class="line">DROP TABLE IF EXISTS `departments`;</span><br><span class="line">CREATE TABLE `departments` (</span><br><span class="line">  `department_id` int(4) NOT NULL AUTO_INCREMENT comment &#x27;部门id&#x27;,</span><br><span class="line">  `department_name` varchar(3) DEFAULT NULL comment &#x27;部门名称&#x27;,</span><br><span class="line">  `manager_id` int(6) DEFAULT NULL comment &#x27;管理者id&#x27;,</span><br><span class="line">  `location_id` int(4) DEFAULT NULL comment &#x27;部门位置id，来源于表locations中的location_id&#x27;,</span><br><span class="line">  PRIMARY KEY (`department_id`),</span><br><span class="line">  KEY `loc_id_fk` (`location_id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=271 comment &#x27;部门表&#x27;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/*员工表*/</span><br><span class="line">DROP TABLE IF EXISTS `employees`;</span><br><span class="line">CREATE TABLE `employees` (</span><br><span class="line">  `employee_id` int(6) NOT NULL AUTO_INCREMENT comment &#x27;员工id&#x27;,</span><br><span class="line">  `first_name` varchar(20) DEFAULT NULL comment &#x27;名&#x27;,</span><br><span class="line">  `last_name` varchar(25) DEFAULT NULL comment &#x27;姓&#x27;,</span><br><span class="line">  `email` varchar(25) DEFAULT NULL comment &#x27;电子邮箱&#x27;,</span><br><span class="line">  `phone_number` varchar(20) DEFAULT NULL comment &#x27;手机&#x27;,</span><br><span class="line">  `job_id` varchar(10) DEFAULT NULL comment &#x27;职位id，来源于jobs表中的job_id&#x27;,</span><br><span class="line">  `salary` double(10,2) DEFAULT NULL comment &#x27;薪水&#x27;,</span><br><span class="line">  `commission_pct` double(4,2) DEFAULT NULL comment &#x27;佣金百分比&#x27;,</span><br><span class="line">  `manager_id` int(6) DEFAULT NULL comment &#x27;上级id&#x27;,</span><br><span class="line">  `department_id` int(4) DEFAULT NULL comment &#x27;所属部门id，来源于departments中的department_id&#x27;,</span><br><span class="line">  `hiredate` datetime DEFAULT NULL comment &#x27;入职日期&#x27;,</span><br><span class="line">  PRIMARY KEY (`employee_id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=207 comment &#x27;员工表&#x27;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/*职位信息表*/</span><br><span class="line">DROP TABLE IF EXISTS `jobs`;</span><br><span class="line">CREATE TABLE `jobs` (</span><br><span class="line">  `job_id` varchar(10) NOT NULL comment &#x27;职位id&#x27;,</span><br><span class="line">  `job_title` varchar(35) DEFAULT NULL comment &#x27;职位名称&#x27;,</span><br><span class="line">  `min_salary` int(6) DEFAULT NULL comment &#x27;薪资范围最小值&#x27;,</span><br><span class="line">  `max_salary` int(6) DEFAULT NULL comment &#x27;薪资范围最大值&#x27;,</span><br><span class="line">  PRIMARY KEY (`job_id`)</span><br><span class="line">) ENGINE=InnoDB comment &#x27;职位id&#x27;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/*位置表*/</span><br><span class="line">DROP TABLE IF EXISTS `locations`;</span><br><span class="line">CREATE TABLE `locations` (</span><br><span class="line">  `location_id` int(11) NOT NULL AUTO_INCREMENT comment &#x27;位置id&#x27;,</span><br><span class="line">  `street_address` varchar(40) DEFAULT NULL comment &#x27;街道地址&#x27;,</span><br><span class="line">  `postal_code` varchar(12) DEFAULT NULL comment &#x27;邮编&#x27;,</span><br><span class="line">  `city` varchar(30) DEFAULT NULL comment &#x27;城市名称&#x27;,</span><br><span class="line">  `state_province` varchar(25) DEFAULT NULL comment &#x27;省&#x27;,</span><br><span class="line">  `country_id` varchar(2) DEFAULT NULL comment &#x27;国家编号&#x27;,</span><br><span class="line">  PRIMARY KEY (`location_id`)</span><br><span class="line">) ENGINE=InnoDB AUTO_INCREMENT=3201 comment &#x27;位置表&#x27;;</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">/*薪资等级表*/</span><br><span class="line">DROP TABLE IF EXISTS `job_grades`;</span><br><span class="line">CREATE TABLE `job_grades`(</span><br><span class="line">  `grade_level` varchar(3) comment &#x27;等级&#x27;,</span><br><span class="line">  `lowest_sal`  int comment &#x27;薪资最低值&#x27;,</span><br><span class="line">  `highest_sal` int comment &#x27;薪资最高值&#x27;,</span><br><span class="line">  PRIMARY KEY (`grade_level`)</span><br><span class="line">) comment &#x27;薪资等级表&#x27;;</span><br></pre></td></tr></table></figure>
+<p>第二步，插入数据，数据在Gitee上，因此这里就忽略，且这里的数据就是前面在学习子查询时的数据。</p>
+<h3 id="创建视图"><a href="#创建视图" class="headerlink" title="创建视图"></a>创建视图</h3><p>创建视图的语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create view 视图名 as 查询语句;</span><br></pre></td></tr></table></figure>
+<p>也就是说使用视图分为两个步骤，第一步是创建视图；第二步是对视图执行查询操作。</p>
+<p><strong>例子1：</strong>查询姓名中包含a字符的员工名称、部门和工作名称。</p>
+<p>第一步，创建视图myview1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">create view myview1 as</span><br><span class="line">select e.last_name,d.department_name,j.job_title</span><br><span class="line">from employees as e,jobs as j,departments as d</span><br><span class="line">where e.employee_id = d.department_id</span><br><span class="line">and e.job_id = j.job_id;</span><br></pre></td></tr></table></figure>
+<p>第二步，使用视图，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from myview1 as m1 where m1.last_name like &#x27;%a%&#x27;;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b9cfc15793b722e6.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>当然开发者也可以直接创建视图，此时SQL如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create view myview1 as</span><br><span class="line">select e.last_name,d.department_name,j.job_title</span><br><span class="line">from employees as e,jobs as j,departments as d</span><br><span class="line">where e.last_name like &#x27;%a%&#x27;</span><br><span class="line">and e.employee_id = d.department_id</span><br><span class="line">and e.job_id = j.job_id;</span><br></pre></td></tr></table></figure>
+<p>但是这种方式不太建议使用，因为它将条件查询内嵌进去，不利于SQL的扩展，因此建议使用前面所说的两步走，即第一步，创建视图；第二步，对视图执行查询操作。</p>
+<p>在上面我们创建了一个视图myview1，当需要查看包含a字符的员工名称、部门和工作名称时，无需关注这个视图内部是如何实现的，只需要查询视图即可。</p>
+<p><strong>例子2：</strong>查询各个部门的平均工资级别，显示部门id、平均工资和工资级别。</p>
+<p>第一步，创建视图myview2：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">create view myview2 as</span><br><span class="line">select e.department_id as 部门id,e.asvg as 平均工资,jg.grade_level as 工资级别</span><br><span class="line">from (</span><br><span class="line">  select department_id, avg(salary)as asvg from employees group by department_id</span><br><span class="line">) as e,job_grades as jg</span><br><span class="line">where e.asvg between jg.lowest_sal and jg.highest_sal;</span><br></pre></td></tr></table></figure>
+<p>第二步，使用视图，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from myview2;</span><br></pre></td></tr></table></figure>
+<p>运行结果如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b97fa704cefc3579.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="修改视图"><a href="#修改视图" class="headerlink" title="修改视图"></a>修改视图</h3><p>可以使用两种方法来对视图进行修改：如果视图存在则修改，不存在则创建；直接修改视图。</p>
+<p><strong>方法1：</strong>如果该视图存在，则修改；不存在则创建新的视图，此时使用的SQL语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create or replace view 视图名 as 查询语句;</span><br></pre></td></tr></table></figure>
+<p><strong>例子3：</strong>查询每个job_id的平均薪水，显示job_id和平均薪水：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">create or replace view myview3 as</span><br><span class="line">select job_id,avg(salary) as avsg</span><br><span class="line">from employees</span><br><span class="line">group by job_id;</span><br></pre></td></tr></table></figure>
+<p>执行结果如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-489fc25399cc1d08.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><strong>方法2：</strong>直接修改视图，此时使用的SQL语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter view 视图名 as 查询语句;</span><br></pre></td></tr></table></figure>
+<p><strong>例子4：</strong>修改之前例子3的视图，使之查询员工信息表信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">alter view myview3 as select * from employees;</span><br></pre></td></tr></table></figure>
+<p>执行结果如下所示（部分）：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2e2a378f28accaae.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="删除视图"><a href="#删除视图" class="headerlink" title="删除视图"></a>删除视图</h3><p>删除视图的语法规则如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop view 视图1[,视图1][,视图1=n];</span><br></pre></td></tr></table></figure>
+<p>开发者可以同时删除多个视图，多个视图名称之间使用逗号进行分隔。</p>
+<p><strong>例子5：</strong>删除之前创建的视图myview1、myview2和myview3：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">drop view myview1,myview2,myview3;</span><br></pre></td></tr></table></figure>
+<h3 id="查询视图结构"><a href="#查询视图结构" class="headerlink" title="查询视图结构"></a>查询视图结构</h3><p>查询视图的结构有两种方法，第一种是使用<code>desc 视图名称;</code>；第二种是使用`show create view 视图名称;。</p>
+<p><strong>例子6：</strong>查看之前创建的myview1视图结构：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">mysql&gt; desc myview1;</span><br><span class="line">+-----------------+-------------+------+-----+---------+-------+</span><br><span class="line">| Field           | Type        | Null | Key | Default | Extra |</span><br><span class="line">+-----------------+-------------+------+-----+---------+-------+</span><br><span class="line">| last_name       | varchar(25) | YES  |     | NULL    |       |</span><br><span class="line">| department_name | varchar(3)  | YES  |     | NULL    |       |</span><br><span class="line">| job_title       | varchar(35) | YES  |     | NULL    |       |</span><br><span class="line">+-----------------+-------------+------+-----+---------+-------+</span><br><span class="line">3 rows in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">mysql&gt; show create view myview1;</span><br><span class="line">+---------+---------------------------------</span><br><span class="line">| View    | Create View                                                                                                                                                                                                                                                                                                                                                                                       | character_set_client | collation_connection |</span><br><span class="line">+---------+--------------------------------------</span><br><span class="line">| myview1 | CREATE ALGORITHM=UNDEFINED DEFINER=`root`@`localhost` SQL SECURITY DEFINER VIEW `myview1` AS select `e`.`last_name` AS `last_name`,`d`.`department_name` AS `department_name`,`j`.`job_title` AS `job_title` from ((`employees` `e` join `jobs` `j`) join `departments` `d`) where ((`e`.`last_name` like &#x27;%a%&#x27;) and (`e`.`employee_id` = `d`.`department_id`) and (`e`.`job_id` = `j`.`job_id`)) | utf8                 | utf8_general_ci      |</span><br><span class="line">+---------+--------------------------</span><br><span class="line">1 row in set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p><code>desc</code>关键字可以显示视图的字段信息，而<code>show create view</code>子句则显示了视图的创建语句。仔细观察可以发现这个其实和查看表的结构语句非常相似，不同的是将table修改为了view。</p>
+<h3 id="更新视图"><a href="#更新视图" class="headerlink" title="更新视图"></a>更新视图</h3><p>接下来了解一下视图的更新，请注意<strong>视图的更新是更改视图中的数据，而不是更改视图中的SQL逻辑。对视图的进行更新后，也会对原始表的数据进行更新。</strong>因此为了防止对原始表的数据产生更新，开发者可以为视图添加只读权限，这样用户只能读取视图，而不能对视图进行更新。在正常情况下，我们很少多视图进行更新操作，因此这个了解一下就行。</p>
+<p><strong>例子7：</strong>接下来通过一个视图来总结和演示视图的使用操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">--创建视图</span><br><span class="line">create or replace view myview4 as</span><br><span class="line">select last_name,email from employees;</span><br><span class="line"></span><br><span class="line">--插入数据</span><br><span class="line">insert into myview4 values(&#x27;envy&#x27;,&#x27;envythink@qq.com&#x27;);</span><br><span class="line"></span><br><span class="line">--查询数据</span><br><span class="line">mysql&gt; select * from myview4 where email like &#x27;%envy%&#x27;;</span><br><span class="line">+-----------+------------------+</span><br><span class="line">| last_name | email            |</span><br><span class="line">+-----------+------------------+</span><br><span class="line">| envy      | envythink@qq.com |</span><br><span class="line">+-----------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line">--修改数据</span><br><span class="line">mysql&gt; update myview4 set last_name = &#x27;book&#x27; where last_name =&#x27;envy&#x27;;</span><br><span class="line">Query OK, 1 row affected (0.17 sec)</span><br><span class="line">Rows matched: 1  Changed: 1  Warnings: 0</span><br><span class="line"></span><br><span class="line">--查询数据</span><br><span class="line">mysql&gt; select * from myview4 where email like &#x27;%envy%&#x27;;</span><br><span class="line">+-----------+------------------+</span><br><span class="line">| last_name | email            |</span><br><span class="line">+-----------+------------------+</span><br><span class="line">| book      | envythink@qq.com |</span><br><span class="line">+-----------+------------------+</span><br><span class="line">1 row in set (0.00 sec)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">--删除数据</span><br><span class="line">mysql&gt; delete from myview4 where last_name = &#x27;book&#x27;;</span><br><span class="line">Query OK, 1 row affected (0.68 sec)</span><br><span class="line">--查询数据</span><br><span class="line">mysql&gt; select * from myview4 where email like &#x27;%envy%&#x27;;</span><br><span class="line">Empty set (0.00 sec)</span><br></pre></td></tr></table></figure>
+<p>由于视图的更新可能导致较为严重的问题产生，因此在企业实际开发过程中视图更新操作用的不是很多。</p>
+<p>其实不光是视图更新操作，在实际开发过程中视图本身用的也就不多，因此本篇只是了解一些视图的相关内容。</p>
+<h3 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h3><p>本篇主要介绍了视图的一些概念，用途以及它和表的区别，并在此基础上学习了如何创建、使用、修改和删除视图，尽管视图本身在实际工作中用的不太多，但是在某些特殊场合下，使用视图可以解决一些问题。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/05/24/mysql-15-how-to-learn-view/">http://envyzhan.asia/2020/05/24/mysql-15-how-to-learn-view/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/mysql/">mysql</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/05/27/mysql-16-how-to-learn-variable/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">变量学习</div></div></a></div><div class="next-post pull-right"><a href="/2020/05/22/mysql-14-how-to-use-null/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">NULL使用记录</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/05/01/mysql-1-introduction/" title="MySQL概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-01</div><div class="title">MySQL概述</div></div></a></div><div><a href="/2020/05/10/mysql-10-authroize-management/" title="MySQL用户权限管理"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-10</div><div class="title">MySQL用户权限管理</div></div></a></div><div><a href="/2020/05/22/mysql-14-how-to-use-null/" title="NULL使用记录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-22</div><div class="title">NULL使用记录</div></div></a></div><div><a href="/2020/05/27/mysql-16-how-to-learn-variable/" title="变量学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-27</div><div class="title">变量学习</div></div></a></div><div><a href="/2020/05/28/mysql-17-procedure-and-function/" title="存储过程和自定义函数"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-28</div><div class="title">存储过程和自定义函数</div></div></a></div><div><a href="/2020/05/30/mysql-19-how-to-learn-cursor/" title="游标学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-30</div><div class="title">游标学习</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%9C%80%E6%B1%82%E8%AF%B4%E6%98%8E"><span class="toc-number">2.</span> <span class="toc-text">需求说明</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE"><span class="toc-number">3.</span> <span class="toc-text">视图</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E5%BF%B5"><span class="toc-number">3.0.1.</span> <span class="toc-text">概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E5%9C%BA%E6%99%AF"><span class="toc-number">3.0.2.</span> <span class="toc-text">使用场景</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%A7%86%E5%9B%BE%E5%92%8C%E8%A1%A8%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">3.0.3.</span> <span class="toc-text">视图和表的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A5%BD%E5%A4%84"><span class="toc-number">3.0.4.</span> <span class="toc-text">好处</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%87%86%E5%A4%87"><span class="toc-number">3.0.5.</span> <span class="toc-text">数据准备</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BA%E8%A7%86%E5%9B%BE"><span class="toc-number">3.0.6.</span> <span class="toc-text">创建视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9%E8%A7%86%E5%9B%BE"><span class="toc-number">3.0.7.</span> <span class="toc-text">修改视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A0%E9%99%A4%E8%A7%86%E5%9B%BE"><span class="toc-number">3.0.8.</span> <span class="toc-text">删除视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9F%A5%E8%AF%A2%E8%A7%86%E5%9B%BE%E7%BB%93%E6%9E%84"><span class="toc-number">3.0.9.</span> <span class="toc-text">查询视图结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%96%B0%E8%A7%86%E5%9B%BE"><span class="toc-number">3.0.10.</span> <span class="toc-text">更新视图</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-number">3.0.11.</span> <span class="toc-text">文章总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

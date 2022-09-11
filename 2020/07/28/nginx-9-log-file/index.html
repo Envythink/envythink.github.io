@@ -1,0 +1,206 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Nginx日志文件 | 余思博客</title><meta name="keywords" content="nginx"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在前面学习Nginx目录结构的时候，可以发现它有一个logs目录，这是nginx日志的默认目录，里面包括访问日志(access.log)、错误日志(error.log)以及nginx.pid文件。nginx.pid文件就是nginx进程在启动后会将其pid写入这个文件中，这个没什么好学习的。现在学习的重点就是访问日志(access.log)和错误日志(error.log)。 访问日志(ac">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx日志文件">
+<meta property="og:url" content="http://envyzhan.asia/2020/07/28/nginx-9-log-file/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在前面学习Nginx目录结构的时候，可以发现它有一个logs目录，这是nginx日志的默认目录，里面包括访问日志(access.log)、错误日志(error.log)以及nginx.pid文件。nginx.pid文件就是nginx进程在启动后会将其pid写入这个文件中，这个没什么好学习的。现在学习的重点就是访问日志(access.log)和错误日志(error.log)。 访问日志(ac">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-07-28T10:13:01.000Z">
+<meta property="article:modified_time" content="2021-03-01T10:36:07.109Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/07/28/nginx-9-log-file/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nginx日志文件',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 18:36:07'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Nginx日志文件</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-07-28T10:13:01.000Z" title="发表于 2020-07-28 18:13:01">2020-07-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T10:36:07.109Z" title="更新于 2021-03-01 18:36:07">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/nginx/">nginx</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nginx日志文件"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在前面学习Nginx目录结构的时候，可以发现它有一个logs目录，这是nginx日志的默认目录，里面包括访问日志(access.log)、错误日志(error.log)以及nginx.pid文件。nginx.pid文件就是nginx进程在启动后会将其pid写入这个文件中，这个没什么好学习的。现在学习的重点就是访问日志(access.log)和错误日志(error.log)。</p>
+<h1 id="访问日志-access-log"><a href="#访问日志-access-log" class="headerlink" title="访问日志(access.log)"></a>访问日志(access.log)</h1><p>访问日志文件(access.log)记录了每个用户对网站的访问请求，这个功能是<code>ngx_http_log_module</code>模块提供的，access.log文件可以帮助站长分析用户的浏览行为。</p>
+<h3 id="日志格式"><a href="#日志格式" class="headerlink" title="日志格式"></a>日志格式</h3><p>首先打开access.log文件，查看一下其中的内容，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0cf473d49f2d3344.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到日志文件的记录格式为“访问IP+访问时间+请求方法+请求路径+HTTP版本+状态码+代理信息”，这些都是我们从日志文件中能获取到的，但是这些肯定是可以定制的。</p>
+<p>回忆之前的Nginx主配置文件nginx.conf，可以发现里面有如下一段代码：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-47ee498dc470c78c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>也就是下面的代码片段其实就是用来定义日志文件的输出格式，这是默认的格式。其中log_format 是日志格式的关键参数，不能修改；main是为日志格式指定的标签，通过这个main标签可以在记录日志的时候选择指定的格式；之后的所有变量都是可以记录的日志信息，请注意所有的日志段都以空格进行分隔，且一行可以记录多个值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">#log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">  #                  &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">  #                  &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br></pre></td></tr></table></figure>
+<p>接下来通过一个表格来对上述日志格式中的参数进行介绍：<br>Nginx日志变量|说明|<br>:-:|:-:|<br><code>$remote_addr</code>|记录访问网站的客户端IP地址|<br><code>$remote_user</code>|远程客户端的名称|<br><code>$time_local</code>|访问时间和时区|<br><code>$request</code>|用户http请求起始行信息|<br><code>$status</code>|http状态码，记录返回的状态|<br><code>$body_bytes_sent</code>|服务器发给客户端响应的body字节数|<br><code>$http_referer</code>|记录此次的请求是从哪个链接访问过来的，可以根据referer进行防盗链设置|<br><code>$http_user_agent</code>|记录客户端访问信息，比如浏览器等|<br><code>$http_x_forwarded_for</code>|当前端有代理服务时，设置web节点记录客户端地址的配置，此参数生效的前提是在代理服务器上也进行了相关的<code>x_forwarded_for</code>设置|</p>
+<p>上面都是一些基本的日志格式配置变量，除此之外还有一些对日志进行优化的参数，这些参数一般使用默认的值即可，除非是有特殊的要求。这些配置语法格式如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">access_log path [format [buffer=size [flush=time]] [if=condition];</span><br><span class="line">access_log path format gzip[=level]  [buffer=size]  [flush=time]  [if=condition];</span><br><span class="line">access_log syslog:server=address[,parameter=value]  [format  [if=condition]];</span><br></pre></td></tr></table></figure>
+<p>其中buffer=size是存放访问日志的缓冲区大小；flush=time是将缓冲区的日志刷到硬盘的时间；gzip[=level]表示压缩的级别；[if=condition]表示其他条件；access_log off中的off表示不记录日志。</p>
+<hr>
+<p>而访问日志文件的存储路径及使用格式则由access_log来控制：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">#access_log  logs/access.log  main;</span><br></pre></td></tr></table></figure>
+<p>接下来将通过实战来学习access_log日志的使用。</p>
+<p>第一步，去掉nginx.conf主配置文件中与log_format相关代码前面的注释，言外之意log_format相关代码必须放在http区块中。</p>
+<p>第二步，在<code>/usr/local/nginx/conf/vhost</code>目录下新建一个think.com.conf文件，里面的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  listen 80;</span><br><span class="line">  server_name www.think.com think.com;</span><br><span class="line">  </span><br><span class="line">  location / &#123;</span><br><span class="line">    root /usr/share/nginx/html/think;</span><br><span class="line">    index index.html index.htm index.php;</span><br><span class="line">  &#125;</span><br><span class="line">  </span><br><span class="line">  access_log /usr/local/nginx/logs/think.log main;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第三步，新建<code>/usr/share/nginx/html/think</code>目录，并在该目录下新建index.html文件，其中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;p style=&quot;color:red&quot;&gt;welcome to think.com!&lt;/p&gt;</span><br></pre></td></tr></table></figure>
+<p>第四步，打开本地宿主机Windows系统内<code>C:\Windows\System32\drivers\etc</code>的文件，并在里面新增如下DNS映射：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">192.168.73.100  www.think.com  think.com</span><br></pre></td></tr></table></figure>
+<p>第五步，使用<code>nginx -t</code>来检查语法，如果没有出现语法问题，就使用<code>nginx -s reload</code>命令来平滑重启nginx，之后在浏览器访问<code>http://think.com</code>连接，可以看到页面出现如下所示的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4980110f2419f989.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>之后在DOS命令中使用<code>curl www.think.com</code>命令来访问该链接。</p>
+<p>第六步，查看<code>/usr/local/nginx/logs/think.log</code>文件，如下所示（日志内容没有的可以使用<code>-</code>来填充）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">192.168.73.1 - - [18/Nov/2020:09:41:11 +0800] &quot;GET / HTTP/1.1&quot; 200 47 &quot;-&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36&quot; &quot;-&quot;   # windows访问日志</span><br><span class="line">192.168.73.1 - - [18/Nov/2020:09:41:11 +0800] &quot;GET /favicon.ico HTTP/1.1&quot; 404 555 &quot;http://www.think.com/&quot; &quot;Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.111 Safari/537.36&quot; &quot;-&quot;   # windows访问日志</span><br><span class="line">192.168.73.1 - - [18/Nov/2020:09:45:07 +0800] &quot;GET / HTTP/1.1&quot; 200 47 &quot;-&quot; &quot;curl/7.55.1&quot; &quot;-&quot;  # Linux访问日志</span><br></pre></td></tr></table></figure>
+<p>当然了，开发者也可以在日志参数中添加buffer和flush，这样在高并发场景下能提升网站的访问性能。</p>
+<p>第七步，修改<code>/usr/local/nginx/conf/vhost/think.com.conf</code>文件中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  listen 80;</span><br><span class="line">  server_name www.think.com think.com;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">    root /usr/share/nginx/html/think;</span><br><span class="line">    index index.html index.htm index.php;</span><br><span class="line">  &#125;</span><br><span class="line"></span><br><span class="line">  access_log /usr/local/nginx/logs/think.log main gzip buffer=128k flush=5s;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后进行语法检测和nginx平滑重启。</p>
+<h3 id="日志轮询切割"><a href="#日志轮询切割" class="headerlink" title="日志轮询切割"></a>日志轮询切割</h3><p>通过前面的学习，大家知道在默认情况下Nginx的访问日志都会存到access_log文件中，但是时间长了这个文件体积会变得很大，且不利于后续的分析，因此有必要对访问日志按照天或者小时进行分割，将其保存为不同的文件。通常情况下都是按照天为单位进行分割，除非在极特殊情况下才考虑按照小时，甚至是分钟的情况。</p>
+<p>我们可以编写脚本来实现Nginx日志文件的切割，将正在写入的日志存入名称为“年月日-日期格式”的文件，之后再平滑重启Nginx，其实这个是可以添加到计划任务列表中的。</p>
+<p>第一步，编写日志分割文件segmentation.sh。按照如下操作依次进行：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# mkdir /usr/local/nginx/script</span><br><span class="line">[root@envythink ~]# cd /usr/local/nginx/script</span><br><span class="line">[root@envythink script]# vi segmentation.sh</span><br><span class="line">[root@envythink script]# cat segmentation.sh</span><br><span class="line"># !/bin/bash</span><br><span class="line">Dateformat=`date +%Y%m%d`</span><br><span class="line">Basedir=&quot;/usr/local/nginx&quot;</span><br><span class="line">Nginxlogdir=&quot;$Basedir/logs&quot;</span><br><span class="line">Logname=&quot;access&quot;</span><br><span class="line">[ -d $Nginxlogdir ] &amp;&amp; cd  $Nginxlogdir || exit 1</span><br><span class="line">[ -f $&#123;Logname&#125;.log ] || exit 1</span><br><span class="line">/bin/mv $&#123;Logname&#125;.log $&#123;Dateformat&#125;_$&#123;Logname&#125;.log</span><br><span class="line">$Basedir/sbin/nginx -s reload</span><br></pre></td></tr></table></figure>
+<p>第二步，将其添加到计划任务中，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink script]#  cat &gt;&gt;/var/spool/cron/root &lt;&lt;EOF</span><br><span class="line">&gt; 00 00 * * * /bin/sh /usr/local/nginx/script/segmentation.sh &gt; /dev/null 2&gt;&amp;1</span><br><span class="line">&gt; EOF</span><br><span class="line">[root@envythink script]# crontab -l</span><br><span class="line">00 00 * * * /bin/sh /usr/local/nginx/script/segmentation.sh &gt; /dev/null 2&gt;&amp;1</span><br></pre></td></tr></table></figure>
+<p>第三步，启动日志切割脚本，观察日志访问文件名称和信息是否写入正确：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink script]# bash segmentation.sh </span><br><span class="line">[root@envythink script]# ll /usr/local/nginx/logs/</span><br><span class="line">总用量 68</span><br><span class="line">-rw-r--r-- 1 nobody root 40995 05月 18 09:41 20200518_access.log</span><br><span class="line">-rw-r--r-- 1 root   root     0 05月 18 10:26 access.log</span><br><span class="line">-rw-r--r-- 1 nobody root 13463 05月 18 10:26 error.log</span><br><span class="line">-rw-r--r-- 1 root   root     6 05月 17 16:28 nginx.pid</span><br><span class="line">-rw-r--r-- 1 root   root   506 05月 18 09:45 think.log</span><br></pre></td></tr></table></figure>
+<h3 id="错误日志-error-log"><a href="#错误日志-error-log" class="headerlink" title="错误日志(error.log)"></a>错误日志(error.log)</h3><p>错误日志文件(error.log)记录了Nginx自身运行故障信息和用户访问Nginx的日志信息。错误日志非常重要，它是后续进行故障排查和分析的重要手段，它是Nginx核心模块ngx_core_module中的参数，可以放在main区块或者不同的虚拟机中。</p>
+<p>错误日志配置语法格式为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">error_log       file        level</span><br><span class="line">关键字         日志文件     错误级别</span><br></pre></td></tr></table></figure>
+<p>打开Nginx主配置文件nginx.conf，可以发现里面有如下一段代码：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a06368322db78b51.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>同样error_log是错误日志关键字，不能修改；file是日志存放文件路径，可以是任意路径；level是错误级别，错误级别按照严重性从小到大依次为：debug–&gt;info–&gt;notice–&gt;warn–&gt;error–&gt;crit–&gt;alert–&gt;emerg等8个级别，注意级别越高意味着记录的信息越少。一般情况下会使用warn、error和crit这三个级别，默认级别是crit。合理使用日志级别，可以减少磁盘I/O的消耗和提升系统性能。</p>
+<h3 id="日志过滤"><a href="#日志过滤" class="headerlink" title="日志过滤"></a>日志过滤</h3><p>在实际工作中，并不是所有的日志信息都需要记录下来，如对于某些负载均衡健康节点的检查，或者是特定文件的访问记录。而且频繁的日志写入会消耗大量的I/O，降低服务器的性能，因此合理对日志文件的记录信息进行过滤也是优化Nginx的一种手段。</p>
+<p>我们以之前的think.com.conf为例进行介绍，在该文件中新增如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location ~.*\.(js|css|jpg|JPG|jpeg|JPEG|bmp|gif|GIF)$ &#123;</span><br><span class="line">  access_log off;  #日志过滤策略</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意代码的放置位置，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f56fd9823fcfa413.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>之后进行语法检查和平滑重启Nginx，对上述配置的策略进行测试，发现没问题。</p>
+<h3 id="日志权限设置"><a href="#日志权限设置" class="headerlink" title="日志权限设置"></a>日志权限设置</h3><p>由于日志文件的特殊性，因此需要给日志目录设置特殊权限，只有特定的人才能访问，如超级管理员root用户：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink logs]# chown -R root.root /usr/local/nginx/logs</span><br><span class="line">[root@envythink logs]# chmod 700 /usr/local/nginx/logs</span><br></pre></td></tr></table></figure>
+<p>上面第一行代码表示将logs目录的属主和属组设置为root用户；第二行代码表示只有root用户才能对logs目录进行访问和修改操作。</p>
+<h1 id="实时日志解析"><a href="#实时日志解析" class="headerlink" title="实时日志解析"></a>实时日志解析</h1><h3 id="ngxtop实时日志解析"><a href="#ngxtop实时日志解析" class="headerlink" title="ngxtop实时日志解析"></a>ngxtop实时日志解析</h3><p>开发者可以使用ngxtop来实时解析Nginx日志，并将处理结果输出到终端，其功能非常类似于Centos系统命令top。</p>
+<p>第一步，安装ngxtop软件。这里比较推荐用户直接使用源码进行安装，相应的步骤如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">yum install python3 -y</span><br><span class="line">wget https://github.com/lebinh/ngxtop/archive/master.zip -O ngxtop-master.zip</span><br><span class="line">unzip ngxtop-master.zip</span><br><span class="line">cd ngxtop-master</span><br><span class="line">python3 setup.py install</span><br></pre></td></tr></table></figure>
+<p>第二步，配置Nginx主配置文件。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/07/28/nginx-9-log-file/">http://envyzhan.asia/2020/07/28/nginx-9-log-file/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/nginx/">nginx</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/07/30/nginx-10-security-optimization/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Nginx安全优化</div></div></a></div><div class="next-post pull-right"><a href="/2020/07/25/nginx-8-nginx-solves-cross-domain-problems/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Nginx解决跨域问题</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/07/30/nginx-10-security-optimization/" title="Nginx安全优化"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-30</div><div class="title">Nginx安全优化</div></div></a></div><div><a href="/2020/08/01/nginx-11-security-chain-and-crawler-and-virtual-directory/" title="Nginx防盗链、爬虫和虚拟目录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-01</div><div class="title">Nginx防盗链、爬虫和虚拟目录</div></div></a></div><div><a href="/2020/08/05/nginx-12-file-access-control-and-structure-optimization-and-mobile-adaptation/" title="Nginx文件访问控制、结构优化和适配移动端"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="title">Nginx文件访问控制、结构优化和适配移动端</div></div></a></div><div><a href="/2020/08/08/nginx-13-nginx-running-state-and-nginx-web-ui/" title="Nginx运行状态和NginxWebUI"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-08</div><div class="title">Nginx运行状态和NginxWebUI</div></div></a></div><div><a href="/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/" title="SSL配置、泛域名和静态服务"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-10</div><div class="title">SSL配置、泛域名和静态服务</div></div></a></div><div><a href="/2020/07/12/nginx-2-nginx-installation-and-function-module-introduction/" title="Nginx安装和功能模块介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-12</div><div class="title">Nginx安装和功能模块介绍</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%97%A5%E5%BF%97-access-log"><span class="toc-number">2.</span> <span class="toc-text">访问日志(access.log)</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%A0%BC%E5%BC%8F"><span class="toc-number">2.0.1.</span> <span class="toc-text">日志格式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E8%BD%AE%E8%AF%A2%E5%88%87%E5%89%B2"><span class="toc-number">2.0.2.</span> <span class="toc-text">日志轮询切割</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%94%99%E8%AF%AF%E6%97%A5%E5%BF%97-error-log"><span class="toc-number">2.0.3.</span> <span class="toc-text">错误日志(error.log)</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E8%BF%87%E6%BB%A4"><span class="toc-number">2.0.4.</span> <span class="toc-text">日志过滤</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%97%A5%E5%BF%97%E6%9D%83%E9%99%90%E8%AE%BE%E7%BD%AE"><span class="toc-number">2.0.5.</span> <span class="toc-text">日志权限设置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E8%A7%A3%E6%9E%90"><span class="toc-number">3.</span> <span class="toc-text">实时日志解析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ngxtop%E5%AE%9E%E6%97%B6%E6%97%A5%E5%BF%97%E8%A7%A3%E6%9E%90"><span class="toc-number">3.0.1.</span> <span class="toc-text">ngxtop实时日志解析</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,345 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Nginx主配置文件 | 余思博客</title><meta name="keywords" content="nginx"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面考虑到Nginx主配置文件的重要性和日常使用的高频率，这里专门拿出一篇文章来深入学习nginx.conf主配置文件，灵活配置nginx.conf主配置文件是学好Nginx的关键所在。 Nginx配置文件在nginx目录下有一个conf目录，里面存放的都是与Nginx配置相关的文件，一般来说我们修改的都是名为nginx.conf的主配置文件。该配置文件由若干个部分组成，每个大括号&amp;#123;">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx主配置文件">
+<meta property="og:url" content="http://envyzhan.asia/2020/07/14/nginx-3-nginx-master-profile/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面考虑到Nginx主配置文件的重要性和日常使用的高频率，这里专门拿出一篇文章来深入学习nginx.conf主配置文件，灵活配置nginx.conf主配置文件是学好Nginx的关键所在。 Nginx配置文件在nginx目录下有一个conf目录，里面存放的都是与Nginx配置相关的文件，一般来说我们修改的都是名为nginx.conf的主配置文件。该配置文件由若干个部分组成，每个大括号&amp;#123;">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-07-14T10:13:01.000Z">
+<meta property="article:modified_time" content="2021-03-01T10:30:46.450Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/07/14/nginx-3-nginx-master-profile/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nginx主配置文件',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 18:30:46'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Nginx主配置文件</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-07-14T10:13:01.000Z" title="发表于 2020-07-14 18:13:01">2020-07-14</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T10:30:46.450Z" title="更新于 2021-03-01 18:30:46">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/nginx/">nginx</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nginx主配置文件"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>考虑到Nginx主配置文件的重要性和日常使用的高频率，这里专门拿出一篇文章来深入学习nginx.conf主配置文件，灵活配置nginx.conf主配置文件是学好Nginx的关键所在。</p>
+<h1 id="Nginx配置文件"><a href="#Nginx配置文件" class="headerlink" title="Nginx配置文件"></a>Nginx配置文件</h1><p>在nginx目录下有一个conf目录，里面存放的都是与Nginx配置相关的文件，一般来说我们修改的都是名为nginx.conf的主配置文件。该配置文件由若干个部分组成，每个大括号<code>&#123;&#125;</code>表示一个部分，每行指令都由分号结束<code>;</code>，用于表示一行的结束。<br>去除nginx.conf主配置文件中的注释代码，完整的内容如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br></pre></td><td class="code"><pre><span class="line">worker_processes  1;</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    default_type  application/octet-stream;</span><br><span class="line"></span><br><span class="line">    sendfile        on;</span><br><span class="line"></span><br><span class="line">    keepalive_timeout  65;</span><br><span class="line"></span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line"></span><br><span class="line">        location / &#123;</span><br><span class="line">            root   html;</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        error_page   500 502 503 504  /50x.html;</span><br><span class="line">        location = /50x.html &#123;</span><br><span class="line">            root   html;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>使用类似于tree的命令来生成该配置文件内容的树形图，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">main        # 全局配置，对全局生效</span><br><span class="line">├── events  # 配置影响Nginx服务器或与用户的网络连接（项工作模式设置）</span><br><span class="line">├── http    # 配置代理，缓存，日志定义等绝大多数功能和第三方模块的配置（http设置）</span><br><span class="line">│   ├── upstream # 配置后端服务器具体地址，需要使用负载均衡时必须配置（负载均衡设置）</span><br><span class="line">│   ├── server   # 配置虚拟主机的相关参数，一个http块中可以有多个server块（主机设置）</span><br><span class="line">│   ├── server</span><br><span class="line">│   │   ├── location  # server块可以包含多个location块，location指令用于匹配uri（URL设置）</span><br><span class="line">│   │   ├── location</span><br><span class="line">│   │   └── ...</span><br><span class="line">│   └── ...</span><br><span class="line">└── ...</span><br></pre></td></tr></table></figure>
+<p>先从整体层面来学习这个Nginx配置文件，通常的配置语法规则如下：<br>（1）配置文件由指令和指令块构成；<br>（2）每条指令以<code>;</code>分号结尾，指令与参数间以空格符号分隔；<br>（3）指令块与<code>&#123;&#125;</code>大括号将多余条指令组织在一起；<br>（4）include语句允许组合多个配置文件以提升可维护性；<br>（5）使用<code>#</code>符号添加注释，提高可读性；<br>（6）使用<code>$</code>符号使用变量；<br>（7）部分指令的参数支持正则表达式。</p>
+<h3 id="常用正则介绍"><a href="#常用正则介绍" class="headerlink" title="常用正则介绍"></a>常用正则介绍</h3><p>从上面的介绍中可以看到，server块中可以包含多个location块，location指令用于匹配uri，语法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">location [ = | ^~ | ~ | ~* ] uri &#123;</span><br><span class="line">	...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单解释一下上述代码的含义：location是指令；<code>[ = | ^~ | ~ | ~* ]</code>是匹配的标识符；uri是匹配的网站地址；<code>&#123;...&#125;</code>是匹配URI后要执行的配置段。</p>
+<p>这里对指令后面匹配的标识符进行介绍，如下：<br>（1）<code>=</code>精确匹配路径，用于不包含正则表达式的uri前，如果匹配成功，那么就不再进行后续的查找；<br>（2）<code>^~</code>用于不包含正则表达式的uri前，表示如果该符号后面的字符是最佳匹配，则采用该规则，不再进行后续的查找。</p>
+<hr>
+<p>（3）<code>~</code>表示用该符号后面的正则去匹配路径，<strong>区分大小写</strong>；<br>（4）<code>~*</code>表示用该符号后面的正则去匹配路径，<strong>不区分大小写</strong>；<br>（5）<code>/</code>是通用匹配，任何请求都会匹配到。</p>
+<p>也就是说如果uri中不包含正则表达式，则可以使用前面两个；如果包含则必须使用后面两个。</p>
+<p>当然常用的正则如下表所示：<br>正则|说明|<br>-|:-:|<br><code>.</code>|匹配除换行符以外的任意字符|<br><code>?</code>|匹配0次或者1次|<br><code>+</code>|匹配1次或者多次|<br><code>*</code>|匹配0次或者多次|<br><code>\d</code>|匹配数字，即0-9|<br><code>\D</code>|匹配非数字，即不是数字|<br><code>^</code>|匹配字符串的开始|<br><code>$</code>|匹配字符串的结束|<br><code>&#123;n&#125;</code>|重复n次|<br><code>&#123;n,&#125;</code>|重复n次或多次|<br><code>[c]</code>|匹配单个字符c|<br><code>[a-z]</code>|匹配a-z小写字母中的任意一个|</p>
+<p>由于location后面的标识符非常重要，后续会专门出一篇文章来研究它的用法。</p>
+<h3 id="全局变量"><a href="#全局变量" class="headerlink" title="全局变量"></a>全局变量</h3><p>当然除了可以使用正则表达式外，还可以使用一些常用的全局变量，开发者可以在配置的任意位置使用它们：</p>
+<table>
+<thead>
+<tr>
+<th>全局变量名</th>
+<th align="center">功能介绍</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$host</code></td>
+<td align="center">请求信息中的Host，如果请求中没有Host行，则等于设置的服务器名，注意不包括端口</td>
+</tr>
+<tr>
+<td><code>$request_method</code></td>
+<td align="center">客户端请求类型，如 GET、POST</td>
+</tr>
+<tr>
+<td><code>$args</code></td>
+<td align="center">请求中的参数</td>
+</tr>
+<tr>
+<td><code>$arg_PARAMETER</code></td>
+<td align="center">GET 请求中变量名PARAMETER参数的值，如$http_user_agent就表示User-Agent 的值</td>
+</tr>
+<tr>
+<td><code>$content_length</code></td>
+<td align="center">请求头中的Content-length字段的值</td>
+</tr>
+<tr>
+<td><code>$content_type</code></td>
+<td align="center">请求头中的Content-Type字段的值</td>
+</tr>
+<tr>
+<td><code>$http_user_agent</code></td>
+<td align="center">客户端agent信息</td>
+</tr>
+<tr>
+<td><code>$http_cookie</code></td>
+<td align="center">客户端cookie信息</td>
+</tr>
+<tr>
+<td><code>$remote_addr</code></td>
+<td align="center">客户端的IP地址</td>
+</tr>
+<tr>
+<td><code>$remote_port</code></td>
+<td align="center">客户端的端口</td>
+</tr>
+<tr>
+<td><code>$remote_user</code></td>
+<td align="center">已经经过Auth Basic Module验证过的用户名</td>
+</tr>
+<tr>
+<td><code>$server_protocol</code></td>
+<td align="center">请求使用的协议，如 HTTP/1.0、HTTP/1.1</td>
+</tr>
+<tr>
+<td><code>$server_addr</code></td>
+<td align="center">服务器地址</td>
+</tr>
+<tr>
+<td><code>$server_name</code></td>
+<td align="center">服务器名称</td>
+</tr>
+<tr>
+<td><code>$server_port</code></td>
+<td align="center">服务器的端口号</td>
+</tr>
+<tr>
+<td><code>$scheme</code></td>
+<td align="center">HTTP 方法（如http，https）</td>
+</tr>
+<tr>
+<td><code>$uri</code></td>
+<td align="center">不带请求参数的当前URI，注意<code>$uri</code>中不包含主机名，如/envy/index.html</td>
+</tr>
+<tr>
+<td><code>$document_uri</code></td>
+<td align="center">功能与<code>$uri</code>类似</td>
+</tr>
+<tr>
+<td><code>$document_root</code></td>
+<td align="center">当前请求在root指令中指定的值</td>
+</tr>
+<tr>
+<td><code>$request_uri</code></td>
+<td align="center">包含请求参数的原始URI，注意也不包含主机名，如/envy/search.html?name=envy</td>
+</tr>
+<tr>
+<td><code>$request_filename</code></td>
+<td align="center">当前请求的文件路径，由root或者alias指令与URI请求生成</td>
+</tr>
+<tr>
+<td><code>$limit_rate</code></td>
+<td align="center">用于限制连接速率</td>
+</tr>
+</tbody></table>
+<p>举个例子，如请求<code>http://127.0.0.1:8080/envy/think/hello.html</code>，那么其中的部分信息如下：<br>全局变量名|内容|<br>-|:-:|<br><code>$host</code>|127.0.0.1|<br><code>$server_port</code>|8080|<br><code>$request_uri</code>|/envy/think/hello.html|<br><code>$document_uri</code>|/envy/think/hello.html|<br><code>$document_root</code>|/var/www/html|<br><code>$request_filename</code>|/var/www/html/envy/think/hello.html|</p>
+<h3 id="预定义变量"><a href="#预定义变量" class="headerlink" title="预定义变量"></a>预定义变量</h3><p>除了全局变量，Nginx还提供了很多预定义的变量，开发者也可以通过set来设置变量，下面是一些常用的预定义变量，可以看到这些和全局变量其实差不多：</p>
+<table>
+<thead>
+<tr>
+<th>预变量名</th>
+<th align="center">所表示的值</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>$args_name</code></td>
+<td align="center">请求中name参数的值</td>
+</tr>
+<tr>
+<td><code>$args</code></td>
+<td align="center">所有请求参数</td>
+</tr>
+<tr>
+<td><code>$query_string</code></td>
+<td align="center"><code>$args</code>的别名</td>
+</tr>
+<tr>
+<td><code>$content_length</code></td>
+<td align="center">请求头Content-Length的值</td>
+</tr>
+<tr>
+<td><code>$content_type</code></td>
+<td align="center">请求头Content-Type的值</td>
+</tr>
+<tr>
+<td><code>$host</code></td>
+<td align="center">如果当前有Host，那么为请求头Host的值；如果没有，那么该值等于匹配该请求的server_name的值</td>
+</tr>
+<tr>
+<td><code>$remote_addr</code></td>
+<td align="center">客户端的IP地址</td>
+</tr>
+<tr>
+<td><code>$request</code></td>
+<td align="center">客户端发起的完整请求，包括HTTP请求方法、URI、HTTP协议、头和请求体</td>
+</tr>
+<tr>
+<td><code>$request_uri</code></td>
+<td align="center">客户端发起的完整请求的URI，注意包括参数</td>
+</tr>
+<tr>
+<td><code>$scheme</code></td>
+<td align="center">当前请求的协议</td>
+</tr>
+<tr>
+<td><code>$uri</code></td>
+<td align="center">当前请求的标准化URI</td>
+</tr>
+</tbody></table>
+<h3 id="main模块"><a href="#main模块" class="headerlink" title="main模块"></a>main模块</h3><p>全局设置填写Nginx的全局配置，在此区域填写的内容会被应用到Nginx的全局，如修改Nginx默认的用户名（默认为nobody）可以在配置文件的开头加上user nginx，这样Nginx运行的用户就变成了nginx。</p>
+<p>常用的全局配置项如下：<br>（1）<code>worker_processes</code>，表示Nginx开启的子进程数；<br>（2）<code>error_log</code>，表示定义全局错误日志文件，可选的值有debug、info、notice、warn、error、crit等；<br>（3）<code>pid</code>用于指定进程id的存储文件位置；<br>（4）<code>worker_rlimit_nofile</code>，用于指定Nginx进程最多可以打开的文件描述符数目。</p>
+<p>举个例子，如下所示的配置信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line"># 定义Nginx运行的用户和用户组</span><br><span class="line">user nginx nginx;</span><br><span class="line"></span><br><span class="line"># Nginx进程数，一般建议为CPU的总核心数，或者设置为auto</span><br><span class="line">worker_processes auto;</span><br><span class="line"></span><br><span class="line"># 定义全局错误日志类型</span><br><span class="line">error_log /var/log/nginx/error.log info;</span><br><span class="line"></span><br><span class="line"># 进程文件</span><br><span class="line">pid /var/run/nginx.pid;</span><br><span class="line"></span><br><span class="line"># 一个Nginx进程最多可以打开的文件描述符数目，建议与ulimit -n的值保持一致</span><br><span class="line">worker_rlimit_nofile 65536;</span><br></pre></td></tr></table></figure>
+<p>上面的例子只是为了示例，在实际使用工作中可以使用默认的配置，也就是不用作任何修改。</p>
+<h3 id="events模块"><a href="#events模块" class="headerlink" title="events模块"></a>events模块</h3><p>events模块用来指定Nginx的工作模式和单个进程的连接数上限。举个例子如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">events &#123;</span><br><span class="line">    # 参考事件模型，可选值有kqueue、rtsig、epoll、/dev/poll、select、poll</span><br><span class="line">    # epoll是linux2.6以上版本内核中的高性能网络I/O模型</span><br><span class="line">    # FreeBSD或者macOS可以使用kqueue模型</span><br><span class="line">    use epoll;</span><br><span class="line"></span><br><span class="line">    # 单个进程的最大连接数（默认是1024，最大连接数=连接数*进程数）</span><br><span class="line">    worker_connections  65535;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上述进程的最大连接数受Linux系统进程的最大打开文件数的限制，只有在执行操作系统命令<code>ulimit -n 65536</code>之后worker_connections的设置才会生效。</p>
+<h3 id="http模块"><a href="#http模块" class="headerlink" title="http模块"></a>http模块</h3><p>http部分是配置文件最核心的部分，它包括了绝大部分HTTP服务器相关属性的配置，如是否使用Keepalive，是否使用gzip进行压缩等，还包括server和upstream这些子模块，这些都是Nginx负载均衡的重要配置部分。</p>
+<p>举个例子，下面是较为完整的配置信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br></pre></td><td class="code"><pre><span class="line"># 配置http服务器</span><br><span class="line">http &#123;</span><br><span class="line">  # 文件扩展名与文件类型映射表</span><br><span class="line">  include mime.types;</span><br><span class="line">  # 默认文件类型</span><br><span class="line">  default_type application/octet-stream;</span><br><span class="line">  # 默认编码</span><br><span class="line">  charset utf-8;</span><br><span class="line">  # 服务器名字的hash表大小</span><br><span class="line">  server_names_hash_bucket_size 128;</span><br><span class="line">  # 缓冲区代理缓冲用户端请求的最大字节数</span><br><span class="line">  client_body_buffer_size 128k;</span><br><span class="line">  # 允许客户端请求的最大单文件字节数</span><br><span class="line">  client_max_body_size 10m;</span><br><span class="line">  # 开启高效文件传输模式，启用之后Nginx会调用sendfile函数来输出文件</span><br><span class="line">  # I/O负载较大的应用，建议设置为off，以平衡磁盘与网络I/O处理速度，减少系统的负载</span><br><span class="line">  sendfile on;</span><br><span class="line">  #开启目录列表访问（默认关闭）</span><br><span class="line">  autoindex on;</span><br><span class="line">  # 防止网络阻塞</span><br><span class="line">  tcp_nopush on;</span><br><span class="line">  tcp_nodelay on;</span><br><span class="line">  # 长连接超时的时间，单位为秒</span><br><span class="line">  keepalive_timeout 120;</span><br><span class="line">  </span><br><span class="line">  # gzip模块设置</span><br><span class="line">  # 开启gzip压缩输出</span><br><span class="line">  gzip on;</span><br><span class="line">  # 最小压缩文件的大小</span><br><span class="line">  gzip_min_length 1k;</span><br><span class="line">  # 压缩缓冲区</span><br><span class="line">  gzip_buffers 4 16k;</span><br><span class="line">  # 压缩版本</span><br><span class="line">  gzip_http_version 1.1;</span><br><span class="line">  # 压缩等级</span><br><span class="line">  gzip_comp_level 2;</span><br><span class="line">  # 压缩类型，默认已经包括text/html，因此下面的就可以不用写了</span><br><span class="line">  gzip_types text/plain application/x-javascript text/css application/xml;</span><br><span class="line">  # 下面的设置会在响应头上加个Vary：Accept-Encoding，可以让前端的缓存服务器经过gzip压缩的页面</span><br><span class="line">  gzip_vary on;</span><br><span class="line">  # 在开启限制IP连接数的时候需要使用下面的配置</span><br><span class="line">  limit_zone crawler $binary_remote_addr 10m;</span><br><span class="line"></span><br><span class="line">  upstream peoject_name &#123;</span><br><span class="line">    ......</span><br><span class="line">  &#125;</span><br><span class="line">  server &#123;</span><br><span class="line">    ......</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>http模块的设置非常庞杂，这里只是列举一小部分配置。</p>
+<h3 id="server模块"><a href="#server模块" class="headerlink" title="server模块"></a>server模块</h3><p>server模块是http的子模块，它可以定义一个虚拟主机，基本配置如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">  listen 2222;</span><br><span class="line">  server_name localhost 1.1.1.1 www.example.com;</span><br><span class="line">  root /nginx/www/path/;</span><br><span class="line">  index index.php index.html index.htm;</span><br><span class="line">  charset utf-8;</span><br><span class="line">  access_log usr/local/var/log/host.access.log main;</span><br><span class="line">  aerror_log usr/local/var/log/host.error.log error;</span><br><span class="line">  ......</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单解释一下上述配置信息内容：<br>（1）<code>server&#123;&#125;</code>表示虚拟主机配置范围；<br>（2）listen用于指定虚拟主机的服务端口；<br>（3）server_name用于指定IP地址或者域名，在多个域名之间用空格分开；<br>（4）root表示在server这个虚拟主机内Web服务的根目录；<br>（5）index用于定义默认的首页地址；<br>（6）charset用于设置网页的默认编码格式；<br>（7）access_log用于指定虚拟主机访问日志的存放路径，后面接上日志的输出格式。</p>
+<p>server模块的配置也很多，其中location模块也是server模块的子模块。</p>
+<h3 id="location模块"><a href="#location模块" class="headerlink" title="location模块"></a>location模块</h3><p>location模块是Nginx中可自定义程度最高的模块，它用于定位解析URL，通过使用正则匹配，用户可以通过location指令实现对网页的各种处理。</p>
+<p>举个例子，下面这个反向代理中的<code>location /</code>就是用于匹配根目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">location / &#123;</span><br><span class="line">  root /nginx/www/path;</span><br><span class="line">  index index.php index.html index.htm;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="upstream模块"><a href="#upstream模块" class="headerlink" title="upstream模块"></a>upstream模块</h3><p>upstream模块又称为负载均衡模块，下面通过一个简单的调度算法来认识这个模块：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">upstream example.com &#123;</span><br><span class="line">  fair;</span><br><span class="line">  server 192.168.73.1:80;</span><br><span class="line">  server 192.168.73.2:8080 down;</span><br><span class="line">  server 192.168.73.3:6666 max_fails=3 fail_timeout=20s max_conns=1000;</span><br><span class="line">  server 192.168.73.4:3333 backup;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，通过使用upstream指令定义了一个名为example.com的负载均衡器，此处的名称可以随意指定，不一定是一个域名。其中的fair是一种负载均衡调度算法，后面的server表示真实服务器群组，后接真实服务器的IP地址。</p>
+<p>请注意IP地址后面的down表示该server不参与负载均衡；backup表示预留的备份机器，只有当其他所有的非backup机器出现故障或者异常忙碌时，才会请求backup机器，所有这台机器的负载压力较小；max_fails表示允许请求失败的次数（默认为1次），当超过最大次数时返回proxy_next_upstream模块定义的错误。fail_timeout表示在经历max_fails次失败后暂停服务的时间。max_conns表示限制分配给后端服务器处理的最大连接数量，超过这个数量，将不会分配新的连接给它。</p>
+<p>请注意，upstream模块中还有一个resolve选项，它需要配合http模块来使用，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">http &#123;</span><br><span class="line">  resolver 192.168.73.100</span><br><span class="line">  upstream u &#123;</span><br><span class="line">    ......</span><br><span class="line">    server example.com resolve;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>在http模块下配置resolver命令，指定域名解析服务为example.com域名，并且由192.168.73.100服务器来负责解析。关于upstream模块的常见配置，可以点击 <a target="_blank" rel="noopener" href="https://nginx.org/en/docs/http/ngx_http_upstream_module.html">这里</a> 进行查阅。</p>
+<p>下面用一张图来对nginx.conf主配置文件的内容进行总结：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-49f2c7445ceaba4b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="完整配置文件示例"><a href="#完整配置文件示例" class="headerlink" title="完整配置文件示例"></a>完整配置文件示例</h3><p>下面是一个较为完整的配置文件示例，内容如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br></pre></td><td class="code"><pre><span class="line">user  nginx nginx;         # 运行用户和组，默认是nginx，可不进行设置</span><br><span class="line">worker_processes  1;      # Nginx 进程数，一般设置为CPU核数或者设置为auto</span><br><span class="line">error_log  /var/log/nginx/error.log warn;   # 定义全局Nginx错误日志存放目录及类型</span><br><span class="line">pid    /var/run/nginx.pid;      # Nginx服务启动时pid的存放位置</span><br><span class="line">worker_rlimit_nofile 65536;   # 一个Nginx进程最多可以打开的文件描述符数目，建议与ulimit -n的值保持一致</span><br><span class="line"></span><br><span class="line">events &#123;</span><br><span class="line">    use epoll;     # 使用epoll这一I/O模型</span><br><span class="line">    worker_connections 65535;    # 单个进程的最大连接数（默认是1024，最大连接数=连接数*进程数）</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">http &#123;   # 配置使用最频繁的部分，代理、缓存、日志定义等绝大多数功能和第三方模块的配置都在这里设置</span><br><span class="line">    # 设置日志模式</span><br><span class="line">    log_format  main  &#x27;$remote_addr - $remote_user [$time_local] &quot;$request&quot; &#x27;</span><br><span class="line">                      &#x27;$status $body_bytes_sent &quot;$http_referer&quot; &#x27;</span><br><span class="line">                      &#x27;&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;&#x27;;</span><br><span class="line"></span><br><span class="line">    access_log  /var/log/nginx/access.log  main;   # Nginx访问日志存放位置</span><br><span class="line"></span><br><span class="line">    sendfile            on;   # 开启高效传输模式</span><br><span class="line">    tcp_nopush          on;   # 减少网络报文段的数量</span><br><span class="line">    tcp_nodelay         on;</span><br><span class="line">    keepalive_timeout   65;   # 保持连接的时间，也称超时时间，单位秒</span><br><span class="line">    types_hash_max_size 2048;</span><br><span class="line"></span><br><span class="line">    include             /etc/nginx/mime.types;      # 文件扩展名与类型映射表</span><br><span class="line">    default_type        application/octet-stream;   # 默认文件类型</span><br><span class="line"></span><br><span class="line">    include /etc/nginx/conf.d/*.conf;   # 加载子配置项</span><br><span class="line">    </span><br><span class="line">    server &#123;</span><br><span class="line">    	listen       80;       # 配置监听的端口</span><br><span class="line">    	server_name  localhost;    # 配置的域名</span><br><span class="line">    	</span><br><span class="line">    	location / &#123;</span><br><span class="line">    		root   /usr/share/nginx/html;  # 网站根目录</span><br><span class="line">    		index  index.html index.htm;   # 默认首页文件</span><br><span class="line">    		deny 192.168.73.10;   # 禁止访问的ip地址，可以为all</span><br><span class="line">    		allow 192.168.73.18；# 允许访问的ip地址，可以为all</span><br><span class="line">    	&#125;</span><br><span class="line">    	</span><br><span class="line">    	error_page 500 502 503 504 /50x.html;  # 默认50x对应的访问页面</span><br><span class="line">    	error_page 400 404 error.html;   # 默认40x对应的访问页面</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>也就是说整个Nginx的核心配置文件的框架为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">worker_processes  1;</span><br><span class="line">events &#123;</span><br><span class="line">    worker_connections  1024;</span><br><span class="line">&#125;</span><br><span class="line">http &#123;</span><br><span class="line">    include       mime.types;</span><br><span class="line">    server &#123;</span><br><span class="line">        listen       80;</span><br><span class="line">        server_name  localhost;</span><br><span class="line">        location / &#123;</span><br><span class="line">            root   html;</span><br><span class="line">            index  index.html index.htm;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样关于Nginx安装和配置文件的介绍就先学习到这。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/07/14/nginx-3-nginx-master-profile/">http://envyzhan.asia/2020/07/14/nginx-3-nginx-master-profile/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/nginx/">nginx</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/07/16/nginx-4-nginx-virtual-host/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Nginx虚拟主机</div></div></a></div><div class="next-post pull-right"><a href="/2020/07/12/nginx-2-nginx-installation-and-function-module-introduction/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Nginx安装和功能模块介绍</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/07/30/nginx-10-security-optimization/" title="Nginx安全优化"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-30</div><div class="title">Nginx安全优化</div></div></a></div><div><a href="/2020/08/01/nginx-11-security-chain-and-crawler-and-virtual-directory/" title="Nginx防盗链、爬虫和虚拟目录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-01</div><div class="title">Nginx防盗链、爬虫和虚拟目录</div></div></a></div><div><a href="/2020/08/05/nginx-12-file-access-control-and-structure-optimization-and-mobile-adaptation/" title="Nginx文件访问控制、结构优化和适配移动端"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="title">Nginx文件访问控制、结构优化和适配移动端</div></div></a></div><div><a href="/2020/08/08/nginx-13-nginx-running-state-and-nginx-web-ui/" title="Nginx运行状态和NginxWebUI"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-08</div><div class="title">Nginx运行状态和NginxWebUI</div></div></a></div><div><a href="/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/" title="SSL配置、泛域名和静态服务"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-10</div><div class="title">SSL配置、泛域名和静态服务</div></div></a></div><div><a href="/2020/07/12/nginx-2-nginx-installation-and-function-module-introduction/" title="Nginx安装和功能模块介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-12</div><div class="title">Nginx安装和功能模块介绍</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Nginx%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6"><span class="toc-number">2.</span> <span class="toc-text">Nginx配置文件</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B8%B8%E7%94%A8%E6%AD%A3%E5%88%99%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.0.1.</span> <span class="toc-text">常用正则介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F"><span class="toc-number">2.0.2.</span> <span class="toc-text">全局变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A2%84%E5%AE%9A%E4%B9%89%E5%8F%98%E9%87%8F"><span class="toc-number">2.0.3.</span> <span class="toc-text">预定义变量</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.4.</span> <span class="toc-text">main模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#events%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.5.</span> <span class="toc-text">events模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#http%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.6.</span> <span class="toc-text">http模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#server%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.7.</span> <span class="toc-text">server模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#location%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.8.</span> <span class="toc-text">location模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#upstream%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.9.</span> <span class="toc-text">upstream模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AE%8C%E6%95%B4%E9%85%8D%E7%BD%AE%E6%96%87%E4%BB%B6%E7%A4%BA%E4%BE%8B"><span class="toc-number">2.0.10.</span> <span class="toc-text">完整配置文件示例</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,315 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Zuul路由详解 | 余思博客</title><meta name="keywords" content="springcloud"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在前面我们学习了Spring Cloud Zuul中的两类路由功能：传统路由方式和面向服务的路由方式的简单使用，接下来将进一步学习路由的相关知识。 传统路由配置所谓的传统路由配置其实就是不依赖于服务发现机制的情况，也就是直接在配置文件中来具体指定每个路由表达式与服务实例的映射关系，进而实现API网关对外部请求的路由。 既然不依赖服务治理框架提供的服务发现功能，那么在实际情况中需要根据服务实">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Zuul路由详解">
+<meta property="og:url" content="http://envyzhan.asia/2019/12/10/spring-cloud-zuul-3-routing-details/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在前面我们学习了Spring Cloud Zuul中的两类路由功能：传统路由方式和面向服务的路由方式的简单使用，接下来将进一步学习路由的相关知识。 传统路由配置所谓的传统路由配置其实就是不依赖于服务发现机制的情况，也就是直接在配置文件中来具体指定每个路由表达式与服务实例的映射关系，进而实现API网关对外部请求的路由。 既然不依赖服务治理框架提供的服务发现功能，那么在实际情况中需要根据服务实">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2019-12-10T11:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T09:58:13.493Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2019/12/10/spring-cloud-zuul-3-routing-details/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Zuul路由详解',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 17:58:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Zuul路由详解</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-12-10T11:23:04.000Z" title="发表于 2019-12-10 19:23:04">2019-12-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T09:58:13.493Z" title="更新于 2021-03-01 17:58:13">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Zuul路由详解"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h3><p>在前面我们学习了Spring Cloud Zuul中的两类路由功能：传统路由方式和面向服务的路由方式的简单使用，接下来将进一步学习路由的相关知识。</p>
+<h3 id="传统路由配置"><a href="#传统路由配置" class="headerlink" title="传统路由配置"></a>传统路由配置</h3><p>所谓的传统路由配置其实就是不依赖于服务发现机制的情况，也就是直接在配置文件中来具体指定每个路由表达式与服务实例的映射关系，进而实现API网关对外部请求的路由。</p>
+<p>既然不依赖服务治理框架提供的服务发现功能，那么在实际情况中需要根据服务实例的数量来采取不同的配置方式，进而实现路由规则。</p>
+<h5 id="单实例配置"><a href="#单实例配置" class="headerlink" title="单实例配置"></a>单实例配置</h5><p>对于单实例的配置，我们可以通过<code>zuul.routes.&lt;route&gt;.path</code>和<code>zuul.routes.&lt;route&gt;.url</code>参数对的方式来进行配置，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes: </span><br><span class="line">    user-service:</span><br><span class="line">      path: /user-service/**</span><br><span class="line">      url: http://localhost:8080/</span><br></pre></td></tr></table></figure>
+<p>通过上面的配置，只要是符合<code>/user-service/**</code>规则的请求路径，都会被转发到<code>http://localhost:8080/</code>地址。举个例子，假设当一个请求<code>http://localhost:3005/user-service/hello</code>被发送到API网关上，由于<code>/user-service/hello</code>能够被上述配置的path规则匹配，所以API网关会将请求转发到<code>http://localhost:8080/hello</code>地址上。</p>
+<h5 id="多实例配置"><a href="#多实例配置" class="headerlink" title="多实例配置"></a>多实例配置</h5><p>对于多实例配置，则可以使用<code>zuul.routes.&lt;route&gt;.path</code>和<code>zuul.routes.&lt;route&gt;.serviceId</code>参数对的方式来进行配置，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    user-service:</span><br><span class="line">      path: /user-service/**</span><br><span class="line">      serviceId: user-service</span><br><span class="line">ribbon:</span><br><span class="line">  eureka:</span><br><span class="line">    enabled: false</span><br><span class="line">user-service:</span><br><span class="line">  ribbon:</span><br><span class="line">    listOfServers: http://localhost:8080/,http://localhost:8081/</span><br></pre></td></tr></table></figure>
+<p>同样该配置实现了对符合<code>/user-service/**</code>规则的请求路径，都会被转发到<code>http://localhost:8080/</code>和<code>http://localhost:8081/</code>这两个实例地址的路由规则。</p>
+<p>可以发现它的配置方式与服务路由的配置方式一样，都采用了<code>zuul.routes.&lt;route&gt;.path</code>和<code>zuul.routes.&lt;route&gt;.serviceId</code>参数对的映射方式，只是这里的serviceId是用户手动设置的服务名称，需要配合<code>ribbon.listOfServers</code>参数来实现服务与实例的维护。</p>
+<p>同时由于这里存在多个实例，那么API网关在进行路由转发的时候需要实现负载均衡策略，因此还需要借助于Spring Cloud Ribbon的支持。但是在前面我们也说过，Spring Cloud Zuul中自带了对Ribbon的依赖，因此只需配置上述示例参数即可，上述关于Ribbon的各个配置的作用简单介绍如下：<br>（1）<code>ribbon.eureka.enabled=false</code>参数。由于我们在<code>zuul.routes.&lt;route&gt;.serviceId</code>中设置的是服务名称，而默认情况下Ribbon会根据服务发现机制来获取配置服务名对应的实例清单。但是上面的例子中，并没有整合Eureka之类的服务治理框架，所以该配置其实是无法生效的，故将该参数设置为false。如果不这么做的话，那么前面配置的serviceId是获取不到对应实例的清单。<br>（2）<code>user-service.ribbon.listOfServers</code>参数。请注意该参数内容必须与<code>zuul.routes.&lt;route&gt;.serviceId</code>的配置相对应，开头的user-service对应serviceId的值，这两个参数的配置相当于在该应用内部手工维护了服务与实例的对应关系。</p>
+<p>其实通过上面的学习，开发者很容易发现无论是单实例还是多实例的配置方式，都需要为每一对映射关系指定一个名称，也就是前面配置中的<route>，每一个<route>对应一条路由规则。每条路由规则都需要通过path属性来定义一个用来匹配客户端请求的路径表达式，并通过url或者serviceId属性来指定请求表达式映射具体实例地址或服务名。</p>
+<h3 id="面向服务的路由配置"><a href="#面向服务的路由配置" class="headerlink" title="面向服务的路由配置"></a>面向服务的路由配置</h3><p>之所以学习传统的路由配置方式，是为了预防服务注册中心挂掉，还需要政策提供服务的情况发生。但是在正常情况下，我们优先选择使用接下来即将学习的面向服务的路由配置。</p>
+<p>在前面的入门例子中，我们知道Spring Cloud Zuul通过整合Spring Cloud Eureka，实现了对服务实例的发现与注册，即自动化维护，因此在进行服务路由配置的时候，不需要像传统方式那些来给serviceId指定具体的服务实例地址。不过依然还是通过<code>zuul.routes.&lt;route&gt;.path</code>和<code>zuul.routes.&lt;route&gt;.serviceId</code>参数对的方式来进行配置，其中<route>可以是任意的路由名称。</p>
+<p>举个例子，假设我们要实现对符合<code>/user-service/**</code>规则的请求路径都转发到名为user-service的服务实例上的路由规则，可以如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    user-service:</span><br><span class="line">      path: /user-service/**</span><br><span class="line">      serviceId: user-service</span><br></pre></td></tr></table></figure>
+<p>这种方式和前面传统路由配置中，存在多实例的情况的配置是一样的。需要说明的是面向服务的路由配置除了使用path和serviceId映射的配置方式外，还有一种非常简单的方式，即<code>zuul.routes.&lt;serviceId&gt;=&lt;path&gt;</code>，其中<serviceId>用来指定路由的具体服务名，<path>用来配置匹配的请求表达式。下面的配置其实就等同于前面使用path和serviceId组合所产生的效果：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    user-service: /user-service/**</span><br></pre></td></tr></table></figure>
+<p>传统路由的映射方式比较直观且容易理解，API网关直接根据请求的URL路径找到最匹配的path表达式，直接转发给该表达式对应的url或者对应serviceId下配置的实例地址，以实现外部请求的路由：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-10832019acbbd656.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<hr>
+<p>那么问题来了，当采用path与serviceId组合，且使用在面向服务的路由配置方式实现时，在没有配置任何实例地址的情况下，外部请求经过API网关的时候，它是如何被解析并转发到服务具体实例的呢？</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f6810de3b96bc8ad.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在前面我们就介绍过Zuul整合Eureka来实现面向服务的路由，实际上我们可以直接将API网关也看做Eureka服务治理体系下的一个普通微服务应用。这样它除了将自己注册到Eureka服务注册中心上之外，还会从服务注册中心获取所有服务以及它们的实例清单。因此借助于Eureka服务治理体系，API网关服务本身就已经维护了系统中所有serviceId与实例地址的映射关系。当有外部请求到达API网关的时候，根据请求的URL路径找到最佳匹配的path规则，API网关就可以知道要将该请求路由到哪个具体的serviceId上去。由于在API网关中已经知道serviceId对应服务实例的地址清单，那么只需要通过Ribbon的负载均衡策略，直接在这些清单中选择一个具体的实例进行转发就能完成路由工作了。</p>
+<h3 id="服务路由的默认规则"><a href="#服务路由的默认规则" class="headerlink" title="服务路由的默认规则"></a>服务路由的默认规则</h3><p>通过Eureka和Zuul的整合，我们只需维护“服务名”和“请求路径匹配表达式”之间的映射关系，但是在实际开发过程中发现大部分的路由规则几乎都会采用服务名来作为外部请求的前缀。举个例子来说，假设配置如下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    user-service:</span><br><span class="line">      path: /user-service/**</span><br><span class="line">      serviceId: user-service</span><br></pre></td></tr></table></figure>
+<p>是不是很尴尬，path路径的前缀使用了user-service，而serviceId（对应的服务名称）也是user-service。</p>
+<p>可以发现这是一个非常有规律性的配置内容，因此希望可以自动完成，是的，当我们为Spring Cloud Zuul构建的API网关服务引入Spring Cloud Eureka之后，它就会为Eureka中的每一个服务都自动创建一个默认的路由规则，这些默认规则的path会使用serviceId配置的服务名作为请求前缀，就像上面例子所介绍的那样。</p>
+<p>也就是说默认情况下所有的Eureka上的服务都会被Zuul自动地创建映射关系来进行路由，这会使得一些我们并不希望对外开放的服务也可能被外部访问的到。此时Zuul提供了另一个配置参数<code>zuul.ignored-services</code>来设置一个服务匹配表达式，该表达式会定义不自动创建路由的规则，即Zuul在自动创建服务路由的时候会根据该表达式来进行判断，如果服务名匹配该表达式，则Zuul会跳过该服务，不为其创建路由规则。自然，当设置为<code>zuul.ignored-services=*</code>的时候，Zuul将对所有的服务都不会自动创建路由规则，即关闭了自动创建默认路由功能。但是通常我们是不会这么干的，正常都是这样：先设置对所有服务都不自动创建默认路由，然后在配置文件中逐个为需要路由的服务添加映射规则，当然钱这里添加规则有两种方式：（1）使用path和serviceId组合的配置方式；（2）使用<code>zuul.routes.&lt;serviceId&gt;=&lt;path&gt;</code>的配置方式。只有在配置文件中出现的映射规则会被创建路由，而从Eureka中获取其他的服务，Zuul将不会再为它们创建路由规则。</p>
+<h3 id="自定义路由映射规则"><a href="#自定义路由映射规则" class="headerlink" title="自定义路由映射规则"></a>自定义路由映射规则</h3><p>前面介绍了服务路由的默认规则，在正常情况下它是无法满足我们需求的，因此还需要学习如何自定义路由映射规则。</p>
+<p>通常我们在进行微服务系统业务逻辑开发的时候，为了兼容外部不同版本的客户端程序（尽量不去强迫用户去升级客户端），一般都会采用开闭原则来进行设计与开发。这使得系统在迭代过程中，有时候会需要我们为一组互相配合的微服务定义一个版本标识来方便管理它们的版本信息，根据这个标识我们可以很容易的知道这些服务需要一起启动并配合使用。一般我们会采用下面类似的命名:userservice-v1、userservice-v2、userservice-v3等方式，而Zuul默认情况下自动会采用服务名作为前缀来创建路由表达式，如针对前面所列举的userservice-v1、userservice-v2、userservice-v3则创建的路由表达式为/userservice-v1、/userservice-v2和/userservice-v3，但是这样生成出来的表达式规则较为单一，不利于通过路径规则来进行管理。</p>
+<p>对于上面那种情况，我们通俗的做法是为这些不同版本的微服务应用生成以版本代号作为路由前缀定义的路由规则，比如/v1/userservice/。此时通过这样具有版本号前缀的URL路径，我们就可以很容易的通过路径表达式来归类和管理这些具有版本信息的微服务。</p>
+<p>也就是说如果我们的各个微服务应用都遵循了类似于userservice-v1的命名规则（即通过<code>-</code>分隔的规范来定义服务名和服务版本标识），这样我们就可以使用Zuul中自定义服务与路由映射关系的功能，来为符合上述规则的微服务自动化的创建类似于<code>/v1/userservice/**</code>的路由匹配规则。那么问题来了，如何实现上述功能呢，其实非常简单，只需在API网关程序的入口类中添加创建PatternServiceRouteMapper对象的方法，如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public PatternServiceRouteMapper serviceRouteMapper()&#123;</span><br><span class="line">    return new PatternServiceRouteMapper(</span><br><span class="line">            &quot;(?&lt;name&gt;^.+)-(?&lt;version&gt;v.+$)&quot;,</span><br><span class="line">            &quot;$&#123;version&#125;/$&#123;name&#125;&quot;</span><br><span class="line">    );</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>PatternServiceRouteMapper对象可以让开发者通过正则表达式来自定义服务与路由映射的生成关系。其中构造函数中有两个参数，第一个是用于匹配服务名称是否符合该自定义规则的正则表达式，第二个参数则是定义根据服务名中定义的内容转换出的路径表达式规则。</p>
+<p>当开发者在API网关中定义了PatternServiceRouteMapper之后，那么只要符合第一个参数定义规则的服务名，都会优先使用该实现构建出的路径表达式；没有匹配上的服务则依旧使用默认的路由映射规则，也就是采用完整服务名作为前缀的路径表达式。</p>
+<h3 id="路径匹配"><a href="#路径匹配" class="headerlink" title="路径匹配"></a>路径匹配</h3><p>通过上面的学习，我们知道无论是采用传统的路由配置方式还是服务路由的配置方式，都需要为每个路由规则定义相匹配的表达式，也就是前面多次提到的path参数。在Zuul中，路由匹配的路径表达式使用了Ant风格定义。Ant风格定义路径表达式使用起来非常简单，一共存在三种通配符：<code>？</code>、<code>*</code>和<code>**</code>。接下来学习三种通配符的具体用法，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">通配符</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">?</td>
+<td align="center">匹配任意单个字符</td>
+</tr>
+<tr>
+<td align="center">*</td>
+<td align="center">匹配任意数量的字符</td>
+</tr>
+<tr>
+<td align="center">**</td>
+<td align="center">匹配任意数量的字符，支持多级目录</td>
+</tr>
+<tr>
+<td align="center">为了更好的理解上述表格的含义，这里通过一个例子来加深印象：</td>
+<td align="center"></td>
+</tr>
+</tbody></table>
+<table>
+<thead>
+<tr>
+<th align="center">URL路径</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center"><code>/hello-service/?</code></td>
+<td align="center">它可以匹配<code>/hello-service/</code>之后拼接一个任意字符的路径，如<code>/hello-service/a</code>、<code>/hello-service/b</code>或者<code>/hello-service/c</code>等</td>
+</tr>
+<tr>
+<td align="center"><code>/hello-service/*</code></td>
+<td align="center">它可以匹配<code>/hello-service/</code>之后拼接任意字符的路径，如<code>/hello-service/a</code>、<code>/hello-service/aa</code>或者<code>/hello-service/bbb</code>等，但是它无法匹配诸如<code>/hello-service/a/b</code>等路径</td>
+</tr>
+<tr>
+<td align="center"><code>/hello-service/**</code></td>
+<td align="center">它不仅可以匹配<code>/hello-service/*</code>包含的内容之外，还可以匹配诸如<code>/hello-service/a/b</code>之类的多级目录路径</td>
+</tr>
+</tbody></table>
+<p>注意当我们使用通配符的时候，经常会碰到这样的情况：一个URL路径可能会被多个不同路由的表达式匹配上。举个例子，假设一开始系统建设初期实现了hello-service服务，并配置了如下的路由规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    hello-service:</span><br><span class="line">      path: /hello-service/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>但是后期随着版本的迭代，我们对hello-service服务进行了一些功能拆分，将原来属于hello-service服务的某些功能拆分到了另外一个全新的服务hello-service-one中，而这些拆分的外部调用URL路径希望能够符合规则<code>/hello-service/one/**</code>,此时我们就需要在配置文件中增加一个路由规则，完整的配置如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    hello-service-one:</span><br><span class="line">      path: /hello-service/one/**</span><br><span class="line">      serviceId: hello-service-one</span><br><span class="line">    hello-service:</span><br><span class="line">      path: /hello-service/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>此时假设用户调用hello-service-one服务的URL路径时，实际上同时会被<code>/user-service/**</code>和<code>/user-service/one/**</code>这两个表达式所匹配。而我们肯定是希望API网关服务能优先选择后者，即<code>/user-service/one/**</code>路由，然后再匹配<code>/user-service/**</code>路由才能实现上述需求。如果开发者使用的是property格式的配置文件则是无法保证上述路由顺序，而使用YAML格式的配置文件则是可以的，因此这里有必要了解路由匹配算法。</p>
+<p>打开SimpleRouteLocator类，可以看到里面有一个getZuulRoute方法，查看一下该方法的源码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">protected ZuulRoute getZuulRoute(String adjustedPath) &#123;</span><br><span class="line">    if (!this.matchesIgnoredPatterns(adjustedPath)) &#123;</span><br><span class="line">        Iterator var2 = this.getRoutesMap().entrySet().iterator();</span><br><span class="line"></span><br><span class="line">        while(var2.hasNext()) &#123;</span><br><span class="line">            Entry&lt;String, ZuulRoute&gt; entry = (Entry)var2.next();</span><br><span class="line">            String pattern = (String)entry.getKey();</span><br><span class="line">            log.debug(&quot;Matching pattern:&quot; + pattern);</span><br><span class="line">            if (this.pathMatcher.match(pattern, adjustedPath)) &#123;</span><br><span class="line">                return (ZuulRoute)entry.getValue();</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line">    return null;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从上面的路由匹配算法中可以知道，它通过线性遍历的方式来使用路由规则匹配请求路径，然后在请求路径获取到第一个匹配的路由规则后就返回并结束匹配过程。因此当存在多个匹配的路由规则时，匹配结果完全取决于路由规则的书写顺序。</p>
+<p>接下来查看一下其中的路由加载方法locateRoutes的源码，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">protected Map&lt;String, ZuulRoute&gt; locateRoutes() &#123;</span><br><span class="line">    LinkedHashMap&lt;String, ZuulRoute&gt; routesMap = new LinkedHashMap();</span><br><span class="line">    Iterator var2 = this.properties.getRoutes().values().iterator();</span><br><span class="line"></span><br><span class="line">    while(var2.hasNext()) &#123;</span><br><span class="line">        ZuulRoute route = (ZuulRoute)var2.next();</span><br><span class="line">        routesMap.put(route.getPath(), route);</span><br><span class="line">    &#125;</span><br><span class="line">    return routesMap;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面就是基础的路由规则加载算法，我们可以看到这些路由规则是通过LinkedHashMap来保存的，也就是说路由规则的保存是有一定顺序的。其内容的加载则是通过遍历配置文件中的路由规则来依次加入的，而保存顺序则是遍历顺序，所以配置文件中路由规则的书写顺序非常重要。而property格式的配置文件无法保证内容的顺序，而使用YAML格式的配置文件则是可以的，因此如果想实现有序的路由规则，建议选择使用YAML格式的配置文件。</p>
+<p>此时application.yml配置文件中的信息为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    hello-service-one:</span><br><span class="line">      path: /hello-service/one/**</span><br><span class="line">      serviceId: hello-service-one</span><br><span class="line">    hello-service:</span><br><span class="line">      path: /hello-service/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>这样就实现了上述需求。</p>
+<h3 id="忽略表达式"><a href="#忽略表达式" class="headerlink" title="忽略表达式"></a>忽略表达式</h3><p>尽管通过path参数定义的Ant风格的表达式已经能完成API网关上的路由规则配置功能，但是当我们不希望某个URL表达式被API网关路由的时候，此时应该如何操作呢？Zuul在设计的时候出于细粒度和灵活配置的考虑，提供了一个忽略表达式参数<code>zuul.ignored-patterns</code>来设置忽略URL表达式，使之不会被API网关路由。</p>
+<p>举个例子，假设我们不希望任何包含hello目录的链接被路由，如<code>/hello-service/hello</code>、<code>/hello-service/a/hello</code>/<code>/hello-service/hello/v1</code>等，此时可以在配置文件中添加如下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  ignored-patterns: /**/hello/**</span><br></pre></td></tr></table></figure>
+<p>为了更好的演示这个效果，可以修改上述application.yml配置文件信息为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  ignored-patterns: /**/hello/**</span><br><span class="line">  routes:</span><br><span class="line">    hello-service:</span><br><span class="line">      path: /hello-service/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>然后启动服务注册中心(项目名称为eureka-server)、服务提供者(项目名称为eureka-client，服务名称为hello-service)，以及这里的api-gateway项目。首先在浏览器中访问<code>http://localhost:8081/hello</code>，可以看到这是服务提供者的接口，此时信息为：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b5b8a9e47da21e65.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接着尝试通过网关来访问hello-service服务的/hello接口，即在浏览器中访问<code>http://localhost:3005/hello-service/hello</code>地址，尽管该访问路径完全符合path参数定义的<code>/hello-service/**</code>规则，但是由于该路由又符合<code>zuul.ignored-patterns</code>参数设置的规则，所以该路径不会被正确路由，用户在控制台中还能看到如下提示没有匹配路由的输出信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">o.s.c.n.z.f.pre.PreDecorationFilter  : No route found for uri: /hello-service/hello</span><br></pre></td></tr></table></figure>
+<p>然后修改上述配置文件，将其中的<code>zuul.ignored-patterns</code>参数给注释掉，然后重启api-gateway项目，在浏览器中访问<code>http://localhost:3005/hello-service/hello</code>链接，可以看到结果如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-09f1cd495493cd63.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这就说明之前所配置的忽略表达式确实生效了。<strong>需要说明的是，该参数在使用时要注意它的范围不是针对某个路由，而是对所有的路由都生效，因此在设置的时候需要全面考虑URL规则，防止忽略一些不该被忽略的URL路径。</strong></p>
+<h3 id="路由前缀"><a href="#路由前缀" class="headerlink" title="路由前缀"></a>路由前缀</h3><p>现在又有一个需求，就是我想为网关上的路由规则都增加<code>/api</code>前缀，那么这个需求该如何实现呢？为了方便全局地为路由规则增加前缀信息，Zuul提供了<code>zuul.prefix</code>参数。对于前面的需求，只需在配置文件中增加<code>zuul.prefix=/api</code>即可。</p>
+<p>另外，对于代理前缀会默认从路径中移除这一问题，开发者可以通过设置<code>zuul.stripPrefix=false</code>参数来关闭该移除代理前缀的动作。当然了，如果开发者只是想对指定路由移除代理前缀的动作，那么可以使用<code>zuul.routes.&lt;route&gt;.strip-prefix=true</code>参数来进行设置。</p>
+<p>请注意在使用<code>zuul.prefix</code>参数的时候，需要谨慎使用或者避开一些引发Bug的配置规则，那么哪些规则会引发Bug，注意笔者使用SpringCloud版本为<code>Hoxton.SR7</code>。</p>
+<p>在application.yml配置文件中添加如下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    api-a:</span><br><span class="line">      path: /api/a/**</span><br><span class="line">      serviceId: hello-service</span><br><span class="line">    api-b:</span><br><span class="line">      path: /api-b/**</span><br><span class="line">      serviceId: hello-service</span><br><span class="line">    api-c:</span><br><span class="line">      path: /cccc/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>可以看到我们配置了三个路由关系：<code>/api/a/**</code>、<code>/api-b/**</code>和<code>/cccc/**</code>，这三个路径规则都会被路由到hello-service服务上去，即开发者在浏览器地址栏中访问<code>http://localhost:3005/api/a/hello</code>、<code>http://localhost:3005/api-b/hello</code>和<code>http://localhost:3005/cccc/hello</code>这三个链接时，其实就相当于访问<code>http://localhost:8081/hello</code>这个链接。</p>
+<p>但是当我们在上述配置中添加了<code>zuul.prefix=/api</code>这一参数后，那么再次访问三个链接可以得到如下的结果：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-aeff2988e5d9b122.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b03dad7539567c02.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d7b1c2a97a588500.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来将之前的api-b中的配置由<code>/api-b/**</code>，修改为<code>/api-b/api/**</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  prefix: /api</span><br><span class="line">  routes:</span><br><span class="line">    api-b:</span><br><span class="line">      path: /api-b/api/**</span><br><span class="line">      serviceId: hello-service</span><br></pre></td></tr></table></figure>
+<p>然后重启项目，再次访问<code>http://localhost:3005/api/api-b/api/hello</code>，可以看到输出结果为：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6497d362a4394f11.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再次将之前的api-b中的配置由<code>/api-b/api/**</code>，修改为<code>/api-b/api/api/**</code>，然后重启项目，再次访问<code>http://localhost:3005/api/api-b/api/api/hello</code>，可以看到输出结果为：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9af7a794bec91775.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>通过上面的验证，这就说明开头包含两级api的链接是无法访问的，其实就是路由不到正确的服务接口，只有开头不包含两级api的链接才可以使用，但是三级、四级这种由于用的较少，因此笔者就不验证了。</p>
+<h3 id="本地跳转"><a href="#本地跳转" class="headerlink" title="本地跳转"></a>本地跳转</h3><p>在Zuul实现的API网关路由功能中，还支持forward形式的服务端跳转配置。这种服务端跳转配置非常容易实现，只需通过使用path与url的配置方式即可完成url中使用forward来指定需要跳转的服务器资源路径。</p>
+<p>举个例子，看下面一段applicatiom.yml配置文件中的配置信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    api-a:</span><br><span class="line">      path: /api-a/**</span><br><span class="line">      url: http://localhost:8001/</span><br><span class="line">    api-b:</span><br><span class="line">      path: /api-b/**</span><br><span class="line">      url: forward:/local</span><br></pre></td></tr></table></figure>
+<p>解释一下上述配置信息的含义：它其实是配置实现了两个路由规则，其中api-a路由实现了将符合<code>/api-a/**</code>规则的请求转发到<code>http://localhost:8001</code>这一地址上；而api-b路由则实现了将符合<code>/api-b/**</code>规则的请求转发到以<code>/local</code>为前缀的请求上，由API网关进行本地处理。</p>
+<p>举个例子，假设当API网关接收到请求<code>/api-b/hello</code>时，它符合api-b的路由规则，所以该请求会被API网关转发到网关的<code>/local/hello</code>请求上进行本地处理。既然要在API网关上实现本地跳转，所以我们也需要为本地跳转实现对应的请求接口，即在API网关上增加一个<code>/local/hello</code>的接口，才能让api-b路由规则生效。在api-gateway项目目录下新建一个controller包，并在里面新建一个HelloController类，其中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">public class HelloController &#123;</span><br><span class="line">    @GetMapping(&quot;/local/hello&quot;)</span><br><span class="line">    public String hello()&#123;</span><br><span class="line">        return &quot;this is local hello.&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果不提供一个<code>/local/hello</code>接口，那么Zuul在进行forward转发的时候会因为找不到该请求而返回404错误。</p>
+<h3 id="Cookie与头信息"><a href="#Cookie与头信息" class="headerlink" title="Cookie与头信息"></a>Cookie与头信息</h3><p>默认情况下，Spring Cloud Zuul在请求路由时会过滤掉HTTP请求头中的一些敏感信息，防止它们被传递到下游的外部服务器。默认的敏感头信息是通过<code>zuul.sensitive-headers</code>参数来定义的，查看该配置信息，可以看到它是一个Set类型：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">private Set&lt;String&gt; sensitiveHeaders = new LinkedHashSet(Arrays.asList(&quot;Cookie&quot;, &quot;Set-Cookie&quot;, &quot;Authorization&quot;));</span><br></pre></td></tr></table></figure>
+<p>且从源码可以看出它默认的属性包括Cookie、Set-Cookie和Authorization等。所以当我们在开发Web应用时常用的Cookie，它在Spring Cloud Zuul网关中默认是不会传递的，这就会引发一个常见的问题：如果我们要将使用了Spring Security、Shiro等安全框架构建的Web应用通过Spring Cloud Zuul构建的网关来进行路由时，由于Cookie信息无法传递，那么我们的Web应用将无法实现登录和鉴权功能。</p>
+<p>那么如何解决这个问题呢？解决办法很多，这里推荐几种方法：（1）通过设置全局参数为空来覆盖默认值。这种方法较为粗暴，但也是比较容易想到的。配置文件中的信息设置如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  sensitive-headers:</span><br></pre></td></tr></table></figure>
+<p>但是个人并不推荐大家使用这种方式，尽管它可以实现Cookie的传递，但是破坏了默认设置的用意。在微服务架构的API网关中，对于无状态的RESTful API请求肯定是要远多于这些Web类应用请求的，甚至还有一些架构设计会将Web类应用和App客户端都一样都归为API网关之外的客户端应用。</p>
+<p>因此第二种方法（2）就是通过指定路由的参数来配置，存在两种配置方法：（a）对指定路由开启自定义敏感头：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    &lt;router&gt;:</span><br><span class="line">      customSensitiveHeaders: true</span><br></pre></td></tr></table></figure>
+<p>(b)将指定路由的敏感头设置为空：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  routes:</span><br><span class="line">    &lt;router&gt;:</span><br><span class="line">      sensitiveHeaders: </span><br></pre></td></tr></table></figure>
+<p>个人比较推荐使用第二种方法中的两种方式，它们仅仅针对指定的Web应用开启对敏感信息的传递，影响范围较小，不至于引起其他服务的信息泄露问题。</p>
+<h5 id="重定向问题"><a href="#重定向问题" class="headerlink" title="重定向问题"></a>重定向问题</h5><p>在解决了Cookie问题后，我们已经可以通过网关来访问并登录到Web应用，但是这时候又会出现另一个问题：虽然可以通过网关访问登录页面并发起登陆请求，但是登录成功后，我们跳转到的页面URL却是具体Web应用实例的地址，而不是通过网关的路由地址。这个问题非常严重，因为使用API网关的一个重要原因就是要将网关作为统一入口，从而不暴露所有的内部服务细节。那么究竟是什么原因导致这一问题的发生呢？</p>
+<p>通过浏览器开发工具查看登录以及登录之后的请求详情，可以发现引起问题的大致原因是：由于Spring Security或Shiro在登录完成后，通过重定向的方式跳转到登录后的页面，此时登录后的请求结果状态码为302，请求响应头信息中的Location指向了具体的服务实例地址，而请求头信息中的Host也指向了具体的服务实例IP地址和端口。所以，该问题的根本原因在于Spring Cloud Zuul在路由请求时，并没有将最初的Host信息设置正确。解决问题的办法就是在配置文件中添加如下参数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  add-host-header: true</span><br></pre></td></tr></table></figure>
+<p>这样就使得网关在进行路由转发前为请求设置Host头信息，以标识最初的服务端请求地址。</p>
+<h3 id="Hystrix和Ribbon支持"><a href="#Hystrix和Ribbon支持" class="headerlink" title="Hystrix和Ribbon支持"></a>Hystrix和Ribbon支持</h3><p>在前面我们说过<code>spring-cloud-starter-netflix-zuul</code>依赖本身就包含了对<code>spring-cloud-starter-netflix-hystrix</code>和<code>spring-cloud-starter-netflix-ribbon</code>模块的依赖，所以Zuul本身就拥有线程隔离和断路器的自我保护功能，以及对服务调用的客户端负载均衡功能。</p>
+<p>需要注意的是，当使用path和url的映射关系来配置路由规则的时候，对于路由转发的请求不会采用HystrixCommand来包装，所以这类路由请求没有线程隔离和断路器的保护，并且也不会有负载均衡的能力。因此，我们在使用Zuul的时候，尽量使用path和serviceId的组合来进行配置，这样不仅可以保证API网关的健壮和稳定，也能使用到Ribbon的客户端负载均衡功能。</p>
+<p>我们在使用Zuul搭建API网关的时候，可以通过Hystrix和Ribbon的参数来调整路由请求的各种超时时间等配置，如下面这些参数的设置：<br>（1）用于设置API网关中路由转发请求的HystrixCommand执行超时时间，单位为毫秒：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">hystrix:</span><br><span class="line">  command:</span><br><span class="line">    default:</span><br><span class="line">      execution:</span><br><span class="line">        isolation:</span><br><span class="line">          thread:</span><br><span class="line">            timeoutInMilliseconds: 5000</span><br></pre></td></tr></table></figure>
+<p>当路由转发请求的命令执行时间超过该配置值以后，Hystrix会将该执行命令标记为TIMEOUT并抛出异常，Zuul会对该异常进行处理，并返回如下JSON信息给外部调用方：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;timestamp&quot;: 1481090975323,</span><br><span class="line">    &quot;status&quot;: 500,</span><br><span class="line">    &quot;error&quot;: &quot;Internal Server Error&quot;,</span><br><span class="line">    &quot;exception&quot;: &quot;com.netflix.zuul.exception.ZuulException&quot;,</span><br><span class="line">    &quot;message&quot;: &quot;TIMEOUT&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（2）用于设置路由转发请求的时候，创建请求连接的超时时间，单位为毫秒：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ribbon:</span><br><span class="line">  ConnectTimeout: 1000</span><br></pre></td></tr></table></figure>
+<hr>
+<p>请注意当<code>ribbon.ConnectTimeout</code>参数设置的值<strong>小于</strong><code>hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds</code>配置的值的时候，若出现路由请求连接超时的情况时，它会自动进行重试路由请求，如果重试依然失败，则Zuul会返回如下JSON信息给外部调用方：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">    &quot;timestamp&quot;: 1481090975689,</span><br><span class="line">    &quot;status&quot;: 500,</span><br><span class="line">    &quot;error&quot;: &quot;Internal Server Error&quot;,</span><br><span class="line">    &quot;exception&quot;: &quot;com.netflix.zuul.exception.ZuulException&quot;,</span><br><span class="line">    &quot;message&quot;: &quot;NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED&quot;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<hr>
+<p>如果<code>ribbon.ConnectTimeout</code>参数设置的值<strong>大于</strong><code>hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds</code>配置的值的时候，若出现路由请求连接超时的情况时，由于此时对于路由转发的请求命令已经超时，所以不会进行重试路由请求，而是直接按请求命令超时处理，返回TIMEOUT的错误信息。<br>（3）用于设置路由转发请求的超时时间，单位为毫秒：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ribbon:</span><br><span class="line">  ReadTimeout: 1000</span><br></pre></td></tr></table></figure>
+<p>它的处理与<code>ribbon.ConnectTimeout</code>类似，只是它的超时是对请求连接建立之后的处理时间。</p>
+<hr>
+<p>如果<code>ribbon.ReadTimeout</code>参数设置的值<strong>小于</strong><code>hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds</code>配置的值的时候，若路由请求的处理时间超过该配置值且依赖服务的请求还未响应的时候，会自动进行重试路由请求。如果重试后依然没有获得请求响应，Zuul会返回<code>NUMBEROF_RETRIES_NEXTSERVER_EXCEEDED</code>错误。</p>
+<hr>
+<p>如果<code>ribbon.ReadTimeout</code>参数设置的值<strong>大于</strong><code>hystrix.command.default.execution.isolation.thread.timeoutInMilliseconds</code>配置的值的时候，若路由请求的处理时间超过该配置值且依赖服务的请求还未响应的时候，不会进行重试路由请求，而是直接按请求命令超时处理，返回TIMEOUT的错误信息。</p>
+<p>通过上面的学习我们知道，在使用Zuul的服务路由时，如果路由转发请求发生超时（连接超时或者处理超时），只要超时时间的设置小于Hystrix的命令超时时间，那么它就会自动发起重试。</p>
+<p>但是在有些情况下，我们可能需要关闭该重试机制，那么此时则可以通过下面的两个参数来进行设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">zuul:</span><br><span class="line">  retryable: false</span><br><span class="line"></span><br><span class="line">  routes: </span><br><span class="line">    &lt;route&gt;:</span><br><span class="line">      retryable: false</span><br></pre></td></tr></table></figure>
+<p>请注意其中的<code>zuul.retryable=false</code>参数用来全局关闭重试机制，而<code>zuul.routes.&lt;route&gt;.retryable=false</code>则是指定路由关闭重试机制。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2019/12/10/spring-cloud-zuul-3-routing-details/">http://envyzhan.asia/2019/12/10/spring-cloud-zuul-3-routing-details/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud/">springcloud</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/12/12/spring-cloud-config-1-basic-use/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Config基础使用</div></div></a></div><div class="next-post pull-right"><a href="/2019/12/08/spring-cloud-zuul-2-request-routing/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Zuul请求路由</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2019/12/22/spring-cloud-bus-2-integrating-rabbitmq/" title="Bus整合RabbitMQ"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-22</div><div class="title">Bus整合RabbitMQ</div></div></a></div><div><a href="/2019/12/12/spring-cloud-config-1-basic-use/" title="Config基础使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-12</div><div class="title">Config基础使用</div></div></a></div><div><a href="/2019/12/14/spring-cloud-config-2-detailed-explanation-of-server/" title="Config服务端详解"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-14</div><div class="title">Config服务端详解</div></div></a></div><div><a href="/2019/12/16/spring-cloud-config-3-health-monitoring/" title="Config健康监测"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-16</div><div class="title">Config健康监测</div></div></a></div><div><a href="/2019/11/01/spring-cloud-eureka-1-introdution/" title="Spring Cloud Eureka介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-01</div><div class="title">Spring Cloud Eureka介绍</div></div></a></div><div><a href="/2019/11/03/spring-cloud-eureka-2-service-register-center/" title="搭建Eureka服务注册中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-03</div><div class="title">搭建Eureka服务注册中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%A0%E7%BB%9F%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE"><span class="toc-number">2.</span> <span class="toc-text">传统路由配置</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8D%95%E5%AE%9E%E4%BE%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">2.0.1.</span> <span class="toc-text">单实例配置</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%9A%E5%AE%9E%E4%BE%8B%E9%85%8D%E7%BD%AE"><span class="toc-number">2.0.2.</span> <span class="toc-text">多实例配置</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E6%9C%8D%E5%8A%A1%E7%9A%84%E8%B7%AF%E7%94%B1%E9%85%8D%E7%BD%AE"><span class="toc-number">3.</span> <span class="toc-text">面向服务的路由配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E8%B7%AF%E7%94%B1%E7%9A%84%E9%BB%98%E8%AE%A4%E8%A7%84%E5%88%99"><span class="toc-number">4.</span> <span class="toc-text">服务路由的默认规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E8%B7%AF%E7%94%B1%E6%98%A0%E5%B0%84%E8%A7%84%E5%88%99"><span class="toc-number">5.</span> <span class="toc-text">自定义路由映射规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E5%BE%84%E5%8C%B9%E9%85%8D"><span class="toc-number">6.</span> <span class="toc-text">路径匹配</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BF%BD%E7%95%A5%E8%A1%A8%E8%BE%BE%E5%BC%8F"><span class="toc-number">7.</span> <span class="toc-text">忽略表达式</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B7%AF%E7%94%B1%E5%89%8D%E7%BC%80"><span class="toc-number">8.</span> <span class="toc-text">路由前缀</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E8%B7%B3%E8%BD%AC"><span class="toc-number">9.</span> <span class="toc-text">本地跳转</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Cookie%E4%B8%8E%E5%A4%B4%E4%BF%A1%E6%81%AF"><span class="toc-number">10.</span> <span class="toc-text">Cookie与头信息</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%87%8D%E5%AE%9A%E5%90%91%E9%97%AE%E9%A2%98"><span class="toc-number">10.0.1.</span> <span class="toc-text">重定向问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Hystrix%E5%92%8CRibbon%E6%94%AF%E6%8C%81"><span class="toc-number">11.</span> <span class="toc-text">Hystrix和Ribbon支持</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

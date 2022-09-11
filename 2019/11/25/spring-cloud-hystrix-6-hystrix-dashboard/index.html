@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Hystrix仪表盘 | 余思博客</title><meta name="keywords" content="springcloud"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Hystrix仪表盘在断路器原理介绍那篇文章中，我们学习了许多关于请求命令的度量指标的判断。这些度量指标都是HystrixCommand和HystrixObservableCommand实例在执行过程中记录的重要信息，它们除了在Hystrix断路器中使用之外，对于系统运维也是有极大的帮助。 这些指标信息会以“滚动时间窗”与“桶”结合的方式进行汇总，并在内存中驻留一段时间，以供内部或外部进行查询使用">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Hystrix仪表盘">
+<meta property="og:url" content="http://envyzhan.asia/2019/11/25/spring-cloud-hystrix-6-hystrix-dashboard/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="Hystrix仪表盘在断路器原理介绍那篇文章中，我们学习了许多关于请求命令的度量指标的判断。这些度量指标都是HystrixCommand和HystrixObservableCommand实例在执行过程中记录的重要信息，它们除了在Hystrix断路器中使用之外，对于系统运维也是有极大的帮助。 这些指标信息会以“滚动时间窗”与“桶”结合的方式进行汇总，并在内存中驻留一段时间，以供内部或外部进行查询使用">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2019-11-25T11:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T09:50:10.607Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2019/11/25/spring-cloud-hystrix-6-hystrix-dashboard/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Hystrix仪表盘',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 17:50:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Hystrix仪表盘</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-11-25T11:23:04.000Z" title="发表于 2019-11-25 19:23:04">2019-11-25</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T09:50:10.607Z" title="更新于 2021-03-01 17:50:10">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Hystrix仪表盘"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Hystrix仪表盘"><a href="#Hystrix仪表盘" class="headerlink" title="Hystrix仪表盘"></a>Hystrix仪表盘</h1><p>在断路器原理介绍那篇文章中，我们学习了许多关于请求命令的度量指标的判断。这些度量指标都是HystrixCommand和HystrixObservableCommand实例在执行过程中记录的重要信息，它们除了在Hystrix断路器中使用之外，对于系统运维也是有极大的帮助。</p>
+<p>这些指标信息会以“滚动时间窗”与“桶”结合的方式进行汇总，并在内存中驻留一段时间，以供内部或外部进行查询使用，Hystrix仪表盘可以显示这些指标信息，通过可视化的显示，可以让我们更加清楚知道系统的健康状况。Spring Cloud不仅整合了Hystrix，还整合了Hystrix的仪表盘组件Hystrix Dashboard，它主要用于实时监控Hystrix的各项指标信息。通过Hystrix Dashboard反馈的实时信息，可以帮助我们快递发现系统中存在的问题，从而及时地采取应对措施。</p>
+<h1 id="Hystrix仪表盘实例演示"><a href="#Hystrix仪表盘实例演示" class="headerlink" title="Hystrix仪表盘实例演示"></a>Hystrix仪表盘实例演示</h1><p>学习使用Hystrix仪表盘对于开发和运维显得非常重要，因此本篇将从链各个方面来学习Hystrix仪表盘的使用，一是监控单体应用，二是整合Turbine实现对集群的监控。</p>
+<h3 id="Hystrix仪表盘监控单体应用"><a href="#Hystrix仪表盘监控单体应用" class="headerlink" title="Hystrix仪表盘监控单体应用"></a>Hystrix仪表盘监控单体应用</h3><p>接下来将通过目前现有的例子，来构建一个Hystrix Dashboard，用于对ribbon-consumer项目（即服务消费者）实施监控，该例子的架构图如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-3d29e50fe3337a2a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h5 id="监控环境搭建"><a href="#监控环境搭建" class="headerlink" title="监控环境搭建"></a>监控环境搭建</h5><p>首先明确Hystrix仪表盘无论是监控单体应用，还是整合Turbine监控集群，都需要一个Hystrix Dashboard。为了更加清楚的学习Hystrix仪表盘监控，这里就不在之前创建的待监控单体应用上引入Hystrix Dashboard依赖，使之具备仪表盘的功能，而是单独建立一个新的工程专门用于提供Hystrix Dashboard服务，这也非常符合微服务的思想。</p>
+<p>第一步，新建一个普通的SpringBoot工程，名称为hystrix-dashboard，注意使用默认的依赖。</p>
+<p>第二步，添加项目依赖。Spring Boot工程创建完成后，修改pom.xml文件，添加如下依赖：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br></pre></td><td class="code"><pre><span class="line">&lt;properties&gt;</span><br><span class="line">    &lt;java.version&gt;1.8&lt;/java.version&gt;</span><br><span class="line">    &lt;spring-cloud.version&gt;Hoxton.SR7&lt;/spring-cloud.version&gt;</span><br><span class="line">&lt;/properties&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;com.netflix.hystrix&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;hystrix-javanica&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix-dashboard&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependencyManagement&gt;</span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;$&#123;spring-cloud.version&#125;&lt;/version&gt;</span><br><span class="line">            &lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">            &lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/dependencyManagement&gt;</span><br></pre></td></tr></table></figure>
+<p>第三步，在入口类上添加启动注解。接下来在项目的入口类上添加<code>@EnableHystrixDashboard</code>注解，用于开启仪表盘功能，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@SpringBootApplication</span><br><span class="line">@EnableHystrixDashboard</span><br><span class="line">public class HystrixDashboardApplication &#123;</span><br><span class="line">    public static void main(String[] args) &#123;</span><br><span class="line">        SpringApplication.run(HystrixDashboardApplication.class, args);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>第四步，设置一些属性。打开application.yml配置文件，在里面按照自己的要求来设置一些信息，如端口号、应用名称等：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: hystrix-dashboard</span><br><span class="line">server:</span><br><span class="line">  port: 2001</span><br></pre></td></tr></table></figure>
+<p>这样我们就完成了基本的配置，接下来就可以启动该应用，来进行访问。在浏览器地址栏中输入<code>http://localhost:2001/hystrix</code>，结果如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d4949a9a8c95f64d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上面就是Hystrix Dashboard的监控首页，可以看到该页面中没有具体的监控信息，且从页面的文字内容可以知道Hystrix Dashboard支持三种不同的监控方式，分别如下所示：</p>
+<ul>
+<li><p><strong>默认的集群监控</strong>：可以通过如下URL：<code>https://turbine-hostname:port/turbine.stream</code>来开启，实现对默认集群的监控。</p>
+</li>
+<li><p><strong>指定的集群监控</strong>：可以通过如下URL：<code>https://turbine-hostname:port/turbine.stream?cluster=[clusterName]</code>来开启，实现对clusterName集群的监控。</p>
+</li>
+<li><p><strong>单体应用的监控</strong>：可以通过如下URL：<code>https://hystrix-app:port/actuator/hystrix.stream</code>来开启，实现对具体某个服务实例的监控。</p>
+</li>
+</ul>
+<p>由于前面两个监控方式是针对集群的，需要整合Turbine才能实现，因此这一部分的内容将在文章后半部分进行介绍，这里主要实现对单个服务实例的监控。</p>
+<p>同时发现该页面还有两个填空和一个按钮，其中一个填空<strong>Delay</strong>表示控制服务器上轮询监控信息的延迟时间，默认为2000毫秒，可以通过配置该属性来降低客户端的网络和CPU消耗；另一个填空<strong>Title</strong>表示展示时使用的标题，默认使用的是具体监控实例的URL，可以通过配置该信息来展示更合适的标题；而之后一个按钮Monitor Stream则表示监控流。</p>
+<p>通过前面的分析可知，Hystrix Dashboard监控单实例节点需要通过访问<code>https://hystrix-app:port/actuator/hystrix.stream</code>链接，即实例的<code>/hystrix.stream</code>接口来实现，因此我们需要为服务实例添加这个端点，而添加该功能只需要两步就能完成：添加actuator和Hystrix依赖以及开启断路器。</p>
+<p>这里选择以之前的服务消费者（即RIBBON-CONSUMER服务）为例，来演示Hystrix Dashboard的单体应用监控功能。</p>
+<p>第一步，在RIBBON-CONSUMER服务（服务消费者）的pom.xml配置文件中添加断路器依赖，以及actuator模块，相应的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">    ......</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-cloud-starter-netflix-hystrix&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;com.netflix.hystrix&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;hystrix-javanica&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter-actuator&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">    ......</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+<p>第二步，在RIBBON-CONSUMER服务（服务消费者）的项目入口类上添加<code>@EnableCircuitBreaker</code>注解，用于开启断路器功能。</p>
+<p>第三步，注意这一步是Spring Boot2.X版本需要添加的，需要暴露端点和配置访问的上下文。在RIBBON-CONSUMER服务（服务消费者）的application.yml配置文件中添加如下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">##用来暴露endpoints的，由于endpoints中会包含很多敏感信息，</span><br><span class="line">##除了health和info两个支持直接访问外，其他的默认不能直接访问，</span><br><span class="line">##所以我们让他们都能访问(*)，或者指定springboot的监控端点访问权限，</span><br><span class="line">##*表示所有的端点都允许访问，如果只写hystrix.stream，他会把默认的info,health端点关闭</span><br><span class="line">management:</span><br><span class="line">  endpoints:</span><br><span class="line">    web:</span><br><span class="line">      exposure:</span><br><span class="line">        include: [&quot;info&quot;,&quot;health&quot;,&quot;hystrix.stream&quot;]</span><br><span class="line">      ## 修改默认的监控端点地址，添加上下文路径actuator，注意默认也是actuator</span><br><span class="line">      base-path: &quot;/actuator&quot;</span><br></pre></td></tr></table></figure>
+<p>第四步，重新启动RIBBON-CONSUMER服务（服务消费者），可以看到在控制台输出大量的监控端点信息，而<code>/actuator/hystrix.stream</code>就是用于Hystrix Dashboard来展示监控信息的接口，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-902db12f03ab1e28.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>**特别注意，当运行项目后，不能立即在浏览器窗口中访问<code>/actuator/hystrix.stream</code>接口，此时会出现一连串的Ping……**，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-eff264d4f2bd9053.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>而是需要先访问RIBBON-CONSUMER服务（即服务消费者）中任意一个带有熔断器的接口，然后再去访问它，此时的页面如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5f3bce05766b20a8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以知道返回结果是一段JSON数据，而这些数据就是监控信息，但是这么看起来不方便也不直观，因此可以借助于Hystrix仪表盘来查看该JSON信息，只需在Hystrix仪表盘(地址为<code>http://localhost:2001/hystrix</code>)中输入监控地址(地址为<code>http://localhost:9000/actuator/hystrix.stream</code>)，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-70f55a72b0d22582.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>之后点击Monitor Stream按钮，发现页面变成如下所示的界面：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6f73e157c0ccbd98.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>且hystrix-dashboard项目（Hystrix仪表盘）控制台输出以下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">WARN 19888 --- [nio-2001-exec-3] ashboardConfiguration$ProxyStreamServlet : Origin parameter: http://localhost:9000/actuator/hystrix.stream is not in the allowed list of proxy host names.  If it should be allowed add it to hystrix.dashboard.proxyStreamAllowList</span><br></pre></td></tr></table></figure>
+<p>针对出现的情况，笔者这里提供一种解决办法，操作如下：</p>
+<p><strong>第一步，配置监控模块。</strong>在hystrix-dashboard项目（Hystrix仪表盘）的application.yml配置文件中新增如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">hystrix:</span><br><span class="line">  dashboard:</span><br><span class="line">    proxy-stream-allow-list: &quot;*&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>第二步，配置被监控模块。</strong>在ribbon-consumer项目（服务消费者）的入口类中定义一个Bean，相应的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Bean</span><br><span class="line">public ServletRegistrationBean getServlet()&#123;</span><br><span class="line">    HystrixMetricsStreamServlet hystrixMetricsStreamServlet = new HystrixMetricsStreamServlet();</span><br><span class="line">    ServletRegistrationBean servletRegistrationBean = new ServletRegistrationBean(hystrixMetricsStreamServlet);</span><br><span class="line"></span><br><span class="line">    servletRegistrationBean.setLoadOnStartup(1);</span><br><span class="line">    servletRegistrationBean.setUrlMappings(Arrays.asList(&quot;/actuator/hystrix.stream&quot;));</span><br><span class="line">    servletRegistrationBean.setName(&quot;HystrixMetricsStreamServlet&quot;);</span><br><span class="line">    return servletRegistrationBean;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>完成这两步以后，在Hystrix仪表盘(地址为<code>http://localhost:2001/hystrix</code>)中输入监控地址(地址为<code>http://localhost:9000/actuator/hystrix.stream</code>)，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-1e06b0daeceec555.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>之后点击Monitor Stream按钮，发现页面变成如下所示的界面：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ed72f6d288fb9bf4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="参数介绍"><a href="#参数介绍" class="headerlink" title="参数介绍"></a>参数介绍</h3><p>监控图已经有了，但是监控图中各种元素代表的含义目前尚不得知，所以接下来尝试学习该图中的一些参数的含义：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2d0ba88adbb6e3c9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>序号1这个实心圆，它有两种含义。通过颜色的变化代表了实例的健康程度，健康程度从绿色、黄色、橙色、红色递减。该实心圆除了颜色的变化之外，它的大小也会根据实例的请求流量发生变化，流量越大该实心圆就越大。所以通过该实心圆的展示，我们可以在大量的实例中快速发现故障实例（通过颜色）和高压力实例（通过大小）。</p>
+<p>序号2这条曲线，它用于记录2分钟内流量的相对变化，我们可以通过它来观察流量的上升和下降趋势。</p>
+<p>当然还有一些其他的数量指标，这里就直接在图中进行说明，如下图所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7e8843bf4c11dbb5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>通过以上的学习，我们就能够使用Hystrix Dashboard来对单个实例做信息监控，但是在分布式系统中，往往有非常多的实例需要去维护和监控。尽管我们可以通过开启多个窗口来达到监控多个实例的目的，但是显然这种做法是不明智的，最好的做法是批量监控，因此接下来学习如何使用Turbine配合Hystrix Dashboard来实现对集群的监控。</p>
+<p><strong>注意，当使用Hystrix Board来监控Spring Cloud Zuul构建的API网关时，ThreadPool信息会一直处于Loading状态，这是因为Zuul默认会使用信号量来实现隔离，因此只有通过Hystrix配置把隔离机制修改为线程池的方式才能够得以显示，这一点需要格外引起注意。</strong></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2019/11/25/spring-cloud-hystrix-6-hystrix-dashboard/">http://envyzhan.asia/2019/11/25/spring-cloud-hystrix-6-hystrix-dashboard/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud/">springcloud</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/11/27/spring-cloud-hystrix-7-hystrix-turbine-cluster-monitoring/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Hystrix与Turbine集群监控</div></div></a></div><div class="next-post pull-right"><a href="/2019/11/23/spring-cloud-hystrix-5-hystrix-service-degradation-and-grouping/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Hystrix服务降级和分组</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2019/12/22/spring-cloud-bus-2-integrating-rabbitmq/" title="Bus整合RabbitMQ"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-22</div><div class="title">Bus整合RabbitMQ</div></div></a></div><div><a href="/2019/12/12/spring-cloud-config-1-basic-use/" title="Config基础使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-12</div><div class="title">Config基础使用</div></div></a></div><div><a href="/2019/12/14/spring-cloud-config-2-detailed-explanation-of-server/" title="Config服务端详解"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-14</div><div class="title">Config服务端详解</div></div></a></div><div><a href="/2019/12/16/spring-cloud-config-3-health-monitoring/" title="Config健康监测"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-16</div><div class="title">Config健康监测</div></div></a></div><div><a href="/2019/11/01/spring-cloud-eureka-1-introdution/" title="Spring Cloud Eureka介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-01</div><div class="title">Spring Cloud Eureka介绍</div></div></a></div><div><a href="/2019/11/03/spring-cloud-eureka-2-service-register-center/" title="搭建Eureka服务注册中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-03</div><div class="title">搭建Eureka服务注册中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Hystrix%E4%BB%AA%E8%A1%A8%E7%9B%98"><span class="toc-number">1.</span> <span class="toc-text">Hystrix仪表盘</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Hystrix%E4%BB%AA%E8%A1%A8%E7%9B%98%E5%AE%9E%E4%BE%8B%E6%BC%94%E7%A4%BA"><span class="toc-number">2.</span> <span class="toc-text">Hystrix仪表盘实例演示</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Hystrix%E4%BB%AA%E8%A1%A8%E7%9B%98%E7%9B%91%E6%8E%A7%E5%8D%95%E4%BD%93%E5%BA%94%E7%94%A8"><span class="toc-number">2.0.1.</span> <span class="toc-text">Hystrix仪表盘监控单体应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%9B%91%E6%8E%A7%E7%8E%AF%E5%A2%83%E6%90%AD%E5%BB%BA"><span class="toc-number">2.0.1.0.1.</span> <span class="toc-text">监控环境搭建</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%82%E6%95%B0%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.0.2.</span> <span class="toc-text">参数介绍</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

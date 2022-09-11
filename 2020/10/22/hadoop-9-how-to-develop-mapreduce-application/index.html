@@ -1,0 +1,232 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>如何开发MapReduce应用 | 余思博客</title><meta name="keywords" content="hadoop"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面前面学习的都是MapReduce较为基础的内容，接下来学习如何开发MapReduce应用，其中最重要的就是学习MapReduce的类型、输入格式、输出格式和Combiner的使用。 MapReduce的类型其实这里主要学习的是MapReduce的输入和输出类型。前面也说过，使用Hadoop中的MapReduce编程模型非常简单，开发者只需实现map和reduce方法中的输入和输出key&#x2F;v">
+<meta property="og:type" content="article">
+<meta property="og:title" content="如何开发MapReduce应用">
+<meta property="og:url" content="http://envyzhan.asia/2020/10/22/hadoop-9-how-to-develop-mapreduce-application/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面前面学习的都是MapReduce较为基础的内容，接下来学习如何开发MapReduce应用，其中最重要的就是学习MapReduce的类型、输入格式、输出格式和Combiner的使用。 MapReduce的类型其实这里主要学习的是MapReduce的输入和输出类型。前面也说过，使用Hadoop中的MapReduce编程模型非常简单，开发者只需实现map和reduce方法中的输入和输出key&#x2F;v">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-10-22T13:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T07:03:28.316Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/10/22/hadoop-9-how-to-develop-mapreduce-application/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '如何开发MapReduce应用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 15:03:28'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">如何开发MapReduce应用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-10-22T13:23:04.000Z" title="发表于 2020-10-22 21:23:04">2020-10-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T07:03:28.316Z" title="更新于 2021-03-01 15:03:28">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="如何开发MapReduce应用"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>前面学习的都是MapReduce较为基础的内容，接下来学习如何开发MapReduce应用，其中最重要的就是学习MapReduce的类型、输入格式、输出格式和Combiner的使用。</p>
+<h3 id="MapReduce的类型"><a href="#MapReduce的类型" class="headerlink" title="MapReduce的类型"></a>MapReduce的类型</h3><p>其实这里主要学习的是MapReduce的输入和输出类型。前面也说过，使用Hadoop中的MapReduce编程模型非常简单，开发者只需实现map和reduce方法中的输入和输出key/value键值对的类型即可，下面来学习各种数据类型在MapReduce中是如何使用的。</p>
+<p>通过查看WritableComparable接口，可以发现Hadoop提供了很多与Java数据类型相对应的数据类型，如下表所示：</p>
+<table>
+<thead>
+<tr>
+<th align="center">Hadoop中数据类型</th>
+<th align="center">Java中的数据类型</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">IntWritable</td>
+<td align="center">Integer</td>
+</tr>
+<tr>
+<td align="center">BooleanWritable</td>
+<td align="center">Boolean</td>
+</tr>
+<tr>
+<td align="center">FloatWritable</td>
+<td align="center">Float</td>
+</tr>
+<tr>
+<td align="center">LongWritable</td>
+<td align="center">Long</td>
+</tr>
+<tr>
+<td align="center">DoubleWritable</td>
+<td align="center">Double</td>
+</tr>
+<tr>
+<td align="center">ShortWritable</td>
+<td align="center">Short</td>
+</tr>
+<tr>
+<td align="center">ByteWritable</td>
+<td align="center">Byte</td>
+</tr>
+</tbody></table>
+<p>同时可以发现MapReduce中的map和reduce函数需要满足如下格式：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">map:(k1,v1) -&gt; list(l2,v2)</span><br><span class="line">reduce:(k2,list(v2)) -&gt; list(k3,v3)</span><br></pre></td></tr></table></figure>
+<p>从这个格式可以知道，reduce函数的输入类型必须与map函数的输出类型保持一致。</p>
+<p>接下来学习MapReduce中常用的设置，了解这些设置对于灵活使用MapReduce非常有帮助：<br>（1）输入数据类型由输入格式(InputFormat)来设置。举个例子，如TextInputFormat的Key类型是LongWritable类型，Value类型是Text。</p>
+<p>（2）map的输出的Key的类型由setMapOutputKeyClass来设置，Value的类型由setMapOutputValueClass来设置。</p>
+<p>（3）reduce的输出的Key的类型由setOutputKeyClass来设置，Value的类型由setOutputValueClass来设置。</p>
+<h3 id="MapReduce的输入格式"><a href="#MapReduce的输入格式" class="headerlink" title="MapReduce的输入格式"></a>MapReduce的输入格式</h3><p>一般情况下，MapReduce处理的数据文件都是存储在HDFS上的，且这些数据文件的格式任意，可以是基于行的日志文件、也可以是二进制的图片、视频等。这些文件一般比较大，可能几十GB，甚至更大，那么问题来了，此时MapReduce如何读取这些数据呢？</p>
+<h5 id="InputFormat接口"><a href="#InputFormat接口" class="headerlink" title="InputFormat接口"></a>InputFormat接口</h5><p>InputFormat接口非常重要，它用于指定输入文件如何被Hadoop分块。InputFormat可以从一个job中得到一个split集合，之后再给这个split集合配上一个合适的RecordReader来读取每个split集合中的数据。</p>
+<p>查看一下这个InputFormat接口的源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@Public</span><br><span class="line">@Stable</span><br><span class="line">public interface InputFormat&lt;K, V&gt; &#123;</span><br><span class="line">    InputSplit[] getSplits(JobConf var1, int var2) throws IOException;</span><br><span class="line"></span><br><span class="line">    RecordReader&lt;K, V&gt; getRecordReader(InputSplit var1, JobConf var2, Reporter var3) throws IOException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个接口中有两个方法，再来看一下这个同名的抽象类的源码，可以看到除了无参的构造方法外，它也有两个方法，而且似乎和上面接口中的方法非常相似：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Public</span><br><span class="line">@Stable</span><br><span class="line">public abstract class InputFormat&lt;K, V&gt; &#123;</span><br><span class="line">    public InputFormat() &#123;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public abstract List&lt;InputSplit&gt; getSplits(JobContext var1) throws IOException, InterruptedException;</span><br><span class="line"></span><br><span class="line">    public abstract RecordReader&lt;K, V&gt; createRecordReader(InputSplit var1, TaskAttemptContext var2) throws IOException, InterruptedException;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到接口中的getSplits和getRecordReader方法与抽象类中的getSplits和createRecordReader的参数和返回值是不同的，但是两者本质上是没有区别的，因此这里就以抽象类为例来介绍这两个方法的作用。</p>
+<p>（1）<code>getSplits(JobContext var1)</code>方法用于将一个大数据在逻辑上分成多片。</p>
+<p>举个例子，假设现在的数据库有100条数据，它们按照主键ID升序存储。之后每20条分为一片，那么这个List的大小就是5，之后每个InputSplit记录两个参数，第一个是是这个分片的起始ID，第二个则是这个分片数据的大小，此处为20。通过这个例子，我们知道这个InputSplit并没有真正存储数据，只是提供了一个如何将数据分片的方法。</p>
+<p>（2）<code>createRecordReader(InputSplit var1, TaskAttemptContext var2)</code>方法会根据InputSplit定义的方法，来返回一个可以读取分片记录的RecordReader对象。</p>
+<p>前面说了<code>getSplits(JobContext var1)</code>方法用于获取由输入文件计算出来的InputSplit，而且在后面计算InputSplit时，会考虑输入文件是否可以分割、文件存储时分块的大小和文件大小等因素。而<code>createRecordReader(InputSplit var1, TaskAttemptContext var2)</code>方法则提供了前面提到的RecordReader的实现，将Key/Value键值对从InputSplit中正确读出，如LineRecordReader，它以Key为偏移值，Value为每行数据，这使得所有<code>createRecordReader()</code>方法返回LineRecordReader的InputFormat都是以偏移值为Key、每行数据为Value的形式读取输入分片的。</p>
+<h5 id="InputFormat接口的实现类"><a href="#InputFormat接口的实现类" class="headerlink" title="InputFormat接口的实现类"></a>InputFormat接口的实现类</h5><p>下面是InputFormat接口所有的实现类：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-eb5eedeecf146087.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来学习几个工作中常用的InputFormat接口的实现类，如下所示：<br>（1）<code>FileInputFormat</code>。<code>FileInputFormat</code>是所有使用文件作为数据源的<code>InputFormat</code>实现的基类，其主要作用是指定作业的输入文件所在的路径。由于作业的输入被设定为一组路径，因此这对于作业路径的指定是非常有利的。<code>FileInputFormat</code>类提供了2种静态方法用于指定作业的输入路径：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">public static void addInputPaths(JobConf conf, String commaSeparatedPaths);</span><br><span class="line">public static void addInputPath(JobConf conf, Path path);</span><br></pre></td></tr></table></figure>
+<p>（2）<code>KeyValueTextInputFormat</code>。<code>KeyValueTextInputFormat</code>它每一行均为一条记录，被分隔符（缺省为Tab）分割为Key（Text类型）、Value（Text类型）。</p>
+<h3 id="MapReduce的输出格式"><a href="#MapReduce的输出格式" class="headerlink" title="MapReduce的输出格式"></a>MapReduce的输出格式</h3><p>针对前面学习的输入格式，Hadoop都有其对应的输出格式。默认情况下只有一个Reduce，也就是一个输出文件，其文件名为<code>part-r-00000</code>。查看一下之前wordCount程序的输出文件，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master ~]# hadoop fs -ls -R /outputwc</span><br><span class="line">-rw-r--r--   1 root supergroup          0 2020-06-04 21:27 /outputwc/_SUCCESS</span><br><span class="line">-rw-r--r--   1 root supergroup         28 2020-06-04 21:27 /outputwc/part-r-00000</span><br></pre></td></tr></table></figure>
+<p>输出文件的个数与Reduce的个数一致，如果有两个Reduce，那么输出结果就有两个文件，第一个为<code>part-r-00000</code>，第二个为<code>part-r-00001</code>，以此类推。</p>
+<h5 id="OutputFormat接口"><a href="#OutputFormat接口" class="headerlink" title="OutputFormat接口"></a>OutputFormat接口</h5><p>OutputFormat接口主要用于描述数据的格式，它能够将用户提供的Key/Value键值对写入特定格式额度文件中。通过OutputFormat接口，开发者也可以实现具体的输出格式，但是过程较为复杂，通常都是使用默认的格式进行输出。</p>
+<h5 id="OutputFormat接口实现类"><a href="#OutputFormat接口实现类" class="headerlink" title="OutputFormat接口实现类"></a>OutputFormat接口实现类</h5><p>Hadoop既然提供了大量的InputFormat接口的实现类，那么就有与之对应的OutputFormat接口实现类，进而完成数据的输入输出操作。</p>
+<p>下面是OutputFormat接口所有的实现类：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7791ab07a10e6e8f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>请注意OutputFormat类是MapReduce输出的基类，所有MapReduce输出都实现了OutputFormat接口。</p>
+<p>接下来学习几个工作中常用的OutputFormat接口的实现类，如下所示：<br>（1）<code>TextOutputFormat</code>(文本输出)，这也是默认的输出格式，也就是说MapReduce默认将数据以文本的形式进行输出。<code>TextOutputFormat</code>将每条记录写为文本行，利用它的键和值可以实现Writable的任意类型，之后<code>TextOutputFormat</code>可以调用<code>toString()</code>方法将它们转换为字符串。</p>
+<p>请注意每个Key/Value键值对由制表符进行分割，当然也可以通过设置<code>mapreduce.output.textoutputformat.separator</code>属性来修改默认的分隔符：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5f8c74ba81d020d3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>请注意，与<code>FileOutputFormat</code>相对应的输入格式是<code>KeyValueTextInputFormat</code>，同样它也是可以通过前面的<code>mapreduce.output.textoutputformat.separator</code>属性来设置分隔符进而将Key/Value键值对进行文本分割。</p>
+<p>还可以使用NullWritable来省略输出的Key或者Value，甚至两者都省略，此时就相当于NullOutputFormat输出格式，这会导致数据无分割符进行输出，此时输出只适合用TextInputFormat来读取。<br>（2）<code>SequenceFileOutputFormat</code>(二进制输出)，它用于将它的输出写为一个顺序文件。请注意，当输出需要作为后续MapReduce任务的输入时，此时推荐使用<code>SequenceFileOutputFormat</code>(二进制输出)，因为它格式紧凑，便于压缩。</p>
+<h1 id="Combiner操作"><a href="#Combiner操作" class="headerlink" title="Combiner操作"></a>Combiner操作</h1><h3 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h3><p>通过前面的学习，我们知道Hadoop框架使用Mapper将数据处理成一个Key/Value键值对，之后再在网络节点中对其进行整理(shuffle)，接着再使用Reducer处理数据并进行最终输出。</p>
+<p>假设现在有一个场景：现在有10亿个数据，Mapper会生成10亿个Key/Value键值对，这些键值对在网络间进行传输，但是现在我们仅仅是想对数据求最大值，那么此时Mapper只需输出它所知道的最大值即可，这样不仅能减轻网络压力，还可以提高程序的执行效率。</p>
+<p>正是由于这种场景在实际工作中非常普通，因此MapReduce框架提供了Combiner来避免map任务与reduce任务之间无效的数据传输。Hadoop允许用户针对map任务的输出指定一个合并函数，用于减少输出到Reducer中的数据量。也就是说这个合并函数主要是为了削减Mapper的输出数量，进而减少网络带宽和Reducer上的负载。</p>
+<p>开发者完全可以将Combiner操作，看成是在每个单独的节点上，先进行一次Reducer操作，只不过此时的输入和输出的参数和Reducer是一样的。</p>
+<p><strong>请注意开发者可以使用Combiner操作来进行求和、求最值，但是无法求平均数。</strong></p>
+<p>下图是之前WordCount程序的执行过程：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9432fcbffedb3b0b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>使用Combiner操作的执行过程：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4ce4185522095e3d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="使用"><a href="#使用" class="headerlink" title="使用"></a>使用</h3><p>接下来以之前学习的WordCount程序为例，来学习如何在实际工作中使用Combiner操作。</p>
+<p>在app包内新建一个<code>WordCountCombinerApp</code>类，其中的代码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br><span class="line">71</span><br><span class="line">72</span><br><span class="line">73</span><br><span class="line">74</span><br><span class="line">75</span><br><span class="line">76</span><br><span class="line">77</span><br><span class="line">78</span><br><span class="line">79</span><br><span class="line">80</span><br><span class="line">81</span><br><span class="line">82</span><br><span class="line">83</span><br><span class="line">84</span><br><span class="line">85</span><br><span class="line">86</span><br><span class="line">87</span><br><span class="line">88</span><br><span class="line">89</span><br><span class="line">90</span><br><span class="line">91</span><br><span class="line">92</span><br><span class="line">93</span><br><span class="line">94</span><br><span class="line">95</span><br><span class="line">96</span><br><span class="line">97</span><br><span class="line">98</span><br><span class="line">99</span><br><span class="line">100</span><br><span class="line">101</span><br><span class="line">102</span><br><span class="line">103</span><br></pre></td><td class="code"><pre><span class="line">public class WordCountCombinerApp &#123;</span><br><span class="line">    public static class MyMapper extends Mapper&lt;Object, Text,Text, IntWritable&gt;&#123;</span><br><span class="line">        //new一个int类型用于计数，并赋值为1，因为不管每个单词出现几次，都是直接输出1</span><br><span class="line">        //假设输入数据为nice to nice,one赋值为1，那么使用context.write(word,one)的输出结果就是nice 1,to 1,nice 1</span><br><span class="line">        //如果one赋值为2，那么使用context.write(word,one)的输出结果就是nice 2,to 2,nice 2</span><br><span class="line">        private static final IntWritable one = new IntWritable(1);</span><br><span class="line">        //new一个String类型</span><br><span class="line">        private Text word = new Text();</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * 重写map函数，其中的context参数是上下文，用于记录key和value的值</span><br><span class="line">         * */</span><br><span class="line">        @Override</span><br><span class="line">        public void map(Object key, Text value, Context context) throws IOException, InterruptedException &#123;</span><br><span class="line">            //字符串分解类，将一行单词分解为多个单词</span><br><span class="line">            StringTokenizer itr =  new StringTokenizer(value.toString());</span><br><span class="line">            //循环条件表示返回是否还有分隔符</span><br><span class="line">            while (itr.hasMoreTokens())&#123;</span><br><span class="line">                //使用itr.nextToken()来获取单词</span><br><span class="line">                //word.set()方法将Java数据类型转换为Hadoop数据类型，这样后续才能输出</span><br><span class="line">                word.set(itr.nextToken());</span><br><span class="line">                //按照输出格式来输出结果，如nice 1</span><br><span class="line">                context.write(word,one);</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static class MyReducer extends Reducer&lt;Text,IntWritable,Text,IntWritable&gt; &#123;</span><br><span class="line">        private IntWritable result = new IntWritable();</span><br><span class="line"></span><br><span class="line">        /**</span><br><span class="line">         * 重写reduce函数，其中的context参数是上下文，用于记录key和result的值</span><br><span class="line">         * */</span><br><span class="line">        @Override</span><br><span class="line">        public void reduce(Text key, Iterable&lt;IntWritable&gt; values, Context context) throws IOException, InterruptedException &#123;</span><br><span class="line">            //定义一个Java数据类型的sum，用于记录相同单词的数量</span><br><span class="line">            int sum = 0;</span><br><span class="line">            //遍历得到的结果</span><br><span class="line">            for(IntWritable value:values)&#123;</span><br><span class="line">                //由于value是IntWritable类型，因此需要调用get()方法来返回Java类型的值</span><br><span class="line">                //请注意IntWritable.get()和IntWritable.set()都可以进行数据类型转换，不同的是set是将Java数据类型转换为Hadoop数据类型</span><br><span class="line">                //而get则是将Hadoop数据类型转换为Java数据类型</span><br><span class="line"></span><br><span class="line">                sum+=value.get();</span><br><span class="line">            &#125;</span><br><span class="line">            //将Java数据类型转换为Hadoop数据类型</span><br><span class="line">            result.set(sum);</span><br><span class="line">            //将结果输出到HDFS中</span><br><span class="line">            context.write(key,result);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    public static void main(String[] args) throws Exception &#123;</span><br><span class="line">        //配置输入路径</span><br><span class="line">        String INPUT_PATH = &quot;hdfs://master:9000/cominputwc&quot;;</span><br><span class="line">        //配置输出路径</span><br><span class="line">        String OUTPUT_PATH = &quot;hdfs://master:9000/comoutputwc&quot;;</span><br><span class="line"></span><br><span class="line">        //读取Hadoop的配置文件</span><br><span class="line">        Configuration configuration= new Configuration();</span><br><span class="line">        final FileSystem fileSystem = FileSystem.get(new URI(INPUT_PATH), configuration);</span><br><span class="line">        if(fileSystem.exists(new Path(OUTPUT_PATH)))&#123;</span><br><span class="line">            fileSystem.delete(new Path(OUTPUT_PATH),true);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        //创建一个任务，第一个参数是配置对象，第二个参数是任务名称，这里是EnvyWordCountApp</span><br><span class="line">        Job job = Job.getInstance(configuration,&quot;WordCountCombinerApp&quot;);</span><br><span class="line"></span><br><span class="line">        //运行Jar类</span><br><span class="line">        job.setJarByClass(WordCountCombinerApp.class);</span><br><span class="line"></span><br><span class="line">        //设置map</span><br><span class="line">        job.setMapperClass(MyMapper.class);</span><br><span class="line">        job.setMapOutputKeyClass(Text.class);</span><br><span class="line">        job.setMapOutputValueClass(IntWritable.class);</span><br><span class="line"></span><br><span class="line">        //设置combiner</span><br><span class="line">        job.setCombinerClass(MyReducer.class);</span><br><span class="line"></span><br><span class="line">        //设置reduce</span><br><span class="line">        job.setReducerClass(MyReducer.class);</span><br><span class="line">        //设置输出结果的key/value的类型，也就是最终存储在HDFS上结果文件的key/value的类型</span><br><span class="line">        job.setOutputKeyClass(Text.class);</span><br><span class="line">        job.setOutputValueClass(IntWritable.class);</span><br><span class="line"></span><br><span class="line">        //设置输入格式</span><br><span class="line">        //设置输入文件路径</span><br><span class="line">        job.setInputFormatClass(TextInputFormat.class);</span><br><span class="line">        Path inputPath = new Path(INPUT_PATH);</span><br><span class="line">        FileInputFormat.addInputPath(job,inputPath);</span><br><span class="line"></span><br><span class="line">        //设置输出格式</span><br><span class="line">        job.setOutputFormatClass(TextOutputFormat.class);</span><br><span class="line">        Path outputPath = new Path(OUTPUT_PATH);</span><br><span class="line">        //设置输出文件路径</span><br><span class="line">        FileOutputFormat.setOutputPath(job, outputPath);</span><br><span class="line"></span><br><span class="line">        //提交job</span><br><span class="line">        //如果job运行成功，那么程序就会正常退出</span><br><span class="line">        System.exit(job.waitForCompletion(true)?0:1);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/10/22/hadoop-9-how-to-develop-mapreduce-application/">http://envyzhan.asia/2020/10/22/hadoop-9-how-to-develop-mapreduce-application/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hadoop/">hadoop</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/10/23/hadoop-10-other-content-partitioner-and-recordreader/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">MapReduce其他内容</div></div></a></div><div class="next-post pull-right"><a href="/2020/10/21/hadoop-8-mapreduce-basic/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">MapReduce入门</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/10/09/hadoop-1-introudction/" title="大数据概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-09</div><div class="title">大数据概述</div></div></a></div><div><a href="/2020/10/27/hadoop-12-yarn-basic/" title="YARN入门"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-27</div><div class="title">YARN入门</div></div></a></div><div><a href="/2020/10/11/hadoop-2-first-to-learn-hadoop/" title="Hadoop初识"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-11</div><div class="title">Hadoop初识</div></div></a></div><div><a href="/2020/10/15/hadoop-4-hdfs-basic/" title="HDFS入门"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-15</div><div class="title">HDFS入门</div></div></a></div><div><a href="/2020/10/17/hadoop-6-deeply-study-the-operation-principal-of-hdfs/" title="深入学习HDFS的运行原理"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-17</div><div class="title">深入学习HDFS的运行原理</div></div></a></div><div><a href="/2020/10/23/hadoop-10-other-content-partitioner-and-recordreader/" title="MapReduce其他内容"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-23</div><div class="title">MapReduce其他内容</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#MapReduce%E7%9A%84%E7%B1%BB%E5%9E%8B"><span class="toc-number">1.0.1.</span> <span class="toc-text">MapReduce的类型</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MapReduce%E7%9A%84%E8%BE%93%E5%85%A5%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.0.2.</span> <span class="toc-text">MapReduce的输入格式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#InputFormat%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.0.2.0.1.</span> <span class="toc-text">InputFormat接口</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#InputFormat%E6%8E%A5%E5%8F%A3%E7%9A%84%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="toc-number">1.0.2.0.2.</span> <span class="toc-text">InputFormat接口的实现类</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MapReduce%E7%9A%84%E8%BE%93%E5%87%BA%E6%A0%BC%E5%BC%8F"><span class="toc-number">1.0.3.</span> <span class="toc-text">MapReduce的输出格式</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#OutputFormat%E6%8E%A5%E5%8F%A3"><span class="toc-number">1.0.3.0.1.</span> <span class="toc-text">OutputFormat接口</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#OutputFormat%E6%8E%A5%E5%8F%A3%E5%AE%9E%E7%8E%B0%E7%B1%BB"><span class="toc-number">1.0.3.0.2.</span> <span class="toc-text">OutputFormat接口实现类</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Combiner%E6%93%8D%E4%BD%9C"><span class="toc-number">2.</span> <span class="toc-text">Combiner操作</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A6%82%E8%BF%B0"><span class="toc-number">2.0.1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8"><span class="toc-number">2.0.2.</span> <span class="toc-text">使用</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

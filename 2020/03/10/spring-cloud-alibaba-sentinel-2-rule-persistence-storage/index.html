@@ -1,0 +1,240 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>规则持久化存储 | 余思博客</title><meta name="keywords" content="springcloud-alibaba"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面前面我们通过一个入门的demo来演示了如何使用Sentinel来实现接口的限流，其实它只是流控规则的一种实现，流控规则除了基于QPS和并发数以外，还支持调用关系的流量控制，但是这都不是本文的重点。本文主要介绍基于流控规则的QPS方式，如何将之前使用的流控规则进行持久化存储。 规则持久化现在系统出了一个bug，需要重启sentinel-hello服务，然后你会发现一个神奇的现象，就是之前开发">
+<meta property="og:type" content="article">
+<meta property="og:title" content="规则持久化存储">
+<meta property="og:url" content="http://envyzhan.asia/2020/03/10/spring-cloud-alibaba-sentinel-2-rule-persistence-storage/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面前面我们通过一个入门的demo来演示了如何使用Sentinel来实现接口的限流，其实它只是流控规则的一种实现，流控规则除了基于QPS和并发数以外，还支持调用关系的流量控制，但是这都不是本文的重点。本文主要介绍基于流控规则的QPS方式，如何将之前使用的流控规则进行持久化存储。 规则持久化现在系统出了一个bug，需要重启sentinel-hello服务，然后你会发现一个神奇的现象，就是之前开发">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-03-10T11:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T08:32:10.476Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud-alibaba">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/03/10/spring-cloud-alibaba-sentinel-2-rule-persistence-storage/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '规则持久化存储',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 16:32:10'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">规则持久化存储</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-03-10T11:23:04.000Z" title="发表于 2020-03-10 19:23:04">2020-03-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T08:32:10.476Z" title="更新于 2021-03-01 16:32:10">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="规则持久化存储"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>前面我们通过一个入门的demo来演示了如何使用Sentinel来实现接口的限流，其实它只是流控规则的一种实现，流控规则除了基于QPS和并发数以外，还支持调用关系的流量控制，但是这都不是本文的重点。本文主要介绍基于流控规则的QPS方式，如何将之前使用的流控规则进行持久化存储。</p>
+<h1 id="规则持久化"><a href="#规则持久化" class="headerlink" title="规则持久化"></a>规则持久化</h1><p>现在系统出了一个bug，需要重启sentinel-hello服务，然后你会发现一个神奇的现象，就是之前开发者在sentinel-dashboard页面配置的限流规则居然不见了，而且该微服务显示处于“失联”状态：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9d13e30cfd73577e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>因此现在需要做的就是对限流规则进行持久化操作，那么如何进行持久化呢？往下看，并阅读 <a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/wiki/%E5%8A%A8%E6%80%81%E8%A7%84%E5%88%99%E6%89%A9%E5%B1%95">官方文档</a> 进行了解。</p>
+<p>从官方文档中可以看出，我们上面讲到的持久化，其实是动态规则扩展里面的外部配置源扩展，接下来就详细学习这个外部配置源扩展。不过在此之前有必要先对动态规则扩展进行一个学习，并通过流控规则基于QPS实现这一例子，来介绍规则持久化存储。</p>
+<h1 id="内存态扩展"><a href="#内存态扩展" class="headerlink" title="内存态扩展"></a>内存态扩展</h1><p>内存态扩展就是直接通过使用API来直接修改规则，Sentinel提供了以下5个API来修改不同的规则：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">FlowRuleManager.loadRules(List&lt;FlowRule&gt; rules); // 流控规则</span><br><span class="line">DegradeRuleManager.loadRules(List&lt;DegradeRule&gt; rules); // 降级规则</span><br><span class="line">ParamFlowRuleManager.loadRules(List&lt;DegradeRule&gt; rules);// 热点规则</span><br><span class="line">SystemRuleManager.loadRules(List&lt;SystemRule&gt; rules); // 系统规则</span><br><span class="line">AuthorityRuleManager.loadRules(List&lt;AuthorityRule&gt; rules); // 授权规则</span><br></pre></td></tr></table></figure>
+<p>其实上述5个API就分别对应于首页的5个规则，同时它们都使用了loadRules方法来加载规则：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f03ec9857deba91b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>由于这5个API分别用于不同的场景，因此后续会结合实际场景来进行学习，这里就只介绍最简单的流控规则。接下来就简单学习如何使用上述提供的API来动态扩展规则。</p>
+<h1 id="流控规则"><a href="#流控规则" class="headerlink" title="流控规则"></a>流控规则</h1><p><a target="_blank" rel="noopener" href="https://github.com/alibaba/Sentinel/wiki/%E6%B5%81%E9%87%8F%E6%8E%A7%E5%88%B6">流控规则</a>，全称为流量控制规则，其原理是监控应用流量的QPS或并发线程数等指标，当达到指定的阈值时对流量进行控制，以避免被瞬时的流量高峰冲垮，从而保障应用的高可用性。</p>
+<p>接下来我们将通过sentinel-dashboard控制台设置和API直接修改这两种方式来演示流控规则如何设置与使用。</p>
+<h3 id="控制台设置"><a href="#控制台设置" class="headerlink" title="控制台设置"></a>控制台设置</h3><p>这里我们以<code>/hello</code>接口为例，来学习如何对其进行限流设置。点击sentinel-dashboard首页左侧的流控规则按钮，然后点击右侧的新增流控规则按钮，按照下图进行设置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8fcca4c5d3fb3cfa.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这里的流控规则非常简单，资源名填入<code>/hello</code>，就是你需要限流的接口；阈值类型选择QPS，也就是每秒查询条数；单机阈值设置2，表示每秒最多允许2个请求进入。之后点击新增按钮，之后页面就显示流控规则已经添加：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-84eb756d774d6095.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来就开始验证上述流控规则是否有效，可以同时多次访问<code>http://127.0.0.1:8036/hello</code>链接，看看页面的返回情况，当每秒请求次数超出设置的2次，页面就会提示以下信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d70e2d5f2c0ccd75.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来看几个通过控制台设置的例子，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ce10a3311129d2d4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>其实可以发现上述设置其实都是使用了高级选项中的默认设置，它就表示当每秒访问<code>/movie</code>接口的次数大于QPS设置的2时，<code>/movie</code>接口就会立即失败，并进行流控。</p>
+<hr>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2dc2aa16c2aa1665.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上图表示，当访问关联资源<code>/book</code>接口的QPS大于设置的阈值2，那么接口<code>/movie</code>就会立即失败，并进行流控。</p>
+<hr>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f78d47dedb1c19ee.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上图表示，当访问<code>/movie</code>接口的QPS大于设置的阈值2，那么后续请求就会处于排队等待状态，超时时间为20秒。</p>
+<hr>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7d70a1a05a064089.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上图表示，在预热完成前，QPS只有10/(3，冷启动因子，默认为3)=3，5秒后预热完成，QPS达到10。</p>
+<h3 id="API直接修改"><a href="#API直接修改" class="headerlink" title="API直接修改"></a>API直接修改</h3><p>第一步，在pom.xml依赖文件中添加<code>spring-cloud-starter-alibaba-sentinel</code>依赖，之前的项目已经添加，因此这一步可以跳过。</p>
+<p>第二步，在项目目录下新建hellorules包，并在该包内新建一个HelloRules类，其中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line">@Component</span><br><span class="line">public class HelloRules &#123;</span><br><span class="line">    /**</span><br><span class="line">     * 流控规则</span><br><span class="line">     * */</span><br><span class="line">    @Bean</span><br><span class="line">    public void flowRules()&#123;</span><br><span class="line">        List&lt;FlowRule&gt; rules = new ArrayList&lt;&gt;();</span><br><span class="line">        FlowRule flowRule = new FlowRule();</span><br><span class="line">        flowRule.setResource(&quot;book&quot;);</span><br><span class="line">        flowRule.setGrade(RuleConstant.FLOW_GRADE_QPS);</span><br><span class="line">        flowRule.setCount(2);</span><br><span class="line">        rules.add(flowRule);</span><br><span class="line">        FlowRuleManager.loadRules(rules);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>请注意这里设置的流控规则与下面这张图相似，不同点是资源名称由hello变成了book而已，因此这个book就是一个接口，后续需要提供，其余的阈值类型选择QPS，单机阈值设置2：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8fcca4c5d3fb3cfa.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>第三步，在之前创建的HelloController类中提供一个<code>/book</code>接口，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">@GetMapping(value = &quot;/book&quot;)</span><br><span class="line">@SentinelResource(value = &quot;book&quot;)</span><br><span class="line">public String book()&#123;</span><br><span class="line">    log.info(&quot;flowRules is doing...&quot;);</span><br><span class="line">    return &quot;flowRules!&quot;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里使用的<code>@SentinelResource</code>注解用来标识资源是否被限流、降级，该注解的value属性book表示资源名，也就是接口（注意没有<code>/</code>符号）。<code>@SentinelResource</code>还提供了其它额外的属性如<code>blockHandler</code>、<code>blockHandlerClass</code>，<code>fallback</code>用于表示限流或降级的操作，这些信息都会在后续学习Sentinel注解支持的时候进行介绍。</p>
+<p>第四步，启动项目。启动这里名为sentinel-hello的服务，接着在浏览器访问<code>http://127.0.0.1:8036/book</code>链接，即可看到如下的返回信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0b2effea4ee3e9fd.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如果一秒内的请求次数大于2，那么该页面就会出如下的错误，这个页面很熟悉，在学习Hystrix的时候经常出现，这就说明服务熔断了：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-e4d7e8ab6657bc6a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>而且可以看到在控制台的流控规则那一栏中已经显示出我们对于<code>book</code>接口的限流规则：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-617a4b414d72b563.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>但是细心的朋友可能已经发现，API这种直接修改方式式硬编码的，很多配置内容都是写死的，就算你通过读取配置文件来设置，但是配置文件的管理也是问题，因此这种方式最好只在学习和测试的时候时候，在实际工作中不要使用这种方式。</p>
+<p>当然流控规则还有另一个根据线程数来设置限流，但总的来说与根据QPS限流设置的规则一样，因此这里就不过多解释，关于流控规则的详细学习会在后面有专门的文章进行学习。同时本文重点在于学习如何将控制规则进行持久化存储，而不是学习流控规则相关的知识，这部分会在后续有专门的文章进行学习。</p>
+<h1 id="外部配置源扩展"><a href="#外部配置源扩展" class="headerlink" title="外部配置源扩展"></a>外部配置源扩展</h1><p>前面我们介绍的API是只能接受内存态的规则对象，但是在更多时候规则都是存储在文件、数据库或者配置中心里面，因此Sentinel提供的<code>DataSource</code>接口允许我们能对接任意的数据配置源，相比于之前直接通过API在内存中修改规则，使用外部配置源无疑是最佳选择。</p>
+<p>官方文档推荐我们通过控制台设置规则后，将规则推送到统一的规则中心这一方式，然后客户端实现<code>ReadableDataSource</code>接口端监听规则中心实时获取变更，流程如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-85726b98399df6d5.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="推拉模式介绍"><a href="#推拉模式介绍" class="headerlink" title="推拉模式介绍"></a>推拉模式介绍</h3><p>DataSource扩展常见的实现方式有：<br><strong>（1）拉模式。</strong>客户端主动向某个规则管理中心定期轮询拉取规则，这个规则中心可以是 RDBMS、文件，甚至是 VCS 等。这样做的方式是简单，缺点是无法及时获取变更；<br><strong>（2）推模式。</strong>规则中心统一推送，客户端通过注册监听器的方式时刻监听变化，比如使用Nacos、Zookeeper等配置中心。这种方式有更好的实时性和一致性保证。</p>
+<p>根据上面介绍的推拉模式，Sentinel目前支持以下数据源扩展：（1）基于拉模式的有：动态文件数据源、Consul和Eureka；（2）基于推模式的有：ZooKeeper、Redis、Nacos、Apollo和etcd。</p>
+<h3 id="推拉模式扩展"><a href="#推拉模式扩展" class="headerlink" title="推拉模式扩展"></a>推拉模式扩展</h3><p>如果开发者想基于上述模式进行自定义扩展，而不使用上述产品的话，Sentinel也是支持的。</p>
+<p>如果开发者想对<strong>拉模式扩展</strong>，最简单的方式是将数据源继承<code>AutoRefreshDataSource</code>抽象类，然后实现<code>readSource()</code> 方法，在该方法里指定数据源读取字符串格式的配置数据，比如基于文件的数据源。</p>
+<p>如果开发者想对<strong>拉模式扩展</strong>，最简单的方式是将数据源继承<code>AbstractDataSource</code>抽象类，然后在其构造方法中添加监听器，并实现<code>readSource()</code>方法，在该方法内指定数据源读取字符串格式的配置数据。比如基 Nacos的数据源。</p>
+<p>当然控制台通常需要做一些改造来直接推送应用维度的规则到配置中心，这个改造指南可以参考官方文档。</p>
+<p>前面也提到过，由于拉模式采用的是客户端主动向某个规则管理中心定期轮询拉取规则，该方式的缺点是无法及时获取变更，因此在实际工作中这样方式用的不是很多，更多的则是使用推模式，这里以Nacos为例，介绍推模式如何持久化存储规则。</p>
+<h3 id="推模式Nacos持久化存储"><a href="#推模式Nacos持久化存储" class="headerlink" title="推模式Nacos持久化存储"></a>推模式Nacos持久化存储</h3><p>接下来就介绍如何使用Nacos来持久化存储流控规则，在这个例子中我们将同时使用到Nacos和Sentinel Dashboard，因此就可以将这两个应用服务以默认配置进行启动，其中两者的默认访问路径为：Nacos地址是<code>http://127.0.0.1:8848</code>；Sentinel DashBoard地址是<code>http://127.0.0.1:8080</code>。</p>
+<p>考虑到微服务的特性，这里就新建一个测试用的实例，这也与微服务的解耦思想相匹配。</p>
+<p><strong>第一步，创建Spring Boot项目。</strong>使用<code>Spring Initializr</code>工具创建一个Spring Boot应用，名称为<code>sentinel-storage-nacos</code>。</p>
+<p><strong>第二步，编辑依赖文件。</strong>请注意考虑到版本兼容问题，因此最好还是使用之前学习Nacos时的Spring Boot、Spring Cloud、Spring Cloud Alibaba的版本。编辑项目的pom.xml依赖文件，添加如下配置信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencyManagement&gt;</span><br><span class="line">    &lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-dependencies&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;Hoxton.SR8&lt;/version&gt;</span><br><span class="line">            &lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">            &lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-cloud-alibaba-dependencies&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;2.2.3.RELEASE&lt;/version&gt;</span><br><span class="line">            &lt;type&gt;pom&lt;/type&gt;</span><br><span class="line">            &lt;scope&gt;import&lt;/scope&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">    &lt;/dependencies&gt;</span><br><span class="line">&lt;/dependencyManagement&gt;</span><br><span class="line"></span><br><span class="line">&lt;dependencies&gt;</span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter-web&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;com.alibaba.cloud&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-cloud-starter-alibaba-sentinel&lt;/artifactId&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.projectlombok&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;lombok&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;1.18.2&lt;/version&gt;</span><br><span class="line">        &lt;optional&gt;true&lt;/optional&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;com.alibaba.csp&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;sentinel-datasource-nacos&lt;/artifactId&gt;</span><br><span class="line">        &lt;version&gt;1.7.2&lt;/version&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line"></span><br><span class="line">    &lt;dependency&gt;</span><br><span class="line">        &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">        &lt;artifactId&gt;spring-boot-starter-test&lt;/artifactId&gt;</span><br><span class="line">        &lt;scope&gt;test&lt;/scope&gt;</span><br><span class="line">        &lt;exclusions&gt;</span><br><span class="line">            &lt;exclusion&gt;</span><br><span class="line">                &lt;groupId&gt;org.junit.vintage&lt;/groupId&gt;</span><br><span class="line">                &lt;artifactId&gt;junit-vintage-engine&lt;/artifactId&gt;</span><br><span class="line">            &lt;/exclusion&gt;</span><br><span class="line">        &lt;/exclusions&gt;</span><br><span class="line">    &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+<p><strong>第三步，配置服务名称、sentinel-dashboard的访问地址以及Nacos中的配置信息。</strong>在<code>application.properties</code>配置文件中指定服务名称，端口号，sentinel-dashboard的访问地址，以及Nacos中的配置信息，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"># 应用名称</span><br><span class="line">spring.application.name=sentinel-storage-nacos</span><br><span class="line"># 应用端口号</span><br><span class="line">server.port=8038</span><br><span class="line"></span><br><span class="line"># sentinel-dashboard访问地址</span><br><span class="line">spring.cloud.sentinel.transport.dashboard=127.0.0.1:8080</span><br><span class="line"></span><br><span class="line"># sentinel-storage-nacos配置</span><br><span class="line"># nacos的访问地址</span><br><span class="line">spring.cloud.sentinel.datasource.ds.nacos.server-addr=127.0.0.1:8848</span><br><span class="line"># nacos中存储规则的dataId</span><br><span class="line">spring.cloud.sentinel.datasource.ds.nacos..data-id=$&#123;spring.application.name&#125;</span><br><span class="line"># nacos中存储规则的groupId</span><br><span class="line">spring.cloud.sentinel.datasource.ds.nacos..group-id=DEFAULT_GROUP</span><br><span class="line"># nacos中存储的规则类型</span><br><span class="line">spring.cloud.sentinel.datasource.ds.nacos.rule-type=flow</span><br></pre></td></tr></table></figure>
+<p>这里主要介绍后者的设置内容，主要是配置nacos中存储规则的dataId、groupId和ruleType，前面两个设置信息在前面都已经进行了介绍，接下来主要学习ruleType，它用来定义存储的规则类型，开发者可以查看枚举类<code>com.alibaba.cloud.sentinel.datasource.RuleType</code>，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public enum RuleType &#123;</span><br><span class="line">    FLOW(&quot;flow&quot;, FlowRule.class),</span><br><span class="line">    DEGRADE(&quot;degrade&quot;, DegradeRule.class),</span><br><span class="line">    PARAM_FLOW(&quot;param-flow&quot;, ParamFlowRule.class),</span><br><span class="line">    SYSTEM(&quot;system&quot;, SystemRule.class),</span><br><span class="line">    AUTHORITY(&quot;authority&quot;, AuthorityRule.class),</span><br><span class="line">    GW_FLOW(&quot;gw-flow&quot;, &quot;com.alibaba.csp.sentinel.adapter.gateway.common.rule.GatewayFlowRule&quot;),</span><br><span class="line">    GW_API_GROUP(&quot;gw-api-group&quot;, &quot;com.alibaba.csp.sentinel.adapter.gateway.common.api.ApiDefinition&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这里因为是存储流控规则，因此使用的就是flow这一类型。还有上面我们的dataId使用了<code>$&#123;spring.application.name&#125;</code>这一变量，这样就可以根据应用名称来区分不同的规则配置。</p>
+<p><strong>第四步，提供一个访问接口。</strong>由于这是一个web工程，因此可以添加一个Controller，并提供一个访问入口。在项目目录下新建controller包，并在里面新建HelloController文件，其中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">public class HelloController &#123;</span><br><span class="line">    @GetMapping(value = &quot;/hello&quot;)</span><br><span class="line">    public String hello()&#123;</span><br><span class="line">        return &quot;envythink&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p><strong>第五步，在Nacos中创建流控规则配置。</strong>确保之前的Nacos已经以默认配置启动成功，然后按照下图所示配置信息来新建一个配置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7e0fcd5683d38337.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>请注意在这里dataId设置为应用名称；groupId设置为默认分组；配置格式设置为JSON，然后里面的配置内容如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[&#123;</span><br><span class="line">    &quot;resource&quot;: &quot;/hello&quot;,</span><br><span class="line">    &quot;limitApp&quot;: &quot;default&quot;,</span><br><span class="line">    &quot;grade&quot;: 1,</span><br><span class="line">    &quot;count&quot;: 2,</span><br><span class="line">    &quot;strategy&quot;: 0,</span><br><span class="line">    &quot;controlBehavior&quot;: 0,</span><br><span class="line">    &quot;clusterNode&quot;: false</span><br><span class="line">&#125;]</span><br></pre></td></tr></table></figure>
+<p>可以看到上面配置的流控规则是一个JSON格式的数组类型，数组中的每个对象是针对每个保护资源的配置对象，这里对这些配置对象简单介绍一下：</p>
+<ul>
+<li>resource，资源名，即限流规则的作用对象；</li>
+<li>limitApp，流控针对的调用来源，如设置为default则不区分调用来源;</li>
+<li>grade，限流阈值类型，可以是QPS或并发线程数，其中0代表根据并发数量来限流，1代表根据QPS来进行流量控制；</li>
+<li>count，限流阈值；</li>
+<li>strategy，调用关系限流策略；</li>
+<li>controlBehavior，流量控制效果，有三种分别为：直接拒绝、Warm Up和匀速排队；</li>
+<li>clusterNode，是否为集群模式，这里肯定是false。</li>
+</ul>
+<p>这里只是简单的介绍了上述配置，但是除此之外还有很多可选配置和规则，这些在后续文章中将会介绍。</p>
+<p><strong>第五步，启动应用。</strong>请确保sentinel-dashboard服务已经正常运行，然后启动这里名为sentinel-storage-nacos的服务。接着在浏览器访问<code>http://127.0.0.1:8038/hello</code>链接，即可看到如下的返回信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8ae35523d744d5db.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>此时，打开浏览器访问Sentinel DashBoard，可以看到当前我们启动的名为sentinel-storage-nacos的服务已经在其中显示了：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-12df39dd4ca4170a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后点击左侧菜单栏中的流控规则，可以看到其中已经存在一条记录，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-776a662cd613e30b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>查看一下这条流控规则的详情信息，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-cfc7d452b527cfa4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以发现这里填写的其实就是之前我们在Nacos中配置的JSON格式的数组对象的信息，也就是说这样我们就在Sentinel Dashboard中获取到了存储在Nacos中的配置规则，自然也可以将Sentinel Dashboard中设置的流控规则存储到Nacos中。在完成上述操作后，对于接口流控规则的修改，开发者既可以通过Sentinel Dashboard来修改，还可以通过Nacos控制台来修改。</p>
+<p>需要说明的是，通过Nacos修改的配置系信息，那么Sentinel中的信息也会同步修改，但是通过Sentinel修改的信息，Nacos中不一定会同步修改。开发者需要确认当前版本的Sentinel控制台是否具备同步修改Nacos配置的能力，Nacos可以通过在客户端中使用Listener来实现自动更新。</p>
+<p>也就是说，开发者在使用Nacos来持久化存储规则后，需要明确两者修改规则是否同步，其中在Sentinel控制台中修改规则，仅存在于服务的内存中，它是不会修改Nacos中的配置值，重启服务后将恢复原来的值；而在Nacos控制台中修改规则，不仅服务内存中的规则会更新，同时Nacos中持久化的规则也会更新，且重启服务后修改值不会恢复为原来的值。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/03/10/spring-cloud-alibaba-sentinel-2-rule-persistence-storage/">http://envyzhan.asia/2020/03/10/spring-cloud-alibaba-sentinel-2-rule-persistence-storage/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud-alibaba/">springcloud-alibaba</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/04/01/docker-1-docker-and-container/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Docker与容器</div></div></a></div><div class="next-post pull-right"><a href="/2020/03/08/spring-cloud-alibaba-sentinel-1-implement-of-interface-current-limiting/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">实现接口限流</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/03/01/spring-cloud-alibaba-introdution/" title="Spring Cloud Alibaba介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-01</div><div class="title">Spring Cloud Alibaba介绍</div></div></a></div><div><a href="/2020/03/06/spring-cloud-alibaba-nacos-3-openapi-store-cluser/" title="Open API、存储和集群部署"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-06</div><div class="title">Open API、存储和集群部署</div></div></a></div><div><a href="/2020/03/08/spring-cloud-alibaba-sentinel-1-implement-of-interface-current-limiting/" title="实现接口限流"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-08</div><div class="title">实现接口限流</div></div></a></div><div><a href="/2020/03/02/spring-cloud-alibaba-nacos-1-implement-service-registration-and-discovery/" title="实现服务注册与发现"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-02</div><div class="title">实现服务注册与发现</div></div></a></div><div><a href="/2020/03/04/spring-cloud-alibaba-nacos-2-implement-configuration-center/" title="实现配置中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-03-04</div><div class="title">实现配置中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%A7%84%E5%88%99%E6%8C%81%E4%B9%85%E5%8C%96"><span class="toc-number">2.</span> <span class="toc-text">规则持久化</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%85%E5%AD%98%E6%80%81%E6%89%A9%E5%B1%95"><span class="toc-number">3.</span> <span class="toc-text">内存态扩展</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%B5%81%E6%8E%A7%E8%A7%84%E5%88%99"><span class="toc-number">4.</span> <span class="toc-text">流控规则</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A7%E5%88%B6%E5%8F%B0%E8%AE%BE%E7%BD%AE"><span class="toc-number">4.0.1.</span> <span class="toc-text">控制台设置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#API%E7%9B%B4%E6%8E%A5%E4%BF%AE%E6%94%B9"><span class="toc-number">4.0.2.</span> <span class="toc-text">API直接修改</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%96%E9%83%A8%E9%85%8D%E7%BD%AE%E6%BA%90%E6%89%A9%E5%B1%95"><span class="toc-number">5.</span> <span class="toc-text">外部配置源扩展</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%8B%89%E6%A8%A1%E5%BC%8F%E4%BB%8B%E7%BB%8D"><span class="toc-number">5.0.1.</span> <span class="toc-text">推拉模式介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%8B%89%E6%A8%A1%E5%BC%8F%E6%89%A9%E5%B1%95"><span class="toc-number">5.0.2.</span> <span class="toc-text">推拉模式扩展</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%A8%E6%A8%A1%E5%BC%8FNacos%E6%8C%81%E4%B9%85%E5%8C%96%E5%AD%98%E5%82%A8"><span class="toc-number">5.0.3.</span> <span class="toc-text">推模式Nacos持久化存储</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

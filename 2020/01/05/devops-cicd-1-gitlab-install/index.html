@@ -1,0 +1,213 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>CICD平台搭建：Gitlab安装 | 余思博客</title><meta name="keywords" content="cicd"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="持续交付持续交付指的是一种能够使得软件在较短的循环中可靠的发布的软件工程方法。在持续交付初期需要掌握的内容有：（1）版本控制系统，如GitLab、GitHub等，也就是代码仓库，用来作为项目构建初期代码构建的仓库平台；（2）持续集成工具，如Jenkins，作为核心的平台，用来将代码抓取到本地，进行集成配置工作；（3）部署交付工具，如Ansible、Saltstack、Chef等，对我们在Jenki">
+<meta property="og:type" content="article">
+<meta property="og:title" content="CICD平台搭建：Gitlab安装">
+<meta property="og:url" content="http://envyzhan.asia/2020/01/05/devops-cicd-1-gitlab-install/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="持续交付持续交付指的是一种能够使得软件在较短的循环中可靠的发布的软件工程方法。在持续交付初期需要掌握的内容有：（1）版本控制系统，如GitLab、GitHub等，也就是代码仓库，用来作为项目构建初期代码构建的仓库平台；（2）持续集成工具，如Jenkins，作为核心的平台，用来将代码抓取到本地，进行集成配置工作；（3）部署交付工具，如Ansible、Saltstack、Chef等，对我们在Jenki">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-01-05T07:45:10.000Z">
+<meta property="article:modified_time" content="2020-11-01T14:33:32.461Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="cicd">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/01/05/devops-cicd-1-gitlab-install/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'CICD平台搭建：Gitlab安装',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-11-01 22:33:32'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">CICD平台搭建：Gitlab安装</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-01-05T07:45:10.000Z" title="发表于 2020-01-05 15:45:10">2020-01-05</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-11-01T14:33:32.461Z" title="更新于 2020-11-01 22:33:32">2020-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/devops/">devops</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="CICD平台搭建：Gitlab安装"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h3 id="持续交付"><a href="#持续交付" class="headerlink" title="持续交付"></a>持续交付</h3><p>持续交付指的是一种能够使得软件在较短的循环中可靠的发布的软件工程方法。在持续交付初期需要掌握的内容有：（1）版本控制系统，如GitLab、GitHub等，也就是代码仓库，用来作为项目构建初期代码构建的仓库平台；（2）持续集成工具，如Jenkins，作为核心的平台，用来将代码抓取到本地，进行集成配置工作；（3）部署交付工具，如Ansible、Saltstack、Chef等，对我们在Jenkins本地抓取的代码进行最终的远程服务器端交付推送工作。因此我们可以得出一个结论：<strong>持续交互=交付+版本控制系统&amp;持续集成工具&amp;部署工具</strong>。</p>
+<p>本套笔记用于记录Jenkins+Ansible+Gitlab如何搭建一个自动化的部署平台。在此过程中会解决一些问题，如Jenkins如何集成Ansible、playbook等；如何使用Gitlab集成我们的交付部署。</p>
+<h3 id="记录内容"><a href="#记录内容" class="headerlink" title="记录内容"></a>记录内容</h3><p>本套笔记主要记录的内容有：（1）GitLab代码仓库的搭建流程与使用流程，且介绍这个工具在项目交付过程中所起的作用；（2）Ansible部署工具的虚拟环境配置以及Playbook脚本编写规范，并介绍Ansible的架构使用规范、模块调用，以及最终的流程应用；（3）Jenkins集成工具系统的环境构建，以及它的Freestyle、Pipeline这两种不同任务格式的编写，以及最终与主流开发工具的集成应用；（4）FreeStyle任务结合JAG（Jenkins+Ansible+Gitlab）三剑客工具去编写一个静态网站的自动化部署交付流程的集成与实现；（5）Pipeline任务结合三剑客工具去编写一个WordPress博客网站的自动化部署交付流程的集成与实现。</p>
+<h1 id="GitLab概述"><a href="#GitLab概述" class="headerlink" title="GitLab概述"></a>GitLab概述</h1><h3 id="GitLab定义"><a href="#GitLab定义" class="headerlink" title="GitLab定义"></a>GitLab定义</h3><p>GitLab是一个开源的分布式版本控制系统，它的开发语言是Ruby，通过Web界面与用户交付实现项目源代码管理缺陷与注释、版本控制、代码复用与查找等功能。</p>
+<p>看到这里你可能有疑惑了，这个与我们平时使用的GitHub有什么区别呢？我们平常就是使用Github来管理代码。Github是一个分布式的在线代码托管<strong>仓库</strong>，个人版可直接在线免费使用，而企业版需要收费且需要服务器安装。Gitlab是一个分布式的在线代码托管<strong>软件</strong>，分社区免费版和企业收费版，且都需要服务器安装。不过GitLab它的优势在于中小公司可以直接使用社区免费版本去保存和管理自己的私有代码，无需使用Github将代码直接暴露在我们的公网上面。</p>
+<p>Gitlab的优势和应用场景有以下几点：1、开源免费，适合中小型公司将代码放置在该系统中。Gitlab目前所发布的社区免费版中的适配功能完全满足中小型公司将其安装到自己的私有网络当中，并充当我们的代码仓库，如果我们需要对Gitlab进行二次开发获取一些第三方平台的集成服务，以及需要没有宕机时间的系统升级服务，我们也可以随时购买它的企业付费版本，服务许可证，实现无缝的将当前免费社区版升级到收费企业版本。2、差异化的版本管理，离线同步以及强大的分支管理功能。这里的差异化的版本管理保证我们的代码无论有多少次细微或这巨大的变动，Gitlab都能实时的保存我们的变动记录。离线同步保证我们不再实时依赖网络资源进行代码提交，Gitlab可以实现本地的代码提交，并在网络通畅的情况下将本地的所有Git相关的操作同步到远程Gitlab服务器当中，GitLab强大的分支管理使我们可以针对不同的部署环境、不同的业务逻辑、不同的代码batch特征，创建不同的分支进行并行的独立维护与更新。3、便捷的GUI操作界面以及强大的账户权限管理功能。Gitlab最大的优势与特点就是有一个强大的便捷GUI操作界面，以及支持本地或者Feature账户对不同仓库，根据用户或组进行读、写、查看、提交等权限划分，保证我们的Gitlab用户可以各司其职，不会越权去操作不属于他的工作。4、集成度很高，能够集成绝大多数的开发工具。Gitlab集成度很高的最大原因就是它广泛应用于国内外大中小公司，充当一个非常可靠的分布式代码仓库系统，正是因为它的口碑，很多第三方工具，如Jira、Jenkins等开发工具都会选择Gitlab作为一个非常重要的持续集成工具加入其系统工具当中。5、支持内置HA，保证在高并发下仍旧实现高可用性。Gitlab支持内置HA，保证在高并发下仍旧实现高可用，无论Gitlab的服务宕机或者因服务异常导致网络中断，它的内置HA高可用功能都可以保证我们的用户在7*24小时内不间断地使用它的服务，我们无需去搭配第三方的高可用工具去保证它的系统安全稳定，我们可以直接打开Gitlab内置HA工具，使用它。</p>
+<h3 id="Gitlab主要服务构成"><a href="#Gitlab主要服务构成" class="headerlink" title="Gitlab主要服务构成"></a>Gitlab主要服务构成</h3><p>Gitlab作为一个分布式在线代码仓库托管软件，它必然有相关的服务组件去支撑这个庞大的系统，接下来就介绍Gitlab的主要服务构成：（1）Nginx静态Web服务器。它作为Gitlab的Proxy代理，处理我们所有HTTPS静态访问请求；（2）<code>Gitlab-workhorse</code>轻量级的反向代理服务器。它用于处理一些较大的文件上传下载以及我们经常使用的<code>git push</code>等命令行操作；（3）<code>Gitlab-shell</code>用于处理日常使用的Git命令和修改存放我们ssh公钥的<code>authorized keys</code>文件列表；（4）Logrotate日志文件管理工具。 Logrotate负责处理我们Gitlab日志的一些切割、打包操作；（5）Postgresql数据库。Postgresql数据库作为Gitlab的推荐数据库，用于保存我们所有的Gitlab信息；（6）Redis缓存服务器。它作为Gitlab的缓存服务器，用于缓存我们的数据库信息，加快我们的前台访问速度，以及数据的交互读写。</p>
+<h3 id="GitLab工作流程"><a href="#GitLab工作流程" class="headerlink" title="GitLab工作流程"></a>GitLab工作流程</h3><p>我们需要在Gitlab前台Web界面创建项目仓库，然后在本地去克隆我们的项目，这里需要注意的是在完成前台项目仓库创建之后，需要在本地电脑上安装Git客户端工具git client，保证我们可以使用git命令去执行我们本地克隆项目操作。上面其实就是<strong>第一步</strong>，创建并克隆项目。接下来是<strong>第二步</strong>，创建项目某Feature分支。我们会根据项目的需求Feature特征去创建对应的仓库分支，这样就可以开始编写该Feature的代码并提交至该Feature分支。需要注意的是，在实际开发过程中，Gitlab管理员会事先创建好我们的项目仓库，并在该仓库下根据项目的业务需求，去创建若干个Feature特征分支，这些Feature特征分支会以任务的形式分发给开发人员，然后开发人员在该分支下编写对应的代码，并初步提交至该分支。<strong>第三步</strong>就是推送该项目分支至远程Gitlab服务器。我们编写的代码最后肯定是需要提交的远程服务器的，你以为这就完了么？不，我们还有<strong>第四步</strong>，在Gitlab 图形Web界面下找到自己开发的代码，并进行代码检查，检查无误后，提交Master主分支合并申请。<strong>第五步</strong>，项目领导审查代码并确认合并申请，这样就完成了一个Feature分支到我们的项目当中，进而完成了Gitlab的一个工作流程。</p>
+<p>作为一个开发团队，我们需要这样一个Gitlab工作流程去更加快速、高效和稳定地进行项目代码编写、提交、检查、合并等操作，这样可以使开发人员可以并行地完成各自的Feature需求，而又不会对主分支代码造成影响。这里选择Gitlab分布式代码管理软件其中最重要的一个原因就是它有一个非常方便的Web界面去完善我们的工作流程，可以帮助我们非常清晰地完成代码的编写与存放工作。</p>
+<h1 id="Gitlab的安装与配置管理"><a href="#Gitlab的安装与配置管理" class="headerlink" title="Gitlab的安装与配置管理"></a>Gitlab的安装与配置管理</h1><h3 id="Gitlab安装配置"><a href="#Gitlab安装配置" class="headerlink" title="Gitlab安装配置"></a>Gitlab安装配置</h3><p>这次是在本地虚拟机下安装Gitlab社区版本，并以一个demo来演示Gitlab的工作流程。首先需要准备一台虚拟机，系统是CentOS7 64位，然后利用xshell工具来登录该虚拟机，开始Gitlab开始前的预配置准备工作，分两步：<strong>第一步，关闭firewalld防火墙。</strong>首先需要关闭CentOS7系统自带的firewalld防火墙，以保证本地电脑可以访问该CentOS7 中所有的端口资源，使用的命令为<code>systemctl stop firewalld</code>，同时需要使用<code>systemctl disable firewalld</code>命令去禁用防火墙开机启动服务；<strong>第二步，关闭SELINUX并重启系统。</strong>关闭SELINUX强制访问控制安全策略，保证该策略不会影响Gitlab的正常运行。可以编辑selinux文件，使用的命令为<code>vi /etc/sysconfig/selinux</code>，将其中的<code>enforcing</code>修改为<code>disabled</code>，最后输入<code>reboot</code>命令来重启系统，完成SELINUX的禁用操作。预配置准备工作就完成了。</p>
+<p>接着需要安装<code>Omnibus Gitlab-ce安装包</code>（其实就是Gitlab社区版安装包），这里你可能就需要问了，为什么使用Omnibus Gitlab-ce安装包，而不是直接通过源代码的方式进行安装，那是因为这里的Omnibus是综合性的意思，而Gitlab本身包含很多服务组件及依赖的安装包，如果你手动去安装这些会很难，且非常费时间，因此Gitlab推出了一键<code>Omnibus Gitlab-ce安装包</code>，去帮助我们快速安装Gitlab所有组件及其依赖，并使用内置的shell自动化配置工具去自动的配置Gitlab的相关组件及有关配置，降低了初学者的安装成本，相比利用源代码安装Gitlab，这里仅仅花费很短的时间就可以完成安装配置工作。安装步骤为：1、安装Gitlab组件，使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install curl policycoreutils openssh-server openssh-clients postfix</span><br></pre></td></tr></table></figure>
+
+<p>2、配置YUM仓库，使用的下面的命令去下载Gitlab仓库源：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash</span><br></pre></td></tr></table></figure>
+
+<p>3、启动postfix邮件服务且开机可以自动加载，使Gitlab能够与postfix集成，发送相关的任务通知给我们的账户邮箱。启动命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl start postfix &amp;&amp; systemctl enable postfix</span><br></pre></td></tr></table></figure>
+
+<p>4、安装<code>Gitlab-ce</code>社区版本。使用下面的命令来安装<code>Gitlab-ce</code>一键社区版本安装包：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum install -y gitlab-ce</span><br></pre></td></tr></table></figure>
+
+<p>5、在安装完<code>Gitlab-ce</code>一键社区版本安装包后，需要配置Gitlab相关的一些证书。（A）首先使用openssl去创建Gitlab本地证书，并配置Gitlab config去加载该证书；（B）配置Nginx SSL代理服务，使我们可以通过域名直接访问Gitlab的所有系统资源；（C）最后使用<code>gitlab-ctl</code>命令来管理并初始化Gitlab相关服务并完成安装。</p>
+<h3 id="Gitlab安装实战"><a href="#Gitlab安装实战" class="headerlink" title="Gitlab安装实战"></a>Gitlab安装实战</h3><p>首先启动本地虚拟机，然后获取到它的IP地址，然后打开git bash或者xshell工具，使用<code>ssh@IP</code>命令登录到该虚拟机。开始执行一系列命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop firewalld  #关闭firewalld防火墙</span><br><span class="line">systemctl disable firewalld  # 禁用防火墙开机启动服务</span><br><span class="line">vi /etc/sysconfig/selinux  # 设置selinux值为disabled</span><br><span class="line">reboot # 重启系统</span><br><span class="line">getenforce # 检查selinux策略是否已为disabled状态</span><br><span class="line"></span><br><span class="line">yum -y install curl policycoreutils openssh-server openssh-clients postfix  # 安装Gitlab组件</span><br><span class="line">curl -sS https://packages.gitlab.com/install/repositories/gitlab/gitlab-ce/script.rpm.sh | sudo bash  # 下载Gitlab仓库源</span><br><span class="line">systemctl start postfix &amp;&amp; systemctl enable postfix  # 启动postfix邮件服务且开机可以自动加载</span><br><span class="line">yum install -y gitlab-ce  # 安装gitlab社区版一键启动包</span><br></pre></td></tr></table></figure>
+
+<p>执行完上述命令后，结果出现下面的信息，表示已经成功安装好<code>Gitlab-ce</code>社区版本：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6994ffcef7492c37.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来进行Gitlab相关的一些证书。（A）使用openssl去创建Gitlab本地证书，并配置Gitlab config去加载该证书，一共有四个证书，这是Gitlab安装必备的。首先需要创建一个ssl目录，使用的命令为<code>mkdir -p /etc/gitlab/ssl</code>，然后去创建一个本地私有秘钥，使用的命令为<code>openssl genrsa -out &quot;/etc/gitlab/ssl/gitlab.example.com.key&quot; 2048</code>，接着使用刚才的私有秘钥去创建csr证书，使用的命令为<code>openssl req -new -key &quot;/etc/gitlab/ssl/gitlab.example.com.key&quot; -out  &quot;/etc/gitlab/ssl/gitlab.example.com.csr&quot;</code>之后会进入一个交互页面，按照图示输入信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f54f1a8b58a2f6b1.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后进入到<code>/etc/gitlab/ssl</code>目录下，查看是否存在私有秘钥和csr证书：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r-- 1 root root 1074 4月  16 18:28 gitlab.example.com.csr</span><br><span class="line">-rw-r--r-- 1 root root 1675 4月  16 18:26 gitlab.example.com.key</span><br></pre></td></tr></table></figure>
+
+<p>接下来用私有秘钥和csr证书创建crt签署证书，使用<code>openssl x509 -req -days 365 -in &quot;/etc/gitlab/ssl/gitlab.example.com.csr&quot; -signkey &quot;/etc/gitlab/ssl/gitlab.example.com.key&quot; -out &quot;/etc/gitlab/ssl/gitlab.example.com.crt&quot;</code>命令来进行创建。注意其中的<code>x509 -req</code>代表签署证书的格式，<code>-days 365</code>代表证书有效期是365天，<code>-in &quot;/etc/gitlab/ssl/gitlab.example.com.csr&quot;</code>代表引入这个csr证书，<code>-signkey &quot;/etc/gitlab/ssl/gitlab.example.com.key&quot;</code>代表使用这个私有秘钥作为签名Key，<code>-out &quot;/etc/gitlab/ssl/gitlab.example.com.crt&quot;</code>表示输出已经签署的证书到本路径。可以看到<code>/etc/gitlab/ssl</code>目录下已经有三个文件了。</p>
+<p>接着去输出pem证书，使用的命令为<code>openssl dhparam -out /etc/gitlab/ssl/dhparams.pem 2048</code>，这里可能需要花费一些时间（注意这里面的<code>/etc/gitlab/ssl/dhparams.pem</code>是不能使用引号包围的）。</p>
+<p>然后进入到<code>/etc/gitlab/ssl</code>目录下，查看是否存在4个证书：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">-rw-r--r-- 1 root root  424 4月  16 19:04 dhparams.pem</span><br><span class="line">-rw-r--r-- 1 root root 1281 4月  16 18:59 gitlab.example.com.crt</span><br><span class="line">-rw-r--r-- 1 root root 1074 4月  16 18:28 gitlab.example.com.csr</span><br><span class="line">-rw-r--r-- 1 root root 1675 4月  16 18:26 gitlab.example.com.key</span><br></pre></td></tr></table></figure>
+
+<p>那么到此关于创建证书这一块就到此为止了，接下来就是更改<code>/etc/gitlab/ssl</code>目录下所有证书的权限(注意必须在<code>/etc/gitlab/ssl</code>目录进行操作)，使用的命令为<code>chmod 600 *</code>。然后编辑Gitlab的配置文件，将这里的4个证书都配置到Gitlab的配置文件中，先使用<code>vi  /etc/gitlab/gitlab.rb</code>打开配置文件，将<code>external_url</code>中的<code>http</code>修改为  <code>https</code>，接着在阅读模式下使用<code>/redirect_http_to_https</code>命令来查找<code>redirect_http_to_https</code>相关的信息，将其前面的#号去掉，且将值修改为true。然后使用<code>/ssl_certificate</code>命令来查找<code>ssl_certificate</code>相关的信息，将其前面的#号去掉，同时将<code>&quot;/etc/gitlab/ssl/#&#123;node[&#39;fqdn&#39;]&#125;.crt&quot;</code>更改为<code>/etc/gitlab/ssl/gitlab.example.com.crt</code>，顺便将下面的<code>nginx[&#39;ssl_certificate_key&#39;] </code>中的key的值也修改为<code>/etc/gitlab/ssl/gitlab.example.com.key</code>。然后使用<code>/ssl_dhparam</code>命令来查找<code>ssl_dhparam</code>相关的信息，<strong>注意其前面的#号一定需要保留</strong>，这里仅仅只是将nil值修改为<code>/etc/gitlab/ssl/dhparams.pem</code>。修改完上述信息后，执行wq保存操作。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-90f91cea94400b3c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>最后使用<code>gitlab-ctl reconfigure</code>命令来初始化gitlab的相关服务配置，在命令执行过程中可以看到gitlab会使用chef自动化部署工具来初始化gitlab相关配置，该过程可能需要一定时间，请耐心等待。当你看到下面的结果时，则表示gitlab已经初始化成功：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-02dda0a90af7a9a0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>（B）配置Nginx SSL代理服务，使我们可以通过域名直接访问Gitlab的所有系统资源。接下来找到gitlab下面的nginx代理工具，去更改gitlab的一个http配置文件，使用的命令为<code>vi   /var/opt/gitlab/nginx/conf/gitlab-http.conf</code>，接着在阅读模式下使用<code>/server_name</code>命令来查找<code>server_name</code>相关的信息，我们在该行的下面新增一行，用来重定向所有gitlab的https请求，添加的那行代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">rewrite ^(.*)$ https://$host$1 permanent;</span><br></pre></td></tr></table></figure>
+
+<p>添加完上述信息后，执行wq保存操作。最后使用<code>gitlab-ctl restart</code>命令来使我们刚才修改的nginx配置信息生效：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-213602a3e58e03c3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>（C）修改本机hosts文件，文件地址是<code>C:\Windows\System32\drivers\etc\hosts</code>，你可以一步步定位到该目录或者直接使用win+R，将这个文件地址放进入回车即可快速进入该目录。在里面手动输入一条DNS记录，内容为<code>192.168.2.131 gitlab.example.com</code>，这条DNS记录的含义是将<code>gitlab.example.com</code>域名重定向到<code>192.168.2.131</code>这个Gitlab主机，也就是我们的虚拟机IP地址。然后打开浏览器，在地址栏中输入网址<code>gitlab.example.com</code>，如果看到下面的图片信息，则表明你已经成功安装了gitlab分布式代码仓库：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4e0a2d44c6fcd019.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>第一次登陆要求更改默认密码，自己设置一个即可，然后点击提交。然后在登录页面使用默认的账号名称root，密码就是你刚才输入的那个：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5ac36d69c4c907e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6581816fde943438.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来就创建一个project，名称为<code>first-repo</code>，具体操作见下面的图片：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9b65c9eeb6033f5c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9c37f76bdbdf5536.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>复制上面的https链接，回到本地电脑，在桌面上新建一个文件夹repo，然后使用git client进入到该文件夹中，在里面执行命令<code>git -c http.sslVerify=false clone https://gitlab.example.com/root/first-repo.git</code>，其中这个<code>-c http.sslVerify=false</code>用来避免我们的本地证书无法进行克隆操作。然后输入你gitlab的账号和密码即可将线上的first-repo项目克隆到本地：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-805ada8ead97dd7a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后新建一个<code>my.py</code>文本文件，里面的内容为：<code>print(&quot;hello,this is my first repository which created by gitlab&quot;)</code>，现在尝试将其推送到我们线上远程仓库。首先使用<code>git add .</code>命令将该目录下所有文件添加到本地仓库，然后使用<code>git commit -m &quot;提交信息&quot;</code>命令输入提交信息。如果页面提示让你输入全局邮箱和用户名，你就按照要求依次进行输入：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">git config --global user.email &quot;admin@example.com&quot;</span><br><span class="line">git config --global user.name &quot;admin&quot;</span><br></pre></td></tr></table></figure>
+
+<p>然后再次执行<code>git commit -m &#39;first commit&#39;</code>命令，如果出现以下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">$ git commit -m &#x27;first commit&#x27;</span><br><span class="line">[master (root-commit) 8c9ef06] first commit</span><br><span class="line"> 1 file changed, 1 insertion(+)</span><br><span class="line"> create mode 100644 test.py</span><br></pre></td></tr></table></figure>
+
+<p>说明本地已经上传了一个my.py文件到我们本地的master分支上，但这还不是远程服务器分支上，需要使用<code>git -c http.sslVerify=false push origin master</code>命令来完成我们本地master分支同步到远程的服务器当中：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7f519b14b44210b0.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如果你觉得页面是英文的不易阅读，可以点击参看这篇文章进行汉化 <a target="_blank" rel="noopener" href="https://soulchild.cn/729.html">gitlab安装和汉化的两种方式</a>。</p>
+<p>最后需要说明的是gitlab的启动、重启、暂停方式代码和普通的服务方式差不多，命令依次为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">gitlab-ctl start</span><br><span class="line">gitlab-ctl restart</span><br><span class="line">gitlab-ctl stop</span><br></pre></td></tr></table></figure></article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/01/05/devops-cicd-1-gitlab-install/">http://envyzhan.asia/2020/01/05/devops-cicd-1-gitlab-install/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/cicd/">cicd</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/01/07/devops-cicd-2-gitlab-used/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">CICD平台搭建：Gitlab应用</div></div></a></div><div class="next-post pull-right"><a href="/2019/12/29/spring-cloud-sleuth-4-data-storage/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Sleuth数据存储</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/01/07/devops-cicd-2-gitlab-used/" title="CICD平台搭建：Gitlab应用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-07</div><div class="title">CICD平台搭建：Gitlab应用</div></div></a></div><div><a href="/2020/01/16/devops-cicd-7-jenkins-used/" title="CICD平台搭建：Jenkins应用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-16</div><div class="title">CICD平台搭建：Jenkins应用</div></div></a></div><div><a href="/2020/01/09/devops-cicd-3-ansible-install/" title="CICD平台搭建：Ansible安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-09</div><div class="title">CICD平台搭建：Ansible安装</div></div></a></div><div><a href="/2020/01/13/devops-cicd-5-jenkins-install/" title="CICD平台搭建：Jenkins安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-13</div><div class="title">CICD平台搭建：Jenkins安装</div></div></a></div><div><a href="/2020/01/15/devops-cicd-6-jenkins-job-install/" title="CICD平台搭建：Jenkins Job安装"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-15</div><div class="title">CICD平台搭建：Jenkins Job安装</div></div></a></div><div><a href="/2020/01/11/devops-cicd-4-ansbile-playbook-introdution/" title="CICD平台搭建：Ansible playbooks介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-01-11</div><div class="title">CICD平台搭建：Ansible playbooks介绍</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8C%81%E7%BB%AD%E4%BA%A4%E4%BB%98"><span class="toc-number">1.</span> <span class="toc-text">持续交付</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%B0%E5%BD%95%E5%86%85%E5%AE%B9"><span class="toc-number">2.</span> <span class="toc-text">记录内容</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#GitLab%E6%A6%82%E8%BF%B0"><span class="toc-number"></span> <span class="toc-text">GitLab概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#GitLab%E5%AE%9A%E4%B9%89"><span class="toc-number">1.</span> <span class="toc-text">GitLab定义</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gitlab%E4%B8%BB%E8%A6%81%E6%9C%8D%E5%8A%A1%E6%9E%84%E6%88%90"><span class="toc-number">2.</span> <span class="toc-text">Gitlab主要服务构成</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#GitLab%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">3.</span> <span class="toc-text">GitLab工作流程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Gitlab%E7%9A%84%E5%AE%89%E8%A3%85%E4%B8%8E%E9%85%8D%E7%BD%AE%E7%AE%A1%E7%90%86"><span class="toc-number"></span> <span class="toc-text">Gitlab的安装与配置管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Gitlab%E5%AE%89%E8%A3%85%E9%85%8D%E7%BD%AE"><span class="toc-number">1.</span> <span class="toc-text">Gitlab安装配置</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Gitlab%E5%AE%89%E8%A3%85%E5%AE%9E%E6%88%98"><span class="toc-number">2.</span> <span class="toc-text">Gitlab安装实战</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

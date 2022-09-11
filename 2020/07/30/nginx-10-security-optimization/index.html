@@ -1,0 +1,208 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Nginx安全优化 | 余思博客</title><meta name="keywords" content="nginx"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面前面学习的都是如何使用Nginx，接下来学习更深层次的Nginx优化知识。我们可以通过修改或者隐藏Nginx版本号，或者更改Nginx服务的默认用户等方式来提升Nginx的安全性。 隐藏Nginx版本号在浏览器中访问一个不存在的链接，可以看到页面出现如下所示的信息：  可以看到它直接暴露了Nginx的版本号，这肯定是不安全的，除了这个版本号之外，还有其他的信息也是较为敏感的，开发者可以进入">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx安全优化">
+<meta property="og:url" content="http://envyzhan.asia/2020/07/30/nginx-10-security-optimization/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面前面学习的都是如何使用Nginx，接下来学习更深层次的Nginx优化知识。我们可以通过修改或者隐藏Nginx版本号，或者更改Nginx服务的默认用户等方式来提升Nginx的安全性。 隐藏Nginx版本号在浏览器中访问一个不存在的链接，可以看到页面出现如下所示的信息：  可以看到它直接暴露了Nginx的版本号，这肯定是不安全的，除了这个版本号之外，还有其他的信息也是较为敏感的，开发者可以进入">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-07-30T10:13:01.000Z">
+<meta property="article:modified_time" content="2021-03-01T10:36:52.637Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/07/30/nginx-10-security-optimization/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nginx安全优化',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 18:36:52'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Nginx安全优化</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-07-30T10:13:01.000Z" title="发表于 2020-07-30 18:13:01">2020-07-30</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T10:36:52.637Z" title="更新于 2021-03-01 18:36:52">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/nginx/">nginx</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nginx安全优化"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>前面学习的都是如何使用Nginx，接下来学习更深层次的Nginx优化知识。我们可以通过修改或者隐藏Nginx版本号，或者更改Nginx服务的默认用户等方式来提升Nginx的安全性。</p>
+<h3 id="隐藏Nginx版本号"><a href="#隐藏Nginx版本号" class="headerlink" title="隐藏Nginx版本号"></a>隐藏Nginx版本号</h3><p>在浏览器中访问一个不存在的链接，可以看到页面出现如下所示的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-00d25bfaf8686cb7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到它直接暴露了Nginx的版本号，这肯定是不安全的，除了这个版本号之外，还有其他的信息也是较为敏感的，开发者可以进入到Nginx安装所在机器，执行如下命令来查看输出信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink vhost]# curl -I 127.0.0.1</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: nginx/1.17.0</span><br><span class="line">Date: Wed, 18 May 2020 07:02:59 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Content-Length: 612</span><br><span class="line">Last-Modified: Tue, 03 Nov 2020 01:18:28 GMT</span><br><span class="line">Connection: keep-alive</span><br><span class="line">ETag: &quot;5fa0afe4-264&quot;</span><br><span class="line">Accept-Ranges: bytes</span><br></pre></td></tr></table></figure>
+<p>只不过上述敏感信息不会显示到界面上，接下来介绍如何将敏感信息隐藏起来。其实步骤很简单，开发者只需打开Nginx的主配置文件nginx.conf，在http区块内新增<code>server_tokens off;</code>参数即可，注意添加的位置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-eff7639155f8c7e4.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>解释一下<code>server_tokens</code>参数，其语法格式为<code>server_tokens on|off</code>，其中on为开启，off为关闭，默认是on也就是开启状态。<code>server_tokens</code>可以放置在http、server、location等区块中。</p>
+<p>之后进行语法检查和平滑重启Nginx，接着再次使用<code>curl -I 127.0.0.1</code>来查看输出信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink conf]# curl -I 127.0.0.1</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: nginx</span><br><span class="line">Date: Wed, 18 Nov 2020 07:14:41 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Content-Length: 612</span><br><span class="line">Last-Modified: Tue, 03 Nov 2020 01:18:28 GMT</span><br><span class="line">Connection: keep-alive</span><br><span class="line">ETag: &quot;5fa0afe4-264&quot;</span><br><span class="line">Accept-Ranges: byte</span><br></pre></td></tr></table></figure>
+<p>可以看到Server中已经不再显示Nginx版本信息了。之后在浏览器中访问一个不存在的链接，可以看到页面出现如下所示的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4aadfeedc17b4761.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>同样通过访问一个不存在的链接，也能证实Nginx版本信息确实不再显示了。</p>
+<h3 id="修改Nginx版本信息"><a href="#修改Nginx版本信息" class="headerlink" title="修改Nginx版本信息"></a>修改Nginx版本信息</h3><p>上面只是对Nginx的敏感信息进行了隐藏，为了更好的提升Nginx的安全性，最好的做法就是直接修改Nginx的版本信息，注意Nginx版本信息需要从源码中才能修改，这里所说的源码就是没有被编译过的Nginx文件，也就是从官网下载后直接解压的文件。显然我们此时使用的已经不是未编译的Nginx，但是下载解压的安装包还在，可以将其进行修改，最后重新编译覆盖现有的Nginx即可。</p>
+<p>笔者Nginx的下载解压路径为<code>/home/envythink</code>目录，这里涉及到三个文件，具体是<code>nginx.h</code>、<code>ngx_http_header_filter_module.c</code>和<code>ngx_http_special_response.c</code>。<br>（A）其中<code>nginx.h</code>文件路径为<code>/home/envythink/nginx-1.17.0/src/core/nginx.h</code>；<br>（B）<code>ngx_http_header_filter_module.c</code>文件路径为<code>/home/envythink/nginx-1.17.0/src/http/ngx_http_header_filter_module.c</code>；<br>（C）<code>ngx_http_special_response.c</code>文件路径为<code>/home/envythink/nginx-1.17.0/src/core/ngx_http_special_response.c</code>。</p>
+<p>接下来将依次对这三个文件进行修改，同时考虑到今后的恢复，这里都将三者进行了备份，以及将修改前和修改后的所涉及到的代码进行了对比：<br>（1）<code>nginx.h</code>文件修改前的内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#define NGINX_VERSION      &quot;1.17.0&quot; # 版本号</span><br><span class="line">#define NGINX_VER          &quot;nginx/&quot; NGINX_VERSION # 软件名称</span><br><span class="line">#ifdef NGX_BUILD</span><br><span class="line">#define NGINX_VER_BUILD    NGINX_VER &quot; (&quot; NGX_BUILD &quot;)&quot;</span><br><span class="line">#else</span><br><span class="line">#define NGINX_VER_BUILD    NGINX_VER </span><br><span class="line">#endif</span><br><span class="line">#define NGINX_VAR          &quot;NGINX&quot; # 软件名称</span><br></pre></td></tr></table></figure>
+<p><code>nginx.h</code>文件修改后的内容：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">#define NGINX_VERSION      &quot;1.1.1&quot;  </span><br><span class="line">#define NGINX_VER          &quot;Envythink/&quot; NGINX_VERSION</span><br><span class="line">#ifdef NGX_BUILD</span><br><span class="line">#define NGINX_VER_BUILD    NGINX_VER &quot; (&quot; NGX_BUILD &quot;)&quot;</span><br><span class="line">#else</span><br><span class="line">#define NGINX_VER_BUILD    NGINX_VER</span><br><span class="line">#endif</span><br><span class="line">#define NGINX_VAR          &quot;Envythink&quot;</span><br></pre></td></tr></table></figure>
+<p>（2）修改<code>ngx_http_header_filter_module.c</code>文件。首先使用如下命令来查询我们需要修改的数据：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink core]# grep -n &#x27;Server: nginx&#x27; /home/envythink/nginx-1.17.0/src/http/ngx_http_header_filter_module.c </span><br><span class="line">49:static u_char ngx_http_server_string[] = &quot;Server: nginx&quot; CRLF;</span><br></pre></td></tr></table></figure>
+<p>接着使用如下命令来将其中的nginx修改为Envythink，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink core]# sed -i &#x27;s#Server: nginx#Server: Envythink#g&#x27; /home/envythink/nginx-1.17.0/src/http/ngx_http_header_filter_module.c </span><br></pre></td></tr></table></figure>
+<p>然后使用如下命令来检查修改是否成功，可以发现确实成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink core]# grep -n &#x27;Server: Envythink&#x27; /home/envythink/nginx-1.17.0/src/http/ngx_http_header_filter_module.c </span><br><span class="line">49:static u_char ngx_http_server_string[] = &quot;Server: Envythink&quot; CRLF;</span><br></pre></td></tr></table></figure>
+<p>（3）<code>ngx_http_special_response.c</code>文件修改前的内容：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-71c9577f4993fd12.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>将图中圈红的两个信息都进行修改。第一个修改为如下所示的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">static u_char ngx_http_error_full_tail[] =</span><br><span class="line">&quot;&lt;hr&gt;&lt;center&gt;&quot; NGINX_VER &quot;(http://www.envythink.com)&lt;/center&gt;&quot; CRLF</span><br><span class="line">&quot;&lt;/body&gt;&quot; CRLF</span><br><span class="line">&quot;&lt;/html&gt;&quot; CRLF</span><br><span class="line">;</span><br></pre></td></tr></table></figure>
+<p>第二个修改为如下所示的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">static u_char ngx_http_error_tail[] =</span><br><span class="line">&quot;&lt;hr&gt;&lt;center&gt;Envythink&lt;/center&gt;&quot; CRLF</span><br><span class="line">&quot;&lt;/body&gt;&quot; CRLF</span><br></pre></td></tr></table></figure>
+<p>在完成上述文件的修改保存之后，接下来开始重新编译Nginx。由于在前面安装了一些第三方插件，因此首先需要查看编译参数，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink http]# nginx -V</span><br><span class="line">nginx version: nginx/1.17.0</span><br><span class="line">built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) </span><br><span class="line">configure arguments: --user=nginx --group=nginx --prefix=/usr/local/nginx --add-module=/usr/local/nginx/third_module/echo-nginx-module-0.61 --with-http_stub_status_module</span><br></pre></td></tr></table></figure>
+<p>那么接下来回到<code>/home/envythink/nginx-1.17.0</code>目录，这是configure脚本所在目录，执行如下的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --user=nginx --group=nginx --prefix=/usr/local/nginx --add-module=/usr/local/nginx/third_module/echo-nginx-module-0.61 --with-http_stub_status_module</span><br></pre></td></tr></table></figure>
+<p>之后使用<code>make</code>命令进行安装，切记不可使用<code>make install</code>命令，这样会覆盖前面已经安装的Nginx。</p>
+<p>由于此处执行了编译和安装命令，那么接下来就需要将安装目录中的nginx命令进行更新，也就是将<code>/home/envythink/nginx-1.17.0/objs</code>目录下的nginx覆盖掉之前的<code>/usr/local/nginx/sbin/</code>目录下的nginx，使用的命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /home/envythink/nginx-1.17.0/objs/nginx /usr/local/nginx/sbin/nginx</span><br></pre></td></tr></table></figure>
+<p>如果出现<code>cp: 无法创建普通文件&quot;/usr/local/nginx/sbin/nginx&quot;: 文本文件忙</code>的提示语，那么就需要使用<code>systemctl stop nginx</code>命令来终止Nginx的运行，然后重新运行上述命令。</p>
+<p>之后进行语法检查和平滑重启Nginx，接着再次使用<code>curl -I 127.0.0.1</code>来查看输出信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink nginx-1.17.0]# curl -I 127.0.0.1</span><br><span class="line">HTTP/1.1 200 OK</span><br><span class="line">Server: Envythink</span><br><span class="line">Date: Wed, 18 May 2020 07:57:37 GMT</span><br><span class="line">Content-Type: text/html</span><br><span class="line">Content-Length: 612</span><br><span class="line">Last-Modified: Tue, 03 May 2020 01:18:28 GMT</span><br><span class="line">Connection: keep-alive</span><br><span class="line">ETag: &quot;5fa0afe4-264&quot;</span><br><span class="line">Accept-Ranges: bytes</span><br></pre></td></tr></table></figure>
+<p>之后在浏览器中访问一个不存在的链接，可以看到页面出现如下所示的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-03228fa52be20a49.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="更改Nginx服务的默认用户"><a href="#更改Nginx服务的默认用户" class="headerlink" title="更改Nginx服务的默认用户"></a>更改Nginx服务的默认用户</h3><p>除了前面的安全优化之外，接下来还可以通过更改Nginx服务的默认用户来提升系统的安全性。</p>
+<p>第一步，创建新用户，这里假定Nginx服务的默认用户名和组都是nginx，依次执行如下命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# useradd nginx -s /sbin/nologin -M　# 创建用户</span><br><span class="line">[root@envythink ~]# id nginx # 检查用户</span><br><span class="line">uid=1003(nginx) gid=1003(nginx) 组=1003(nginx)</span><br></pre></td></tr></table></figure>
+<p>第二步，重新编译Nginx。由于在前面安装了一些第三方插件，因此首先需要查看编译参数，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink http]# nginx -V</span><br><span class="line">nginx version: nginx/1.17.0</span><br><span class="line">built by gcc 4.8.5 20150623 (Red Hat 4.8.5-39) (GCC) </span><br><span class="line">configure arguments: --user=nginx --group=nginx --prefix=/usr/local/nginx --add-module=/usr/local/nginx/third_module/echo-nginx-module-0.61 --with-http_stub_status_module</span><br></pre></td></tr></table></figure>
+<p>可以发现笔者在之前编译的时候就使用了nginx用户和nginx用户组，因此接下来的操作是假设没有使用nginx用户和nginx用户组的情况。</p>
+<p>回到<code>/home/envythink/nginx-1.17.0</code>目录，这是configure脚本所在目录，执行如下的命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">./configure --user=nginx --group=nginx --prefix=/usr/local/nginx --add-module=/usr/local/nginx/third_module/echo-nginx-module-0.61 --with-http_stub_status_module</span><br></pre></td></tr></table></figure>
+<p>之后使用<code>make</code>命令进行安装，切记不可使用<code>make install</code>命令，这样会覆盖前面已经安装的Nginx。</p>
+<p>由于此处执行了编译和安装命令，那么接下来就需要将安装目录中的nginx命令进行更新，也就是将<code>/home/envythink/nginx-1.17.0/objs</code>目录下的nginx覆盖掉之前的<code>/usr/local/nginx/sbin/</code>目录下的nginx，使用的命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cp /home/envythink/nginx-1.17.0/objs/nginx /usr/local/nginx/sbin/nginx</span><br></pre></td></tr></table></figure>
+<p>如果出现<code>cp: 无法创建普通文件&quot;/usr/local/nginx/sbin/nginx&quot;: 文本文件忙</code>的提示语，那么就需要使用<code>systemctl stop nginx</code>命令来终止Nginx的运行，然后重新运行上述命令。</p>
+<p>第三步，修改Nginx主配置文件nginx.conf，在里面添加如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">user nginx nginx;</span><br></pre></td></tr></table></figure>
+<p>注意代码添加的位置如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d07663c876b3f140.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>之后进行语法检查和平滑重启Nginx，然后使用如下命令来验证Nginx服务用户名是否已经修改成功：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink conf]# ps -aux|grep nginx | grep -v grep</span><br><span class="line">root      18873  0.0  0.2  20212  2044 ?        Ss   15:55   0:00 nginx: master process /usr/local/nginx/sbin/nginx</span><br><span class="line">nginx     18906  0.0  0.1  20212  1464 ?        S    16:22   0:00 nginx: worker process</span><br></pre></td></tr></table></figure>
+<p>注意关于Nginx安全优化的相关学习就到此为止，后续开始学习其他知识。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/07/30/nginx-10-security-optimization/">http://envyzhan.asia/2020/07/30/nginx-10-security-optimization/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/nginx/">nginx</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/08/01/nginx-11-security-chain-and-crawler-and-virtual-directory/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Nginx防盗链、爬虫和虚拟目录</div></div></a></div><div class="next-post pull-right"><a href="/2020/07/28/nginx-9-log-file/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Nginx日志文件</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/08/01/nginx-11-security-chain-and-crawler-and-virtual-directory/" title="Nginx防盗链、爬虫和虚拟目录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-01</div><div class="title">Nginx防盗链、爬虫和虚拟目录</div></div></a></div><div><a href="/2020/08/05/nginx-12-file-access-control-and-structure-optimization-and-mobile-adaptation/" title="Nginx文件访问控制、结构优化和适配移动端"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="title">Nginx文件访问控制、结构优化和适配移动端</div></div></a></div><div><a href="/2020/08/08/nginx-13-nginx-running-state-and-nginx-web-ui/" title="Nginx运行状态和NginxWebUI"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-08</div><div class="title">Nginx运行状态和NginxWebUI</div></div></a></div><div><a href="/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/" title="SSL配置、泛域名和静态服务"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-10</div><div class="title">SSL配置、泛域名和静态服务</div></div></a></div><div><a href="/2020/07/12/nginx-2-nginx-installation-and-function-module-introduction/" title="Nginx安装和功能模块介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-12</div><div class="title">Nginx安装和功能模块介绍</div></div></a></div><div><a href="/2020/07/16/nginx-4-nginx-virtual-host/" title="Nginx虚拟主机"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-16</div><div class="title">Nginx虚拟主机</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9A%90%E8%97%8FNginx%E7%89%88%E6%9C%AC%E5%8F%B7"><span class="toc-number">1.0.1.</span> <span class="toc-text">隐藏Nginx版本号</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E6%94%B9Nginx%E7%89%88%E6%9C%AC%E4%BF%A1%E6%81%AF"><span class="toc-number">1.0.2.</span> <span class="toc-text">修改Nginx版本信息</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9B%B4%E6%94%B9Nginx%E6%9C%8D%E5%8A%A1%E7%9A%84%E9%BB%98%E8%AE%A4%E7%94%A8%E6%88%B7"><span class="toc-number">1.0.3.</span> <span class="toc-text">更改Nginx服务的默认用户</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,186 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>深入学习HDFS的运行原理 | 余思博客</title><meta name="keywords" content="hadoop"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面本篇来深入学习HDFS的运行原理，主要包括HDFS文件的读写流程、副本机制和文件数据的负载均衡和机架感知。 HDFS文件读写流程HDFS文件读流程首先学习HDFS文件的读流程，主要是客户端读取数据，其流程如下所示：  （1）客户端通过调用FileSystem的open方法获取需要读取的数据文件，对于HDFS来说这个FileSystem就是DistributeFileSystem；（2）Di">
+<meta property="og:type" content="article">
+<meta property="og:title" content="深入学习HDFS的运行原理">
+<meta property="og:url" content="http://envyzhan.asia/2020/10/17/hadoop-6-deeply-study-the-operation-principal-of-hdfs/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面本篇来深入学习HDFS的运行原理，主要包括HDFS文件的读写流程、副本机制和文件数据的负载均衡和机架感知。 HDFS文件读写流程HDFS文件读流程首先学习HDFS文件的读流程，主要是客户端读取数据，其流程如下所示：  （1）客户端通过调用FileSystem的open方法获取需要读取的数据文件，对于HDFS来说这个FileSystem就是DistributeFileSystem；（2）Di">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-10-17T13:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T07:02:13.951Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="hadoop">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/10/17/hadoop-6-deeply-study-the-operation-principal-of-hdfs/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '深入学习HDFS的运行原理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 15:02:13'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">深入学习HDFS的运行原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-10-17T13:23:04.000Z" title="发表于 2020-10-17 21:23:04">2020-10-17</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T07:02:13.951Z" title="更新于 2021-03-01 15:02:13">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/">大数据</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="深入学习HDFS的运行原理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本篇来深入学习HDFS的运行原理，主要包括HDFS文件的读写流程、副本机制和文件数据的负载均衡和机架感知。</p>
+<h1 id="HDFS文件读写流程"><a href="#HDFS文件读写流程" class="headerlink" title="HDFS文件读写流程"></a>HDFS文件读写流程</h1><h3 id="HDFS文件读流程"><a href="#HDFS文件读流程" class="headerlink" title="HDFS文件读流程"></a>HDFS文件读流程</h3><p>首先学习HDFS文件的读流程，主要是客户端读取数据，其流程如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-870a20757227594d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>（1）客户端通过调用FileSystem的open方法获取需要读取的数据文件，对于HDFS来说这个FileSystem就是DistributeFileSystem；<br>（2）DistributeFileSystem通过RPC来调用NameNode，进而获取到需要读取的数据文件对应的Block存储在哪些DataNode上；<br>（3）客户端会先到最佳位置（所谓最佳位置其实就是离它最近的）的DataNode上调用FSDataInputStream的read方法，通过反复调用read方法，就可以将数据从DataNode传递到客户端；<br>（4）当读取完所有的数据之后，FSDataInputStream就会关闭与DataNode的连接，然后寻找下一块的最佳位置，也就是说对于客户端而言，它只需要读取连续的流；<br>（5）一旦客户端完成读取操作后，就对FSDataInputStream调用close方法来完成资源的关闭操作。</p>
+<h3 id="HDFS文件写流程"><a href="#HDFS文件写流程" class="headerlink" title="HDFS文件写流程"></a>HDFS文件写流程</h3><p>同样对于HDFS来说，写数据的过程也是由客户端来完成的，其流程如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-eeb7aacf916fb841.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>（1）客户端通过调用DistributeFileSystem的create方法来创建一个文件；<br>（2）DistributeFileSystem会对NameNode发起RPC请求，在文件系统的名字空间中创建一个新的文件，此时会进行各种检查，如检查待创建的文件是否已经存在，如果该文件不存在，那么NameNode就会为该文件创建一条元数据记录；<br>（3）客户端调用FSDataOutputStream的write方法将数据写入到一个内部队列中。假设副本系数为3，那么会将队列中的数据写到3个副本对应存储的DataNode上；<br>（4）FSDataOutputStream内部维护了一个确认队列，当接收到所有DataNode确认写完的消息后，数据才会从确认队列中删除；<br>（5）当客户端完成数据的写入后，会对数据流调用close方法来关闭相关资源。</p>
+<h3 id="HDFS文件读写小结"><a href="#HDFS文件读写小结" class="headerlink" title="HDFS文件读写小结"></a>HDFS文件读写小结</h3><p>综上可知，客户端其实都是先通过调用DistributeFileSystem的方法来进行文件操作，之后通过发起RPC请求来对NameNode进行操作，之后就是调用FSDataInputStream/FSDataOutputStream流来对数据进行读取/写入操作，最后都会调用数据流的close方法来关闭相关资源。</p>
+<h1 id="HDFS副本机制"><a href="#HDFS副本机制" class="headerlink" title="HDFS副本机制"></a>HDFS副本机制</h1><p>前面多次提到副本系数，那么接下来就仔细研究HDFS的副本机制。</p>
+<p>我们知道HDFS上的文件对应的Block保存有多个副本且提供容错机制，也就是说如果此时部分副本丢失或者发送宕机时，HDFS可以对文件进行自动恢复。HDFS默认保存3个副本。</p>
+<p>HDFS副本摆放机制如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6595a0b6a38700f4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="副本摆放策略"><a href="#副本摆放策略" class="headerlink" title="副本摆放策略"></a>副本摆放策略</h3><p>这里就以HDFS默认保存3个副本为例来学习副本摆放策略：<br><strong>第一个副本：</strong>放在上传文件的DataNode上（图中深色的是客户端）；注意如果是集群外提交，那么会随机挑选一个磁盘不太慢、CPU不太忙的节点；<br><strong>第二个副本：</strong>放在与第一个副本不同机架的节点上；<br><strong>第三个副本：</strong>放在与第二个副本相同机架的不同节点上；<br><strong>假设存在第n个副本，</strong>那么将随机的放在节点中。</p>
+<h3 id="副本系数"><a href="#副本系数" class="headerlink" title="副本系数"></a>副本系数</h3><p>（1）当开发者上传文件A到HDFS中时，此时HDFS中副本系数就就决定了这个文件A的块副本数，之后无论怎么修改系统的副本系数，这个文件A的副本数都不会变化。</p>
+<p>也就是说，上传到HDFS系统的文件副本数是由当时系统的副本系数来决定，之后副本系数的修改不会对它产生影响。</p>
+<p>（2）在上传文件时，开发者可以指定副本系数，<code>dfs.replication</code>是客户端的属性，如果用户不指定具体的replication副本系数时，那么系统就使用默认值。</p>
+<p>请注意文件上传之后，其备份数就已经确定，此时再修改<code>dfs.replication</code>参数值不会影响之前文件的副本数，也不影响后面指定副本数的文件，仅仅只影响使用默认副本数的文件。</p>
+<p>（3）再次强调<code>dfs.replication</code>是客户端的属性，也就是说如果客户端未设置，系统才会去读取配置文件中的数据。</p>
+<p>（4）还有一个比较容易出错的地方就是用户明明在<code>hdfs-site.xml</code>配置文件中设置了<code>dfs.replication=1</code>，但是此时块的备份数依旧还是3，而不是1，那可能是因为用户没有将<code>hdfs-site.xml</code>配置文件加入到工程的classpath中，这样就导致程序在运行时读取的依旧还是<code>hdfs-default.xml</code>配置文件中默认配置的<code>dfs.replication=3</code>，这个问题很容易发生，因此需要格外引起注意。</p>
+<h1 id="HDFS负载均衡"><a href="#HDFS负载均衡" class="headerlink" title="HDFS负载均衡"></a>HDFS负载均衡</h1><p>HDFS架构支持数据负载均衡策略，也就是说当某个DataNode上的空闲空间低于特定的临界点，那么按照数据均衡策略，系统就会自动将数据从这个DataNode移动到其他空闲的DataNode上。</p>
+<p>当对某个文件的请求突然增加时，系统也有可能启动一个计划来创建该文件新的副本，同时重新平衡集群中的其他数据。当HDFS负载不均衡时，需要对HDFS进行数据的负载均衡调整，即对各个节点机器上数据的存储分布进行调整，进而让数据均匀地分布在各个DataNode上，以均衡IO性能、平衡IO负载、平均数据、平衡集群防止发生热点。</p>
+<p>在Hadoop的<code>$HADOOP_HOME/sbin</code>目录下有一个名为<code>start-balancer.sh</code>的脚本，开发者可以通过运行这个脚本来启动HDFS的数据均衡服务Balancer，相应的启动命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@master sbin]# ./start-balancer.sh</span><br><span class="line">//或者</span><br><span class="line">[hadoop@master ~]$ $HADOOP_HOME/sbin/start-balancer.sh</span><br></pre></td></tr></table></figure>
+<p>请注意这个命令后面可以跟几个参数：<br>（1）<code>-threshold</code>，默认值为10，取值范围0~100；该参数是判断集群是否平衡的阈值。理论上说该参数值越小，则整个集群就越平衡。<br>（2）<code>dfs.balance.bindwidthPerSec</code>，默认值为1048576（1M/s）；该参数表示Balancer运行时允许占用的带宽。</p>
+<p>接下来通过结合上述两个命令参数来介绍几个例子：<br>（a）启动数据平衡，默认阈值为10%，此时命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[hadoop@master ~]$ $HADOOP_HOME/sbin/start-balancer.sh</span><br></pre></td></tr></table></figure>
+<p>（b）启动数据平衡，阈值为5%，此时命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[hadoop@master ~]$ $HADOOP_HOME/sbin/start-balancer.sh -threshold 5</span><br></pre></td></tr></table></figure>
+<p>（c）停止数据平衡，此时命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[hadoop@master ~]$ $HADOOP_HOME/sbin/stop-balancer.sh</span><br></pre></td></tr></table></figure>
+<p>而关于设置数据均衡占用的网络带宽，用户可以在<code>hdfs-site.xml</code>文件中进行设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;configuration&gt;</span><br><span class="line">        &lt;property&gt;</span><br><span class="line">              &lt;name&gt;dfs.balance.bindwidthPerSec&lt;/name&gt;</span><br><span class="line">              &lt;value&gt;1048576&lt;/value&gt;</span><br><span class="line">        &lt;/property&gt;</span><br><span class="line">&lt;/configuration&gt;</span><br></pre></td></tr></table></figure>
+<h1 id="HDFS机架感知"><a href="#HDFS机架感知" class="headerlink" title="HDFS机架感知"></a>HDFS机架感知</h1><p>通常大型的Hadoop集群是以机架的形式来组织的，同一个机架上的不同节点间的网络状况比不同机架之间的网络状况好很多，但是NameNode为了提高容错性，会将数据块副本保存在不同的机架上。</p>
+<p>HDFS不能自动判断集群中各个DataNode的网络拓扑情况，但是Hadoop允许集群管理员通过配置<code>dfs.network.script</code>参数来确定节点所处的机架。配置文件提供了ip到rackid的翻译，这样NameNode通过这个配置可以知道集群中各个DataNode机器的rackid。请注意，如果<code>topology.script.file.name</code>没有设定，那么每个ip都会被翻译成<code>/default-rack</code>。</p>
+<p>机架感知如下图所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2feb89734c71006d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上图中的D和R代表交换机，H代表DataNode，那么H1的<code>rackid=/D1/R1/H1</code>，其实这个rackid可以通过<code>topology.script.file.name</code>参数来配置，这样就能计算出任意两个DataNode之间的距离。</p>
+<p>举个例子，如下所示：<br>(1)<code>distance(/D1/R1/H1,/D1/R1/H1)=0</code>，表示相同的DataNode；<br>(2)<code>distance(/D1/R1/H1,/D1/R1/H2)=2</code>，表示同一rack下的不同DataNode；<br>(3)<code>distance(/D1/R1/H1,/D1/R1/H4)=4</code>，表示同一IDC下的不同DataNode；<br>(4)<code>distance(/D1/R1/H1,/D1/R1/H7)=6</code>，表示不同IDC下的DataNode；</p>
+<p>关于HDFS机架感知还有以下两点需要注意：<br>（1）当没有配置机架信息时，那么所有的机器都在同一个默认的，名为<code>/default-rack</code>的机架下。此种情况下的任何一台DataNode机器，不管是物理上是否属于同一个机架，它都会被认为是在同一个机架下。<br>（2）用户一旦配置了<code>topology.script.file.name</code>，那么就可以按照网络拓扑结构来寻找DataNode。通常我们都会将<code>topology.script.file.name</code>这个配置选项的value指定为一个可执行程序，这样就便于后续执行。</p>
+<p>这样关于HDFS运行原理的深度学习就到此为止，后续学习其他内容。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/10/17/hadoop-6-deeply-study-the-operation-principal-of-hdfs/">http://envyzhan.asia/2020/10/17/hadoop-6-deeply-study-the-operation-principal-of-hdfs/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/hadoop/">hadoop</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/10/19/hadoop-7-hdfs-advanced-knowledge/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">HDFS高级知识</div></div></a></div><div class="next-post pull-right"><a href="/2020/10/16/hadoop-5-visit-the-hdfs-file-system/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">访问HDFS文件系统</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/10/09/hadoop-1-introudction/" title="大数据概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-09</div><div class="title">大数据概述</div></div></a></div><div><a href="/2020/10/27/hadoop-12-yarn-basic/" title="YARN入门"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-27</div><div class="title">YARN入门</div></div></a></div><div><a href="/2020/10/11/hadoop-2-first-to-learn-hadoop/" title="Hadoop初识"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-11</div><div class="title">Hadoop初识</div></div></a></div><div><a href="/2020/10/15/hadoop-4-hdfs-basic/" title="HDFS入门"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-15</div><div class="title">HDFS入门</div></div></a></div><div><a href="/2020/10/22/hadoop-9-how-to-develop-mapreduce-application/" title="如何开发MapReduce应用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-22</div><div class="title">如何开发MapReduce应用</div></div></a></div><div><a href="/2020/10/23/hadoop-10-other-content-partitioner-and-recordreader/" title="MapReduce其他内容"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-10-23</div><div class="title">MapReduce其他内容</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HDFS%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">HDFS文件读写流程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E6%96%87%E4%BB%B6%E8%AF%BB%E6%B5%81%E7%A8%8B"><span class="toc-number">2.0.1.</span> <span class="toc-text">HDFS文件读流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E6%96%87%E4%BB%B6%E5%86%99%E6%B5%81%E7%A8%8B"><span class="toc-number">2.0.2.</span> <span class="toc-text">HDFS文件写流程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#HDFS%E6%96%87%E4%BB%B6%E8%AF%BB%E5%86%99%E5%B0%8F%E7%BB%93"><span class="toc-number">2.0.3.</span> <span class="toc-text">HDFS文件读写小结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HDFS%E5%89%AF%E6%9C%AC%E6%9C%BA%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">HDFS副本机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E6%91%86%E6%94%BE%E7%AD%96%E7%95%A5"><span class="toc-number">3.0.1.</span> <span class="toc-text">副本摆放策略</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%89%AF%E6%9C%AC%E7%B3%BB%E6%95%B0"><span class="toc-number">3.0.2.</span> <span class="toc-text">副本系数</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HDFS%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">4.</span> <span class="toc-text">HDFS负载均衡</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#HDFS%E6%9C%BA%E6%9E%B6%E6%84%9F%E7%9F%A5"><span class="toc-number">5.</span> <span class="toc-text">HDFS机架感知</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

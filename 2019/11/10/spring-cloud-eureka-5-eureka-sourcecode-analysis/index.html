@@ -1,0 +1,201 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Eureka源码分析 | 余思博客</title><meta name="keywords" content="springcloud"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Eureka源码分析通过前面的学习，我们对Eureka中各个核心元素的通信行为有了较为详细的认识，为了更加深入理解它的运作和配置，接下来将结合源码来分别看看各个通信行为是如何实现的。 在阅读源码之前，先回顾之前所实现的内容，从而找到一个合适的切入口来分析。首先对于服务注册中心、服务提供者、服务消费者这三个核心元素来说，服务提供者和服务消费者都是Eureka Client，在整个运行机制中是大部分通">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Eureka源码分析">
+<meta property="og:url" content="http://envyzhan.asia/2019/11/10/spring-cloud-eureka-5-eureka-sourcecode-analysis/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="Eureka源码分析通过前面的学习，我们对Eureka中各个核心元素的通信行为有了较为详细的认识，为了更加深入理解它的运作和配置，接下来将结合源码来分别看看各个通信行为是如何实现的。 在阅读源码之前，先回顾之前所实现的内容，从而找到一个合适的切入口来分析。首先对于服务注册中心、服务提供者、服务消费者这三个核心元素来说，服务提供者和服务消费者都是Eureka Client，在整个运行机制中是大部分通">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2019-11-10T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-10-29T15:06:23.180Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2019/11/10/spring-cloud-eureka-5-eureka-sourcecode-analysis/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Eureka源码分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-10-29 23:06:23'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Eureka源码分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-11-10T11:23:04.000Z" title="发表于 2019-11-10 19:23:04">2019-11-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-29T15:06:23.180Z" title="更新于 2020-10-29 23:06:23">2020-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Eureka源码分析"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Eureka源码分析"><a href="#Eureka源码分析" class="headerlink" title="Eureka源码分析"></a>Eureka源码分析</h1><p>通过前面的学习，我们对Eureka中各个核心元素的通信行为有了较为详细的认识，为了更加深入理解它的运作和配置，接下来将结合源码来分别看看各个通信行为是如何实现的。</p>
+<p>在阅读源码之前，先回顾之前所实现的内容，从而找到一个合适的切入口来分析。首先对于服务注册中心、服务提供者、服务消费者这三个核心元素来说，服务提供者和服务消费者都是Eureka Client，在整个运行机制中是大部分通信行为的主动发起者，而服务注册中心主要是处理请求的接收者。因此Eureka采用的是客户端发现机制，我们可以从Eureka Client着手来分析它是如何完成这些主动通信行为的。</p>
+<p>仔细回忆一下，当我们需要将一个普通的SpringBoot应用注册到Eureka Server中，或者是从Eureka Server中获取服务列表时都进行了哪些操作？<br>显然只进行了两步：第一步，在项目入口类上添加<code>@EnableDiscoveryClient</code>注解；第二步，在application.yml配置文件中通过<code>eureka.client.service-url.defaultZone</code>参数来配置服务注册中心的位置。</p>
+<p>那就顺着这个思路来阅读源码，首先查看<code>@EnableDiscoveryClient</code>注解的源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Target(&#123;ElementType.TYPE&#125;)</span><br><span class="line">@Retention(RetentionPolicy.RUNTIME)</span><br><span class="line">@Documented</span><br><span class="line">@Inherited</span><br><span class="line">@Import(&#123;EnableDiscoveryClientImportSelector.class&#125;)</span><br><span class="line">public @interface EnableDiscoveryClient &#123;</span><br><span class="line">    boolean autoRegister() default true;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>从该注解的注释中可以知道，它主要用来开启DiscoveryClient的实例。搜索一下DiscoveryClient类，可以发现有一个类和一个接口：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a42e6de1ef262996.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>既然有一个同名的接口和类，首先分析同名的接口，可以查看该接口的实现类，可以看到该接口一共有4个实现类：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-af2d10f2c3c8183d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>里面有一个EurekaDiscoveryClient类引起了关注，查看一下该类的信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-e211fdf7a057ba42.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>顺便查看一下该类的继承关系：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-1a7d616d8ce79881.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到此处的EurekaDiscoveryClient类存在于<code>org.springframework.cloud.netflix.eureka</code>包中，同时发现该类实现了前面的DiscoveryClient接口，其实从名字也可以判断出它是对Eureka发现服务的封装。</p>
+<hr>
+<p>聪明的你可能已经发现前面同名的DiscoveryClient接口和实现类是存在于不同的包中。其中DiscoveryClient接口存在于<code>org.springframework.cloud.client.discovery</code>包内，它是SpringCloud的接口，它定义了用来发现服务的常用抽象方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">public interface DiscoveryClient extends Ordered &#123;</span><br><span class="line">    int DEFAULT_ORDER = 0;</span><br><span class="line"></span><br><span class="line">    String description();</span><br><span class="line">    List&lt;ServiceInstance&gt; getInstances(String serviceId);</span><br><span class="line"></span><br><span class="line">    List&lt;String&gt; getServices();</span><br><span class="line"></span><br><span class="line">    default int getOrder() &#123;</span><br><span class="line">        return 0;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>是否注意到里面的getInstances方法，在前面我们使用它来获取服务提供者的信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line">@RestController</span><br><span class="line">public class HelloController &#123;</span><br><span class="line">    private static final Logger logger = LoggerFactory.getLogger(HelloController.class);</span><br><span class="line"></span><br><span class="line">    @Autowired</span><br><span class="line">    private DiscoveryClient client;</span><br><span class="line"></span><br><span class="line">    @GetMapping(value = &quot;/hello&quot;)</span><br><span class="line">    public String index()&#123;</span><br><span class="line">        List&lt;ServiceInstance&gt; instances = client.getInstances(&quot;hello-service&quot;);</span><br><span class="line">        for(int i=0;i&lt;instances.size();i++)&#123;</span><br><span class="line">            logger.info(&quot;/hello,host: &quot;+instances.get(i).getHost()+</span><br><span class="line">                    &quot;,service_id: &quot;+instances.get(i).getServiceId());</span><br><span class="line">        &#125;</span><br><span class="line">        return &quot;hello,world!&quot;;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>由于这里只是一个接口，而不是一个类，因此通过该接口可以有效的屏蔽服务治理的实现细节，因此使用SpringCloud构建的微服务应用可以很方便地切换服务治理框架，而不用修改程序代码，只需要另外添加一些针对服务治理框架的配置即可。</p>
+<hr>
+<p>再来分析同名的DiscoveryClient实现类，该类存在于<code>com.netflix.discovery</code>包内，同时实现了EurekaClient接口，而EurekaClient接口则继承了LookupService接口，它们都是Netflix开源包中的内容，主要定义了针对Eureka的发现服务的抽象方法，而真正实现发现服务的则是Netflix包中的<code>com.netflix.discovery.DiscoveryClient</code>类，也就是这里所说同名的DiscoveryClient实现类。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d608cbdade9daf62.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以查看一下DiscoveryClient类的继承信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9d34a7bca882d76f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>既然这个同名的DiscoveryClient实现类是真正实现发现服务的类，那么接下来就好好分析该类的源码。</p>
+<p>首先分析该类头部的注释，注释的内容大致为：（1）该类用于帮助与Eureka Server互相协作；（2）Eureka Client主要负责以下任务：向Eureka Server注册服务实例；向Eureka Server服务租约；当服务关闭期间，向Eureka Server取消租约；查询Eureka Server中的服务实例列表。（3）Eureka Client还需要配置一个Eureka Server的URL列表。</p>
+<p>在具体研究Eureka Client负责完成的任务之前，先看看在哪里对Eureka Server的URL列表进行配置。其实这个配置就是<code>eureka.client.service-url.defaultZone</code>，然后通过serviceUrl就可以找到该属性相关的加载属性，但是在SR5版本中它们都被<code>@Deprecated</code>注解标注为不再建议使用，并使用<code>@link</code>到了替代类<code>com.netflix.discovery.endpoint.EndpointUtils</code>，因此我们可以在EndpointUtils类中找到那个获取serviceUrl的方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br></pre></td><td class="code"><pre><span class="line">public static Map&lt;String, List&lt;String&gt;&gt; getServiceUrlsMapFromConfig(EurekaClientConfig clientConfig, String instanceZone, boolean preferSameZone) &#123;</span><br><span class="line">    Map&lt;String, List&lt;String&gt;&gt; orderedUrls = new LinkedHashMap();</span><br><span class="line">    String region = getRegion(clientConfig);</span><br><span class="line">    String[] availZones = clientConfig.getAvailabilityZones(clientConfig.getRegion());</span><br><span class="line">    if (availZones == null || availZones.length == 0) &#123;</span><br><span class="line">        availZones = new String[]&#123;&quot;default&quot;&#125;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    logger.debug(&quot;The availability zone for the given region &#123;&#125; are &#123;&#125;&quot;, region, availZones);</span><br><span class="line">    int myZoneOffset = getZoneOffset(instanceZone, preferSameZone, availZones);</span><br><span class="line">    String zone = availZones[myZoneOffset];</span><br><span class="line">    List&lt;String&gt; serviceUrls = clientConfig.getEurekaServerServiceUrls(zone);</span><br><span class="line">    if (serviceUrls != null) &#123;</span><br><span class="line">        orderedUrls.put(zone, serviceUrls);</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    int currentOffset = myZoneOffset == availZones.length - 1 ? 0 : myZoneOffset + 1;</span><br><span class="line"></span><br><span class="line">    while(currentOffset != myZoneOffset) &#123;</span><br><span class="line">        zone = availZones[currentOffset];</span><br><span class="line">        serviceUrls = clientConfig.getEurekaServerServiceUrls(zone);</span><br><span class="line">        if (serviceUrls != null) &#123;</span><br><span class="line">            orderedUrls.put(zone, serviceUrls);</span><br><span class="line">        &#125;</span><br><span class="line"></span><br><span class="line">        if (currentOffset == availZones.length - 1) &#123;</span><br><span class="line">            currentOffset = 0;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            ++currentOffset;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    if (orderedUrls.size() &lt; 1) &#123;</span><br><span class="line">        throw new IllegalArgumentException(&quot;DiscoveryClient: invalid serviceUrl specified!&quot;);</span><br><span class="line">    &#125; else &#123;</span><br><span class="line">        return orderedUrls;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="Region和Zone"><a href="#Region和Zone" class="headerlink" title="Region和Zone"></a>Region和Zone</h5><p>在上述getServiceUrlsMapFromConfig方法中，可以发现客户端依次加载了两个内容：第一个是Region，第二个是Zone，其实从加载逻辑上我们就能判断出两者之间的关系。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-772bacf1fd97d822.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>首先调用getRegion函数，里面传入一个EurekaClientConfig对象，然后返回一个字符串类型的region，因此一个微服务应用只可以属于一个Region，如果不特别配置，默认为default。查看一下该getRegion方法的源码，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public static String getRegion(EurekaClientConfig clientConfig) &#123;</span><br><span class="line">    String region = clientConfig.getRegion();</span><br><span class="line">    if (region == null) &#123;</span><br><span class="line">        region = &quot;default&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    region = region.trim().toLowerCase();</span><br><span class="line">    return region;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>如果开发者想要自定义设置，可以通过在application.yml配置文件中新增如下配置来实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    region: us-east-1</span><br></pre></td></tr></table></figure>
+<p>注意这个us-east-1是默认的region名称。</p>
+<p>之后通过<code>EurekaClientConfig#getAvailabilityZones</code>方法来得到字符串类型数组的availZones对象，查看一下getAvailabilityZones方法（请注意这个方法存在于EurekaClientConfig接口另一个实现类EurekaClientConfigBean中）的源码，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">public String[] getAvailabilityZones(String region) &#123;</span><br><span class="line">    String value = (String)this.availabilityZones.get(region);</span><br><span class="line">    if (value == null) &#123;</span><br><span class="line">        value = &quot;defaultZone&quot;;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    return value.split(&quot;,&quot;);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>因此从上面分析可知，当我们没有特别为Region配置Zone的时候，系统默认使用defaultZone，其实这也是我们之前在application.yml配置文件中新增如下配置的原因：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://peer1:1111/eureka/</span><br></pre></td></tr></table></figure>
+<p>你也看到了这个service-url其实是一个Map对象，而这个defaultZone则是键，后面的值其实是一个字符串类型的数组。其实从getAvailabilityZones方法的返回值可以知道Zone能够设置多个，并且通过逗号分隔来配置。如果开发者想要为应用指定Zone，可以通过添加如下配置来实现：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    availability-zones: </span><br></pre></td></tr></table></figure>
+<p>通过上面的分析，大家就能知道Region和Zone之间是一对多的关系。</p>
+<h5 id="serviceUrls"><a href="#serviceUrls" class="headerlink" title="serviceUrls"></a>serviceUrls</h5><p>在获取了Region和Zone的信息之后，才真正开始加载Eureka Server的具体地址。继续阅读之前getServiceUrlsMapFromConfig方法的源码，里面有这六行代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">int myZoneOffset = getZoneOffset(instanceZone, preferSameZone, availZones);</span><br><span class="line">String zone = availZones[myZoneOffset];</span><br><span class="line">List&lt;String&gt; serviceUrls = clientConfig.getEurekaServerServiceUrls(zone);</span><br><span class="line">if (serviceUrls != null) &#123;</span><br><span class="line">    orderedUrls.put(zone, serviceUrls);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到这个getZoneOffset方法可以根据传入的参数按照一定的算法确定加载位于哪一个Zone配置的serviceUrls。</p>
+<p>之后调用<code>EurekaClientConfig</code>对象的getEurekaServerServiceUrls方法来获取字符串类型的serviceUrls，同样可以知道这个getEurekaServerServiceUrls方法存在于EurekaClientConfig接口中，那么依然可以查看该接口的另一个实现类EurekaClientConfigBean，可以看到这是一个配置类，用来加载配置文件中的内容：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-15e3a968d7d51cdd.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这里面有很多信息，此处先介绍我们比较关系的defaultZone，可以发现EurekaClientConfigBean类无参的构造方法会自动将defaultZone添加入之前所说的serviceUrl这个map集合中：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a85716c73edb2274.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>还记得之前所说的那个getEurekaServerServiceUrls方法么，这个EurekaClientConfigBean类中有对该方法的完整实现逻辑：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;String&gt; getEurekaServerServiceUrls(String myZone) &#123;</span><br><span class="line">        String serviceUrls = (String)this.serviceUrl.get(myZone);</span><br><span class="line">        if (serviceUrls == null || serviceUrls.isEmpty()) &#123;</span><br><span class="line">            serviceUrls = (String)this.serviceUrl.get(&quot;defaultZone&quot;);</span><br><span class="line">        &#125;</span><br><span class="line">        if (!StringUtils.isEmpty(serviceUrls)) &#123;</span><br><span class="line">            String[] serviceUrlsSplit = StringUtils.commaDelimitedListToStringArray(serviceUrls);</span><br><span class="line">            List&lt;String&gt; eurekaServiceUrls = new ArrayList(serviceUrlsSplit.length);</span><br><span class="line">            String[] var5 = serviceUrlsSplit;</span><br><span class="line">            int var6 = serviceUrlsSplit.length;</span><br><span class="line">            for(int var7 = 0; var7 &lt; var6; ++var7) &#123;</span><br><span class="line">                String eurekaServiceUrl = var5[var7];</span><br><span class="line">                if (!this.endsWithSlash(eurekaServiceUrl)) &#123;</span><br><span class="line">                    eurekaServiceUrl = eurekaServiceUrl + &quot;/&quot;;</span><br><span class="line">                &#125;</span><br><span class="line">                eurekaServiceUrls.add(eurekaServiceUrl.trim());</span><br><span class="line">            &#125;</span><br><span class="line">            return eurekaServiceUrls;</span><br><span class="line">        &#125; else &#123;</span><br><span class="line">            return new ArrayList();</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>通过分析该源码可以知道该函数用于对传入的Zone进行拆分，也是就说开发者可以通过在application.yml配置文件中新增如下配置来实现配置多个Zone的目的，需要注意的是多个Zone之间需要通过逗号来进行分隔：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://peer1:1111/eureka/,http://peer2:1112/eureka/</span><br></pre></td></tr></table></figure>
+<p>当我们在微服务应用中使用Ribbon来实现服务调用时，对于Zone的设置可以在负载均衡时实现区域亲和特性。所谓的区域亲和特性是指：Ribbon的默认策略会优先访问同客户端处于一个Zone中的服务端实例，只有当同一个Zone中没有可用的服务端实例的时候才会访问其他Zone中的实例。所以开发者可以通过Zone属性的定义，配合实际部署的物理结构，就能有效的设计出对区域性故障的容错集群。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2019/11/10/spring-cloud-eureka-5-eureka-sourcecode-analysis/">http://envyzhan.asia/2019/11/10/spring-cloud-eureka-5-eureka-sourcecode-analysis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud/">springcloud</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/11/13/spring-cloud-ribbon-1-achieve-load-balance/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Ribbon实现客户端负载均衡</div></div></a></div><div class="next-post pull-right"><a href="/2019/11/08/spring-cloud-eureka-4-eureka-architecture-analysis/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Eureka架构分析</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2019/12/22/spring-cloud-bus-2-integrating-rabbitmq/" title="Bus整合RabbitMQ"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-22</div><div class="title">Bus整合RabbitMQ</div></div></a></div><div><a href="/2019/12/12/spring-cloud-config-1-basic-use/" title="Config基础使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-12</div><div class="title">Config基础使用</div></div></a></div><div><a href="/2019/12/14/spring-cloud-config-2-detailed-explanation-of-server/" title="Config服务端详解"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-14</div><div class="title">Config服务端详解</div></div></a></div><div><a href="/2019/12/16/spring-cloud-config-3-health-monitoring/" title="Config健康监测"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-16</div><div class="title">Config健康监测</div></div></a></div><div><a href="/2019/11/01/spring-cloud-eureka-1-introdution/" title="Spring Cloud Eureka介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-01</div><div class="title">Spring Cloud Eureka介绍</div></div></a></div><div><a href="/2019/11/03/spring-cloud-eureka-2-service-register-center/" title="搭建Eureka服务注册中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-03</div><div class="title">搭建Eureka服务注册中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Eureka%E6%BA%90%E7%A0%81%E5%88%86%E6%9E%90"><span class="toc-number">1.</span> <span class="toc-text">Eureka源码分析</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Region%E5%92%8CZone"><span class="toc-number">1.0.0.0.1.</span> <span class="toc-text">Region和Zone</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#serviceUrls"><span class="toc-number">1.0.0.0.2.</span> <span class="toc-text">serviceUrls</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

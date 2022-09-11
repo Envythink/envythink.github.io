@@ -1,0 +1,216 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>自定义信息 | 余思博客</title><meta name="keywords" content="springsecurity"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面前面使用的登录表单是Spring Security自带的，在实际开发过程中用户都会自定义登录表单、样式文件、登录接口、登录参数名称等信息，因此本篇就来研究这些内容。 自定义信息登录表单自定义SpringSecurity默认提供的登陆表单样式如下所示：  如果开发者想自定义该登陆页面及样式这也是允许的，首先用户需要在resourses文件夹下新建static目录，并在该目录中新建login.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="自定义信息">
+<meta property="og:url" content="http://envyzhan.asia/2020/12/08/springsecurity-2-custom-information/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面前面使用的登录表单是Spring Security自带的，在实际开发过程中用户都会自定义登录表单、样式文件、登录接口、登录参数名称等信息，因此本篇就来研究这些内容。 自定义信息登录表单自定义SpringSecurity默认提供的登陆表单样式如下所示：  如果开发者想自定义该登陆页面及样式这也是允许的，首先用户需要在resourses文件夹下新建static目录，并在该目录中新建login.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-12-08T11:23:04.000Z">
+<meta property="article:modified_time" content="2021-03-01T07:56:55.139Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springsecurity">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/12/08/springsecurity-2-custom-information/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '自定义信息',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 15:56:55'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">自定义信息</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-12-08T11:23:04.000Z" title="发表于 2020-12-08 19:23:04">2020-12-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T07:56:55.139Z" title="更新于 2021-03-01 15:56:55">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springsecurity/">springsecurity</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="自定义信息"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>前面使用的登录表单是Spring Security自带的，在实际开发过程中用户都会自定义登录表单、样式文件、登录接口、登录参数名称等信息，因此本篇就来研究这些内容。</p>
+<h3 id="自定义信息"><a href="#自定义信息" class="headerlink" title="自定义信息"></a>自定义信息</h3><h1 id="登录表单自定义"><a href="#登录表单自定义" class="headerlink" title="登录表单自定义"></a>登录表单自定义</h1><p>SpringSecurity默认提供的登陆表单样式如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-666a83f8434afd40.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如果开发者想自定义该登陆页面及样式这也是允许的，首先用户需要在resourses文件夹下新建static目录，并在该目录中新建login.html文件，其中的代码为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br></pre></td><td class="code"><pre><span class="line">&lt;!DOCTYPE html&gt;</span><br><span class="line">&lt;html lang=&quot;en&quot;&gt;</span><br><span class="line">&lt;head&gt;</span><br><span class="line">    &lt;meta charset=&quot;UTF-8&quot;&gt;</span><br><span class="line">    &lt;title&gt;登录&lt;/title&gt;</span><br><span class="line">    &lt;link href=&quot;https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/css/bootstrap.min.css&quot; rel=&quot;stylesheet&quot;&gt;</span><br><span class="line">&lt;/head&gt;</span><br><span class="line">&lt;body&gt;</span><br><span class="line">&lt;div class=&quot;container&quot;&gt;</span><br><span class="line">    &lt;div class=&quot;row clearfix&quot;&gt;</span><br><span class="line">        &lt;div class=&quot;col-md-4 column&quot;&gt;&lt;/div&gt;</span><br><span class="line"></span><br><span class="line">        &lt;div class=&quot;col-md-4 column&quot;&gt;</span><br><span class="line">            &lt;h3 class=&quot;text-center&quot;&gt;</span><br><span class="line">               用户登录</span><br><span class="line">            &lt;/h3&gt;</span><br><span class="line">            &lt;form role=&quot;form&quot; action=&quot;/login.html&quot; method=&quot;post&quot;&gt;</span><br><span class="line">                &lt;div class=&quot;form-group&quot;&gt;</span><br><span class="line">                    &lt;label for=&quot;exampleInputName&quot;&gt;用户名&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;username&quot; class=&quot;form-control&quot; id=&quot;exampleInputName&quot; /&gt;</span><br><span class="line">                &lt;/div&gt;</span><br><span class="line">                &lt;div class=&quot;form-group&quot;&gt;</span><br><span class="line">                    &lt;label for=&quot;exampleInputPassword1&quot;&gt;密码&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;password&quot; class=&quot;form-control&quot; id=&quot;exampleInputPassword1&quot; /&gt;</span><br><span class="line">                &lt;/div&gt;</span><br><span class="line">                &lt;div class=&quot;checkbox&quot;&gt;</span><br><span class="line">                &lt;/div&gt; &lt;button type=&quot;submit&quot; class=&quot;btn btn-default&quot;&gt;登录&lt;/button&gt;</span><br><span class="line">            &lt;/form&gt;</span><br><span class="line">        &lt;/div&gt;</span><br><span class="line"></span><br><span class="line">        &lt;div class=&quot;col-md-4 column&quot;&gt;&lt;/div&gt;</span><br><span class="line">    &lt;/div&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/jquery/3.4.0/jquery.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;script src=&quot;https://cdn.bootcdn.net/ajax/libs/twitter-bootstrap/3.3.5/js/bootstrap.min.js&quot;&gt;&lt;/script&gt;</span><br><span class="line">&lt;/body&gt;</span><br><span class="line">&lt;/html&gt;</span><br></pre></td></tr></table></figure>
+<p>请注意上面必须在form中设置action为<code>/login.html</code>，method为post方式，同时jquery.js文件必须在bootstrap.js文件之前引入这一点非常重要。然后回到之前的MyWebSecurityConfig类中，继续完善该类的功能，新增如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void configure(HttpSecurity http) throws Exception &#123;</span><br><span class="line">    http.authorizeRequests().anyRequest().authenticated()</span><br><span class="line">            .and()</span><br><span class="line">            .formLogin().loginPage(&quot;/login.html&quot;).permitAll()</span><br><span class="line">            .and()</span><br><span class="line">            .csrf().disable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>简单解释一下上述代码的含义：</p>
+<ul>
+<li>首先重写了<code>configure(HttpSecurity http)</code>方法，然后调用<code>httpSecurity.authorizeRequests()</code>方法开启HttpSecurity的配置。</li>
+<li><code>.anyRequest().authenticated()</code>表示用户访问所有URL都必须认证后才能访问（即登录后才能访问）。</li>
+<li><code>.and().formLogin().loginPage(&quot;/login.html&quot;).permitAll()</code>表示开启表单登录，也就是一开始看到的登录页面，同时配置了登录页面为<code>/login.html</code>，最后还配置了<code>permitAll</code>表示和登录相关的页面都不需要认证即可访问。</li>
+<li><code>.and().csrf().disable();</code>表示关闭csrf验证。</li>
+</ul>
+<p>请注意此处之所以在static文件夹下新建login.html，是因为static文件夹下的资源可以直接通过url地址来进行访问（前提是没有配置相关的url拦截规则）。如果用户在templates文件夹下新建了login.html，那么它必须在controller中配置相应的视图来映射访问，这种相对来说较为普遍，但是此处只是为了演示，因此就不需要了。</p>
+<p>之后启动项目，直接访问<code>http://localhost:8080/hello</code>链接时，页面会自动跳转到<code>http://localhost:8080/login.html</code>页面：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-dd65f81f0379de7d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这样自定义登录页面就完成了。</p>
+<h1 id="本地样式文件"><a href="#本地样式文件" class="headerlink" title="本地样式文件"></a>本地样式文件</h1><p>现在你可能要问了，前面的样式文件都是采用了cdn的方式，但是实际开发过程中绝大多数样式文件都是存放在本地的，因此需要修改上述代码。</p>
+<p>首先在static文件夹下新建css和js文件，然后在css文件夹中新建<code>bootstrap.min.css</code>文件，在js文件夹中新建<code>bootstrap.min.js</code>和<code>jquery.min.js</code>文件，各个文件中的内容可访问对应的cdn链接来复制获取。</p>
+<p>接着回到MyWebSecurityConfig类中，新增<code>configure(WebSecurity web)</code>方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"> public void configure(WebSecurity web) throws Exception &#123;</span><br><span class="line">     web.ignoring().antMatchers(&quot;/js/**&quot;, &quot;/css/**&quot;);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>很明显该方法的作用就是忽略一些url，一般来说静态资源都是需要过滤掉。</p>
+<p>之后启动项目，按照前述操作同样实现了既定要求。</p>
+<h1 id="自定义登录接口"><a href="#自定义登录接口" class="headerlink" title="自定义登录接口"></a>自定义登录接口</h1><p>前面设置的是自定义登录页面，如下图所示。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-cb5efabb1dad109d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>以及当该页面点击确定按钮后，页面将跳转至<code>/login.html</code>：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a72cdb9176e0da76.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>现在你可能有疑问了，此处action跳转为何是<code>/login.html</code>，而不是<code>/login</code>呢？讲到这里就不得不提登录页面和登录接口，其中登录页面就是<code>/login.html</code>，即上述看到的登陆界面，而登录接口则是action跳转链接<code>/login.html</code>。登录页面使用的是get方式，而登录接口使用的则是post方式。正如你所看到的，此处的登录页面和登录接口设置一致了，均为<code>/login.html</code>。其实SpringSecurity默认的登录页面和登录接口均为<code>/login</code>。</p>
+<p>在前面自定义登录页面的时候，笔者在<code>configure(HttpSecurity http)</code>方法中进行了如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line"> protected void configure(HttpSecurity http) throws Exception &#123;</span><br><span class="line">     http.authorizeRequests().anyRequest().authenticated()</span><br><span class="line">             .and()</span><br><span class="line">             .formLogin().loginPage(&quot;/login.html&quot;).permitAll()</span><br><span class="line">             .and()</span><br><span class="line">             .csrf().disable();</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到此处设置的<code>.formLogin()</code>表示开启表单登录，<code>.loginPage(&quot;/login.html&quot;)</code>表示登录页面为<code>/login.html</code>，其实就是登录地址为<code>/login.html</code>，即登录访问链接为：<code>http:localhost:8080/login.html</code>。其实此处也隐含设置登录接口为<code>/login.html</code>，因此也证明前述所说登录页面和登录接口一致的情况。这样现在存在两个链接：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">GET ---&gt; http:localhost:8080/login.html</span><br><span class="line">POST ---&gt; http:localhost:8080/login.html</span><br></pre></td></tr></table></figure>
+<p>其中GET请求用于获取登录页面，POST请求用于处理提交的登录信息。</p>
+<p>现在问题来了，登录页面和登录接口是否可以设置为不相同呢？答案是当然。只需修改<code>configure(HttpSecurity http)</code>方法如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">@Override</span><br><span class="line">protected void configure(HttpSecurity http) throws Exception &#123;</span><br><span class="line">    http.authorizeRequests().anyRequest().authenticated()</span><br><span class="line">            .and()</span><br><span class="line">            .formLogin()</span><br><span class="line">            .loginPage(&quot;/login.html&quot;)</span><br><span class="line">            .loginProcessingUrl(&quot;/goLogin&quot;)</span><br><span class="line">            .permitAll()</span><br><span class="line">            .and()</span><br><span class="line">            .csrf().disable();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>注意其中的<code>.loginPage(&quot;/login.html&quot;)</code>设置的是登录页面，而<code>.loginProcessingUrl(&quot;/goLogin&quot;)</code>则是设置登录接口，这样就将两者分开了。</p>
+<p>既然两者不同，那么就需要修改login.html页面的action指向：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;form role=&quot;form&quot; action=&quot;/goLogin&quot; method=&quot;post&quot;&gt;</span><br></pre></td></tr></table></figure>
+<p>之后重启项目，重新登录试试，可以发现没有任何问题。那么现在问题来了SpringSecurity为什么默认将登录页面和登录接口都设置同一个链接呢？这里就不得不查阅源码了，我们知道在SpringSecurity中和form表单相关的配置均在FormLoginConfigurer类中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">public final class FormLoginConfigurer&lt;H extends HttpSecurityBuilder&lt;H&gt;&gt; extends AbstractAuthenticationFilterConfigurer&lt;H, FormLoginConfigurer&lt;H&gt;, UsernamePasswordAuthenticationFilter&gt; &#123; &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到该类继承自<code>AbstractAuthenticationFilterConfigurer</code>类，查阅一下<code>AbstractAuthenticationFilterConfigurer</code>类的源码：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ceda45eba44c8a6f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到该类无参的构造方法中设置了<code>setLoginPage(&quot;/login&quot;)</code>，别忘了这个无参的构造方法可是会在之类实例化未指定父类构造方法时自动执行，也就是说默认为<code>loginPage(&quot;/login&quot;)</code>。</p>
+<p>回到FormLoginConfigurer类中，可以发现该类的init方法调用了父类的init方法，而在父类的init方法中又调用了<code>updateAuthenticationDefaults</code>方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public void init(B http) throws Exception &#123;</span><br><span class="line">       this.updateAuthenticationDefaults();</span><br><span class="line">       this.updateAccessDefaults(http);</span><br><span class="line">       this.registerDefaultAuthenticationEntryPoint(http);</span><br><span class="line">   &#125;</span><br></pre></td></tr></table></figure>
+<p>查看一下这个<code>updateAuthenticationDefaults</code>方法的源码，可以发现当<code>loginProcessingUrl</code>为null的时候，就将loginPage设置为<code>loginProcessingUrl</code>：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-56ac935fa95ee910.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>需要注意的是，只要<code>loginProcessingUrl</code>为null，那么就将loginPage设置为<code>loginProcessingUrl</code>的值，这一点和是否设置loginPage是没有任何关系的，所以通过阅读源码就知道了SpringSecurity默认将登录页面和登录接口设为一致的原因，还知道了登录接口为什么采用Post方式进行访问：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-859a28b6b218a839.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h1 id="自定义登录参数名称"><a href="#自定义登录参数名称" class="headerlink" title="自定义登录参数名称"></a>自定义登录参数名称</h1><p>仔细阅读FormLoginConfigurer类源码的童鞋可能已经发现了FormLoginConfigurer无参的构造方法中有这么一段代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">public FormLoginConfigurer() &#123;</span><br><span class="line">     super(new UsernamePasswordAuthenticationFilter(), (String)null);</span><br><span class="line">     this.usernameParameter(&quot;username&quot;);</span><br><span class="line">     this.passwordParameter(&quot;password&quot;);</span><br><span class="line"> &#125;</span><br></pre></td></tr></table></figure>
+<p>这就是一开始笔者要求默认的登录控件name为username，密码控件name为password的原因，可以看到该构造方法一开始调用了父类的构造方法，传入一个<code>UsernamePasswordAuthenticationFilter</code>对象实例，然后将该实例变量赋值给父类的authFilter属性，第二个参数是null，表示使用默认<code>loginProcessingUrl</code>：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f67953605dfe3061.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来阅读usernameParameter方法的源码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"> public FormLoginConfigurer&lt;H&gt; usernameParameter(String usernameParameter) &#123;</span><br><span class="line">((UsernamePasswordAuthenticationFilter)this.getAuthenticationFilter())</span><br><span class="line">.setUsernameParameter(usernameParameter);</span><br><span class="line">        return this;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到它先将子类强转为父类<code>UsernamePasswordAuthenticationFilter</code>，然后调用它的<code>getAuthenticationFilter</code>方法，而这个<code>getAuthenticationFilter</code>方法返回的则是authFilter属性，也就是说该方法得到的其实是一个<code>UsernamePasswordAuthenticationFilter</code>对象。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">protected final F getAuthenticationFilter() &#123;</span><br><span class="line">        return this.authFilter;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>然后调用该对象的setUsernameParameter方法去设置登录名参数，即默认的<code>username</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">public void setUsernameParameter(String usernameParameter) &#123;</span><br><span class="line">        Assert.hasText(usernameParameter, &quot;Username parameter must not be empty or null&quot;);</span><br><span class="line">        this.usernameParameter = usernameParameter;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>设置密码名参数也是类似，因此就不重复介绍了。现在问题来了，这里的设置有什么用呢？我们知道此处需要获取用户输入的账户和密码信息，很显然是需要从HttpServletRequest对象中获取，但是怎么获取呢？在Servlet中一般是通过<code>request.getParameter(&quot;username&quot;)</code>等这种方式，其实此处也是采取这种方式。在<code>UsernamePasswordAuthenticationFilter</code>类中有以下两个方法用于获取用户提交的账户和密码信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">protected String obtainPassword(HttpServletRequest request) &#123;</span><br><span class="line">     return request.getParameter(this.passwordParameter);</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">protected String obtainUsername(HttpServletRequest request) &#123;</span><br><span class="line">     return request.getParameter(this.usernameParameter);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>看到没有，它是通过passwordParameter和usernameParameter参数来获取的，因此想要自定义登录参数名称只需在MyWebSecurityConfig类中新增如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">.usernameParameter(&quot;name&quot;)</span><br><span class="line">.passwordParameter(&quot;word&quot;)</span><br></pre></td></tr></table></figure>
+<p>注意放置的位置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5d7b2a9f0ae9b9ad.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到IDEA中也智能提示了这些方法的返回值类型。光这样是不够的，因为<code>request.getParameter(&quot;username&quot;)</code>这种方式是根据表单控件的name属性来获取值的，因此需要修改<code>login.html</code>文件中form表单控件信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">&lt;div class=&quot;form-group&quot;&gt;</span><br><span class="line">&lt;label for=&quot;exampleInputName&quot;&gt;用户名&lt;/label&gt;&lt;input type=&quot;text&quot; name=&quot;name&quot; class=&quot;form-control&quot; id=&quot;exampleInputName&quot; /&gt;</span><br><span class="line">&lt;/div&gt;</span><br><span class="line">&lt;div class=&quot;form-group&quot;&gt;</span><br><span class="line">&lt;label for=&quot;exampleInputPassword1&quot;&gt;密码&lt;/label&gt;&lt;input type=&quot;password&quot; name=&quot;word&quot; class=&quot;form-control&quot; id=&quot;exampleInputPassword1&quot; /&gt;</span><br><span class="line">&lt;/div&gt;</span><br></pre></td></tr></table></figure>
+<p>之后重启项目，重新登录试试，可以发现没有任何问题。</p>
+<p>那么本篇关于如何自定义表单信息、样式文件、登录接口、登录参数名称的学习就到此为止，后续开始学习登录回调相关的知识。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/12/08/springsecurity-2-custom-information/">http://envyzhan.asia/2020/12/08/springsecurity-2-custom-information/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springsecurity/">springsecurity</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/12/09/springsecurity-3-the-front-and-back-end-do-not-separate-the-callback-and-logout-login/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">前后端不分离回调和注销登录</div></div></a></div><div class="next-post pull-right"><a href="/2020/12/07/springsecurity-1-quick-learn/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">快速入门</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/12/07/springsecurity-1-quick-learn/" title="快速入门"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-07</div><div class="title">快速入门</div></div></a></div><div><a href="/2020/12/16/springsecurity-10-fill-the-pit-separate-the-front-and-back-end-login-in-json-format/" title="填坑，前后端分离JSON格式登录实现"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-16</div><div class="title">填坑，前后端分离JSON格式登录实现</div></div></a></div><div><a href="/2020/12/26/springsecurity-19-defending-against-fixed-session-attacks/" title="防御固定会话攻击"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-26</div><div class="title">防御固定会话攻击</div></div></a></div><div><a href="/2020/12/09/springsecurity-3-the-front-and-back-end-do-not-separate-the-callback-and-logout-login/" title="前后端不分离回调和注销登录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-09</div><div class="title">前后端不分离回调和注销登录</div></div></a></div><div><a href="/2020/12/11/springsecurity-5-memory-based-authorization-operation/" title="基于内存的授权操作"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-11</div><div class="title">基于内存的授权操作</div></div></a></div><div><a href="/2020/12/12/springsecurity-6-authorization-operation-based-on-database/" title="基于数据库的授权操作"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-12-12</div><div class="title">基于数据库的授权操作</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E4%BF%A1%E6%81%AF"><span class="toc-number">1.0.1.</span> <span class="toc-text">自定义信息</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%99%BB%E5%BD%95%E8%A1%A8%E5%8D%95%E8%87%AA%E5%AE%9A%E4%B9%89"><span class="toc-number">2.</span> <span class="toc-text">登录表单自定义</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%AC%E5%9C%B0%E6%A0%B7%E5%BC%8F%E6%96%87%E4%BB%B6"><span class="toc-number">3.</span> <span class="toc-text">本地样式文件</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%99%BB%E5%BD%95%E6%8E%A5%E5%8F%A3"><span class="toc-number">4.</span> <span class="toc-text">自定义登录接口</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%87%AA%E5%AE%9A%E4%B9%89%E7%99%BB%E5%BD%95%E5%8F%82%E6%95%B0%E5%90%8D%E7%A7%B0"><span class="toc-number">5.</span> <span class="toc-text">自定义登录参数名称</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,222 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Nginx实现负载均衡 | 余思博客</title><meta name="keywords" content="nginx"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在前面我们对Nginx如何实现本地请求转发和反向代理进行了学习，接下来学习Nginx另一个较为重要的用途，实现服务端的负载均衡。 负载均衡负载均衡介绍一般情况下，客户端发送多个请求到服务器，服务器将处理这些请求，不过其中一部分请求可能要操作一些资源，如数据库、静态资源等，服务器处理完成请求后，再将结果返回给客户端。 对于早期的系统来说，由于功能不复杂，且并发请求相对较少，因此上述模式可以适">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Nginx实现负载均衡">
+<meta property="og:url" content="http://envyzhan.asia/2020/07/20/nginx-6-load-balancing-with-nginx/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在前面我们对Nginx如何实现本地请求转发和反向代理进行了学习，接下来学习Nginx另一个较为重要的用途，实现服务端的负载均衡。 负载均衡负载均衡介绍一般情况下，客户端发送多个请求到服务器，服务器将处理这些请求，不过其中一部分请求可能要操作一些资源，如数据库、静态资源等，服务器处理完成请求后，再将结果返回给客户端。 对于早期的系统来说，由于功能不复杂，且并发请求相对较少，因此上述模式可以适">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-07-20T10:13:01.000Z">
+<meta property="article:modified_time" content="2021-03-01T10:33:03.570Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="nginx">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/07/20/nginx-6-load-balancing-with-nginx/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Nginx实现负载均衡',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2021-03-01 18:33:03'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Nginx实现负载均衡</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-07-20T10:13:01.000Z" title="发表于 2020-07-20 18:13:01">2020-07-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2021-03-01T10:33:03.570Z" title="更新于 2021-03-01 18:33:03">2021-03-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/nginx/">nginx</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Nginx实现负载均衡"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在前面我们对Nginx如何实现本地请求转发和反向代理进行了学习，接下来学习Nginx另一个较为重要的用途，实现服务端的负载均衡。</p>
+<h1 id="负载均衡"><a href="#负载均衡" class="headerlink" title="负载均衡"></a>负载均衡</h1><h3 id="负载均衡介绍"><a href="#负载均衡介绍" class="headerlink" title="负载均衡介绍"></a>负载均衡介绍</h3><p>一般情况下，客户端发送多个请求到服务器，服务器将处理这些请求，不过其中一部分请求可能要操作一些资源，如数据库、静态资源等，服务器处理完成请求后，再将结果返回给客户端。</p>
+<p>对于早期的系统来说，由于功能不复杂，且并发请求相对较少，因此上述模式可以适用。但是随着业务不断更迭、访问量和数据量也在飞速发展，此时这种模式已经无法满足实际要求，当并发量比较大的时候，服务器非常容易发生宕机和崩溃。</p>
+<p>很明显这就是服务器性能瓶颈带来的访问过载，除了不断加机器之外，还需要使用负载均衡来解决这一问题。</p>
+<p>在请求数量达到指数级增长的时候，单个机器性能再优秀也无法满足需求，这时就必须采用集群的方式，将请求分发到多个机器上，其实就是将负载分发到多个机器上，这就是负载均衡。负载均衡的核心就是分摊压力。一般来说，Nginx实现负载均衡就是将请求转发给多个服务器，也就是服务器集群。</p>
+<p>举一个司空见惯的例子，当你早高峰乘坐地铁的时候，工作人员会拿着大喇叭告诉你：“请往车厢两边走，两边人少，便于您乘车。”这里工作人员的作用就是负载均衡，非常形象生动，便于理解：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-409c828ed55b06dd.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="负载均衡算法"><a href="#负载均衡算法" class="headerlink" title="负载均衡算法"></a>负载均衡算法</h3><p>通过前面的学习，我们知道其实这里的负载均衡主要是针对上游服务器，因此都是在upstream模块中进行配置使用。</p>
+<p>upstream模块可以使用三种负载均衡方式：轮询(round-robin)、IP哈希(IP hash)和最少连接数(Least Connection)，默认情况下使用的是轮询算法，它不需要指令来激活。</p>
+<h5 id="轮询-round-robin"><a href="#轮询-round-robin" class="headerlink" title="轮询(round-robin)"></a>轮询(round-robin)</h5><p>轮询(round-robin)是Nginx中默认使用的负载均衡算法，它不需要指令来激活。轮询算法是基于在队列中谁是下一个的原理，来确保将访问量均匀地分配给每一个上游服务器。它可以通过设置weight（权重）来指定轮询的几率，权重越高，被访问的概率也就越大，通常用于后端服务器性能不均的情况。</p>
+<h5 id="IP哈希-IP-hash"><a href="#IP哈希-IP-hash" class="headerlink" title="IP哈希(IP hash)"></a>IP哈希(IP hash)</h5><p>IP哈希(IP hash)算法通过ip_hash指令激活使用，从而将某些IP地址映射到同一个上游服务器。</p>
+<p>Nginx通过IPv4地址的前3个字节或者整个IPv6地址作为哈希键来实现。由于同一个IP地址池的地址总是映射到同一个上游服务器，因此这个算法的目的不是要确保请求被均匀的分配给每一台上游服务器，而是在客户端和上游服务器之间实现一致映射。</p>
+<h5 id="最少连接数-Least-Connection"><a href="#最少连接数-Least-Connection" class="headerlink" title="最少连接数(Least Connection)"></a>最少连接数(Least Connection)</h5><p>最少连接数(Least Connection)由上游服务器默认的模块支持，最少连接数可使用least_conn指令激活使用。该算法的目的是通过选择一个活跃连接数最少的服务器，然后将负载均匀的分配给上游服务器。如果上游服务器的处理能力不相同，那么可以在server指令中使用weight权重参数来设置。该算法将考虑到不同服务器的加权最小连接数。</p>
+<p>也就是说采用最少连接数这一方式，请求将被传递给当前拥有最少活跃连接的server，同时会考虑权重weight的因素。那么问题来了，权重weight是如何被考虑进去的呢？查看一下Nginx的源码，在http模块<code>ngx_http_upstream_least_conn_module.c</code>中，决定“最少连接”的逻辑代码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">if (best == NULL || peer-&gt;conns * best-&gt;weight &lt; best-&gt;conns * peer-&gt;weight)</span><br><span class="line">&#123;</span><br><span class="line">    best = peer; //选择peer为当前server</span><br><span class="line">    many = 0;</span><br><span class="line">    p = i;</span><br><span class="line"></span><br><span class="line">&#125; else if (peer-&gt;conns * best-&gt;weight == best-&gt;conns * peer-&gt;weight) &#123;</span><br><span class="line">    many = 1;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面if判断语句中的<code>(peer-&gt;conns * best-&gt;weight) &lt; (best-&gt;conns * peer-&gt;weight)</code>非常重要，做一个不等式推导可以得出其等价于<code>(peer-&gt;conns/peer-&gt;weight) &lt; (best-&gt;conns/best-&gt;weight)</code>，也就是说实际比较的是<code>conns/weight</code>的大小。上面if语句的判断条件为：当peer的conns/weight小于best时，就把peer赋值给best，因此最终best是选取的conns/weight最小的那个。</p>
+<p>也就是说<code>least_conn</code>指令的实际的含义，是选取活跃连接数与权重weight比值的最小者为下一个处理请求的server，需要注意的是上一次已选的server和已达到最大连接数的server实例已不在选择的范围。</p>
+<p>上面这样描述可能不太容易理解，接下来将通过实际的例子来进行说明，如下所示的upstream模块中定义了三个上游服务器地址：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">upstream backend &#123;</span><br><span class="line">    zone backends 64k;</span><br><span class="line">    least_conn;</span><br><span class="line">    server 192.168.73.2 weight=2;</span><br><span class="line">    server 192.168.73.4 weight=1;</span><br><span class="line">    server 192.168.73.6 weight=1; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>现在假设上一个请求被转发到中间的上游服务器上，那么下一个请求只能被转发到第一个和第三个（也就是剩下的conns/weight），到底哪个呢？可以参看下面的分析过程：<br>（1）假设第一个上游服务器，目前已经有连接数100个，由于权重为2，因此<code>conns/weight</code>的值为50；<br>（2）假设第三个上游服务器，目前已经有连接数80个，由于权重为1，因此<code>conns/weight</code>的值为80；<br>综合上述分析，因此下一个请求会选择第一个，而不是第三个，尽管第一个上游服务器目前已有的连接数大于第三个。</p>
+<h3 id="负载均衡实例"><a href="#负载均衡实例" class="headerlink" title="负载均衡实例"></a>负载均衡实例</h3><p>前面介绍了负载均衡的三种算法，接下来将结合具体的实例来介绍三种算法的配置使用。为了得到较好的演示效果，这里笔者已经利用之前学习过的知识，在本地虚拟机上启动了两个不同端口的Nginx服务，其中8080端口首页访问的是<code>/usr/share/nginx/html/envythink/8080.html</code>文件，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b8c7568f2d7ea695.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>而8081端口首页访问的是<code>/usr/share/nginx/html/envythink/8081.html</code>文件，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-38e0471e5e502e79.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>其对应的配置文件路径为<code>/usr/local/nginx/conf/vhost/envy.com.conf</code>，内容如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"># /usr/local/nginx/conf/vhost/envy.com.conf</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">  listen 8080;</span><br><span class="line">  server_name envy.com;</span><br><span class="line">  client_max_body_size 1024M;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">    root /usr/share/nginx/html/envythink;</span><br><span class="line">    index 8080.html;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">  listen 8081;</span><br><span class="line">  server_name envy.com;</span><br><span class="line">  client_max_body_size 1024M;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">    root /usr/share/nginx/html/envythink;</span><br><span class="line">    index 8081.html;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="轮询实例"><a href="#轮询实例" class="headerlink" title="轮询实例"></a>轮询实例</h5><p>前面也说了负载均衡主要是针对上游服务器，因此都是在upstream模块中进行配置。</p>
+<p>在之前的<code>/usr/local/nginx/conf/vhost/envy.com.conf</code>文件内新增如下配置信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  server 127.0.0.1:8080;</span><br><span class="line">  server 127.0.0.1:8081;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">server &#123;</span><br><span class="line">  listen 81;</span><br><span class="line">  server_name envy.com;</span><br><span class="line">  client_max_body_size 1024M;</span><br><span class="line"></span><br><span class="line">  location / &#123;</span><br><span class="line">    proxy_pass http://test;</span><br><span class="line">    proxy_set_header Host $host:$server_port;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>上面的例子就是定义了两个上游服务器地址，此处假设上游服务器地址为主机，只是使用了不同的端口。该段配置的含义是当开发者访问81端口的时候，Nginx会将请求均匀的转发到两个上游服务器中，也就是每次刷新页面都会均匀的访问到这两个上游服务器：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-e20173db91f349a5.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d25c2decef2716bf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>也就是说轮询算法的核心配置为如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  server 127.0.0.1:8080;</span><br><span class="line">  server 127.0.0.1:8081;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>当然如果上游服务器性能不均的时候，可以通过weight权重来指定服务器的轮询几率，权重和请求被访问到的概率成正比。举个例子，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  server 127.0.0.1:8080 weight=8;</span><br><span class="line">  server 127.0.0.1:8081 weight=2;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这个配置表示如果Nginx将10次请求转发到上游服务器，那么可能会有8次请求到8080端口，2次请求到8081端口。</p>
+<h5 id="IP哈希实例"><a href="#IP哈希实例" class="headerlink" title="IP哈希实例"></a>IP哈希实例</h5><p>通常情况下我们都可以直接使用轮询方式，但是在实际工作中可能会遇到这么一种情况：我们将用户的登录信息保存到session中，如果依然采用轮询方式，那么就可能出现请求被转发到另一台服务器的情况，此时用户就需要重新登录，这肯定是不好的体验，所以我们希望用户只访问一个服务器，可以采用IP哈希算法来解决这个问题。IP哈希算法的核心配置为如下代码所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  ip_hash;</span><br><span class="line">  server 127.0.0.1:8080;</span><br><span class="line">  server 127.0.0.1:8081;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="fair-最快响应时间-实例"><a href="#fair-最快响应时间-实例" class="headerlink" title="fair(最快响应时间)实例"></a>fair(最快响应时间)实例</h5><p>fair是第三方模块，它按后端服务器的响应时间来分配请求，响应时间短的优先分配，需要提前安装nginx-upstream-fair插件。</p>
+<p>fair这一方式的核心配置为如下代码所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  fair;</span><br><span class="line">  server 127.0.0.1:8080;</span><br><span class="line">  server 127.0.0.1:8081;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="url-hash实例"><a href="#url-hash实例" class="headerlink" title="url_hash实例"></a>url_hash实例</h5><p>url_hash也是第三方模块，它是按照访问url的hash结果来分配请求，使得url定向到同一个后端服务器，这种在后端服务器作为缓存的时候比较有用。</p>
+<p>开发者只需在upstream模块中加入hash来指定请求uri，hash_method表示指定hash算法，但是server语句中不能写入weight等其他的参数。url_hash这一方式的核心配置为如下代码所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">  hash $request_uri;</span><br><span class="line">  hash_method crc32;</span><br><span class="line">  server 127.0.0.1:8080;</span><br><span class="line">  server 127.0.0.1:8081;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>以上4种负载均衡策略都有各自适合的场景，开发者可以根据实际情况来选择合适的策略，需要注意的是fair和url_hash需要安装第三方模块才能使用。</p>
+<h3 id="upstream模块"><a href="#upstream模块" class="headerlink" title="upstream模块"></a>upstream模块</h3><p>由于upstream是Nginx实现负载均衡的核心模块，因此这里再次学习一下upstream模块。upstream模块会启用一个定义了一组上游服务器的新配置区段，组内的上游服务器可能设置了不同的权重（一般来说，权重越高的上游服务器会被Nginx传递更多的连接）或者是不同的类型（TCP与UNIX域），甚至可能出于对服务器维护的需要，将标记设置为down。下表示upstream模块中常用的指令：</p>
+<table>
+<thead>
+<tr>
+<th>upstream模块指令</th>
+<th align="center">说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>ip_hash</td>
+<td align="center">该指令通过IP地址的哈希值来确保客户端均匀地连接所有服务器，键值基于C类地址</td>
+</tr>
+<tr>
+<td>keepalive</td>
+<td align="center">该指令指定每个worker进程缓存到上游服务器的连接数。在使用HTTP连接时，proxy_http_version应该设置为1.1，并且将proxy_set_header设置为Connection “”</td>
+</tr>
+<tr>
+<td>least_conn</td>
+<td align="center">该指令激活负载均衡算法，将请求发送到活跃连接数最少的那台服务器</td>
+</tr>
+<tr>
+<td>server</td>
+<td align="center">该指令为upstream定义一个服务器地址（带有TCP端口号的域名，IP地址或者是UNIX域套接字）和可选参数。参数有5种：weight、max_fails、fail_timeout、backup和down。</td>
+</tr>
+</tbody></table>
+<p>关于server中定义的参数详细介绍如下：<br>（1）weight：该参数设置一个服务器的优先级优于其他服务器，默认值为1；<br>（2）max_fails：该参数设置在fail_timeout时间之内尝试对一个服务器连接的最大次数，如果超出这个次数，那么就会被标记为down；<br>（3）fail_timeout：在这个指定的时间内，服务器必须提供响应，如果没有收到响应，那么该服务器就会被标记为down状态；<br>（4）backup：一旦其他服务器宕机，那么仅有该参数标记的机器才会接收请求；<br>（5）down：该参数标记一个服务器不再接受任何请求。</p>
+<p>下面这个例子采用IP哈希这一方式，server中分别采用不同的参数来进行设置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">upstream test &#123;</span><br><span class="line">      ip_hash; </span><br><span class="line">      server 127.0.0.1:9090 down; </span><br><span class="line">      server 127.0.0.1:8080 weight=2; </span><br><span class="line">      server 127.0.0.1:6060; </span><br><span class="line">      server 127.0.0.1:7070 backup; </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样关于Nginx实现负载均衡的学习就到此结束，后续开始学习其他内容。</p>
+<p>参考文章：<a target="_blank" rel="noopener" href="https://blog.csdn.net/qq_24127857/article/details/85003202">nginx负载均衡指令least_conn的真正含义</a> ，感谢大佬的技术解惑。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/07/20/nginx-6-load-balancing-with-nginx/">http://envyzhan.asia/2020/07/20/nginx-6-load-balancing-with-nginx/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/nginx/">nginx</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/07/22/nginx-7-installing-third-party-modules-and-access-control/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Nginx安装第三方模块和访问控制</div></div></a></div><div class="next-post pull-right"><a href="/2020/07/18/nginx-5-nginx-implements-reverse-proxy/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Nginx实现反向代理</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/07/30/nginx-10-security-optimization/" title="Nginx安全优化"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-30</div><div class="title">Nginx安全优化</div></div></a></div><div><a href="/2020/08/01/nginx-11-security-chain-and-crawler-and-virtual-directory/" title="Nginx防盗链、爬虫和虚拟目录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-01</div><div class="title">Nginx防盗链、爬虫和虚拟目录</div></div></a></div><div><a href="/2020/08/05/nginx-12-file-access-control-and-structure-optimization-and-mobile-adaptation/" title="Nginx文件访问控制、结构优化和适配移动端"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-05</div><div class="title">Nginx文件访问控制、结构优化和适配移动端</div></div></a></div><div><a href="/2020/08/08/nginx-13-nginx-running-state-and-nginx-web-ui/" title="Nginx运行状态和NginxWebUI"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-08</div><div class="title">Nginx运行状态和NginxWebUI</div></div></a></div><div><a href="/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/" title="SSL配置、泛域名和静态服务"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-08-10</div><div class="title">SSL配置、泛域名和静态服务</div></div></a></div><div><a href="/2020/07/12/nginx-2-nginx-installation-and-function-module-introduction/" title="Nginx安装和功能模块介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-07-12</div><div class="title">Nginx安装和功能模块介绍</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1"><span class="toc-number">2.</span> <span class="toc-text">负载均衡</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.0.1.</span> <span class="toc-text">负载均衡介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E7%AE%97%E6%B3%95"><span class="toc-number">2.0.2.</span> <span class="toc-text">负载均衡算法</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BD%AE%E8%AF%A2-round-robin"><span class="toc-number">2.0.2.0.1.</span> <span class="toc-text">轮询(round-robin)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IP%E5%93%88%E5%B8%8C-IP-hash"><span class="toc-number">2.0.2.0.2.</span> <span class="toc-text">IP哈希(IP hash)</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%80%E5%B0%91%E8%BF%9E%E6%8E%A5%E6%95%B0-Least-Connection"><span class="toc-number">2.0.2.0.3.</span> <span class="toc-text">最少连接数(Least Connection)</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B4%9F%E8%BD%BD%E5%9D%87%E8%A1%A1%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.0.3.</span> <span class="toc-text">负载均衡实例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%BD%AE%E8%AF%A2%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.0.3.0.1.</span> <span class="toc-text">轮询实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#IP%E5%93%88%E5%B8%8C%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.0.3.0.2.</span> <span class="toc-text">IP哈希实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#fair-%E6%9C%80%E5%BF%AB%E5%93%8D%E5%BA%94%E6%97%B6%E9%97%B4-%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.0.3.0.3.</span> <span class="toc-text">fair(最快响应时间)实例</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#url-hash%E5%AE%9E%E4%BE%8B"><span class="toc-number">2.0.3.0.4.</span> <span class="toc-text">url_hash实例</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#upstream%E6%A8%A1%E5%9D%97"><span class="toc-number">2.0.4.</span> <span class="toc-text">upstream模块</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

@@ -1,0 +1,215 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>IDEA中创建Maven多模块项目 | 余思博客</title><meta name="keywords" content="maven tools"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在日常开发过程中经常会遇到Maven多模块的情况，那么如何创建Maven多模块呢？此处笔者结合常用的IDEA工具进行介绍，Eclipse、MyEclipse等工具创建Maven项目过程与之类似，因此就不过多介绍。 本文主要分为4个部分，第一部分创建parent项目，第二部分创建children项目，第三部分模块调用，第四部分运行项目。 创建parent项目1、打开IDEA工具，使用Mave">
+<meta property="og:type" content="article">
+<meta property="og:title" content="IDEA中创建Maven多模块项目">
+<meta property="og:url" content="http://envyzhan.asia/2018/04/22/tools-how-to-create-many-modules-by-idea/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在日常开发过程中经常会遇到Maven多模块的情况，那么如何创建Maven多模块呢？此处笔者结合常用的IDEA工具进行介绍，Eclipse、MyEclipse等工具创建Maven项目过程与之类似，因此就不过多介绍。 本文主要分为4个部分，第一部分创建parent项目，第二部分创建children项目，第三部分模块调用，第四部分运行项目。 创建parent项目1、打开IDEA工具，使用Mave">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2018-04-22T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-11-01T13:25:30.474Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="maven tools">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2018/04/22/tools-how-to-create-many-modules-by-idea/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'IDEA中创建Maven多模块项目',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-11-01 21:25:30'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">IDEA中创建Maven多模块项目</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2018-04-22T11:23:04.000Z" title="发表于 2018-04-22 19:23:04">2018-04-22</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-11-01T13:25:30.474Z" title="更新于 2020-11-01 21:25:30">2020-11-01</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/tools/">tools</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="IDEA中创建Maven多模块项目"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在日常开发过程中经常会遇到Maven多模块的情况，那么如何创建Maven多模块呢？此处笔者结合常用的IDEA工具进行介绍，Eclipse、MyEclipse等工具创建Maven项目过程与之类似，因此就不过多介绍。</p>
+<p>本文主要分为4个部分，第一部分创建parent项目，第二部分创建children项目，第三部分模块调用，第四部分运行项目。</p>
+<h1 id="创建parent项目"><a href="#创建parent项目" class="headerlink" title="创建parent项目"></a>创建parent项目</h1><p>1、打开IDEA工具，使用Maven来构建项目，请注意此处不要勾选模板，因为使用模板构建maven项目的速度非常慢，所以此处忽略模板，当后面需要某文件夹时可自行手动创建：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2ee5e5c8c2269c66.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>2、按照图示填入项目名称和模块名称：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4eb4f968a64a25bb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>3、配置工程路径，最后点击finish完成parent项目的构建过程：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-401196630298c6fc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>4、由于parent项目只是用于管理各模块和第三方依赖，因此此处的src目录可以删除：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2cc28085efa77905.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>请注意parent项目的pom.xml文件是不能删除的，后续需要使用它来进行依赖管理。这样关于parent项目的创建过程就告一段落，接下来开始进行子模块的创建工作。</p>
+<h1 id="创建children模块"><a href="#创建children模块" class="headerlink" title="创建children模块"></a>创建children模块</h1><h3 id="创建children1模块"><a href="#创建children1模块" class="headerlink" title="创建children1模块"></a>创建children1模块</h3><p>1、鼠标选中parent模块，然后右键单击出现的new-&gt;选择Module：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-483992cf5df87391.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>2、请注意这里依旧不选择模板，直接点击下一步：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2ee5e5c8c2269c66.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>3、在图中填入children模块的名称，然后点击下一步：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8e9c605f9e65f7eb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>4、检查children模块的路径是否需要修改，如果不需要则点击finish，这样就创建完成children1模块：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f275e445e884d3fa.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>5、最后查看一下此时的项目目录结构：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-882d0c714bdc271f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>同时请注意此时parent模块的pom.xml文件和children1模块中的pom.xml文件的变化：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-c06228d55a52b05c.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-e6a3163117afa205.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="创建children2模块"><a href="#创建children2模块" class="headerlink" title="创建children2模块"></a>创建children2模块</h3><p>1、由于创建children2模块的操作和children1模块创建操作类似，这里就不赘述：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0466cd5100b0ff9f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>2、请注意前面创建的children1和children2都是普通的Java项目，并不是JavaWeb项目。在一个JavaWeb项目中，可能分为dao、service、web、common、utils等模块，通常而言除了web模块是web项目结构，其他模块则是普通的Java项目。在本例中，笔者假设children1为普通项目，children2为web项目，接下来就介绍如何将一个普通的Java项目改造成一个JavaWeb项目。</p>
+<p>3、鼠标选中children2模块，然后右键单击出现的Open Module Settings：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5ac5d31e240526e3.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>4、在出现的页面中，先选择children2，然后点击左上角的+号，选择下拉菜单中的web：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-725f6e5a52bcb673.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>5、接着按照图示操作设置web资源目录：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-53bf5d3e49da22a9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-af75449ccc97999b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>请注意确保资源resource目录为<code>demoparent\children2\src\main\webapp</code>路径，尽管此时<code>src\main\webapp</code>目录是不存在的，但是IDEA会自动帮我们进行创建。</p>
+<p>6、按照图示修改web.xml文件目录：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-1183b9befca0ca1e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-4db83a68e6be2e7e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"><br>请注意确保web.xml文件目录为<code>demoparent\children2\src\main\webapp\WEB-INF\web.xml</code>路径。</p>
+<p>7、这样我们就将children2模块成功的改造成了一个web项目，此时项目结构如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8a5cabff4e5df5e7.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="模块调用"><a href="#模块调用" class="headerlink" title="模块调用"></a>模块调用</h3><p>虽然上述父子模块都创建完成，但是并没有介绍children模块之间的调用，接下来尝试在children2模块中调用children1模块中的方法。<br>1、在children1模块中新建Hello类和hello方法，如下图所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-926bbfd220fe66c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>2、在children2模块中引用children1模块，只需修改children2模块中的pom.xml文件即可：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">&lt;dependencies&gt;</span><br><span class="line">        &lt;dependency&gt;</span><br><span class="line">            &lt;groupId&gt;com.envy.demo&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;children1&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.0-SNAPSHOT&lt;/version&gt;</span><br><span class="line">        &lt;/dependency&gt;</span><br><span class="line">&lt;/dependencies&gt;</span><br></pre></td></tr></table></figure>
+<p>请注意代码的位置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ef0283c495da2100.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>3、为了更好的展示演示，这里在children2模块的webapp目录下创建index.jsp页面，然后在该页面中调用children1模块中的方法：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9c3c60496d847f99.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>4、仅仅是前面那样不够的，因为children2模块在构建时默认是以jar包存在的，但是Tomcat中运行的war包，因此需要修改children2模块的pom.xml文件，注意children1模块不需要修改。在children2模块的pom.xml文件中新增如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&lt;packaging&gt;war&lt;/packaging&gt;</span><br></pre></td></tr></table></figure>
+<p>注意代码的位置：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2f3b63812bec657a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>5、点击IDEA右侧边栏的Maven Project ，找到parent-demo模块，然后点开LifeCycle菜单，双击package：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-fa72dae64a07d99a.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>6、当项目构建成功后，会在children2模块的根目录下生成一个target目录，该目录下有一个war文件，这个就是后续要运行的war文件：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-11c9ddd7cf87e9de.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="项目运行"><a href="#项目运行" class="headerlink" title="项目运行"></a>项目运行</h3><p>1、点击项目右上角的如下按钮：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6fd2ac529d57fb5b.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>2、选择出现页面左上角的+号，然后选择下拉框的Tomcat，接着选择本地Tomcat。然后在Tomcat选项卡中首先配置Tomcat的名称，可随意设置，此处设置为demo，然后点击Deployment选项卡，如下：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f6dccf9d0a01cb84.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>3、点击Tomcat配置页面中的Deployment选项，在该选项卡中点击+号，选择外部资源（External Resource），并选择刚才打包好的war包：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-877c62b64dcf764f.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>4、点击右上角的demo按钮，开始启动项目：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-758022f56c1b08cb.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>5、在浏览器地址栏中输入<code>http://localhost:8080/</code>即可看到相关信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-c30aeb3906e719ff.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>当然在第3步中，不选择使用选择外部资源（External Resource），而是直接使用Atifacts，然后选择<code>children2:war</code>即可：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-72ea0c961a9dfbdc.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后点击确定，再次运行项目，访问同一个URL，可以发现也出现了相应的结果。这样关于IDEA中创建Maven多模块项目的介绍就到此为止。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2018/04/22/tools-how-to-create-many-modules-by-idea/">http://envyzhan.asia/2018/04/22/tools-how-to-create-many-modules-by-idea/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/maven-tools/">maven tools</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/08/01/springboot-study-springboot-for-two-hours-1/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">快速入门SpringBoot（基础）</div></div></a></div><div class="next-post pull-right"><a href="/2018/04/22/2018-springmvc-4-interceptors/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">springmvc:SpringMVC拦截器</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2018/04/01/tools-maven-1-how-to-use-maven-to-manage-project/" title="Maven项目管理工具"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2018-04-01</div><div class="title">Maven项目管理工具</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAparent%E9%A1%B9%E7%9B%AE"><span class="toc-number">2.</span> <span class="toc-text">创建parent项目</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAchildren%E6%A8%A1%E5%9D%97"><span class="toc-number">3.</span> <span class="toc-text">创建children模块</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAchildren1%E6%A8%A1%E5%9D%97"><span class="toc-number">3.0.1.</span> <span class="toc-text">创建children1模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%9B%E5%BB%BAchildren2%E6%A8%A1%E5%9D%97"><span class="toc-number">3.0.2.</span> <span class="toc-text">创建children2模块</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E5%9D%97%E8%B0%83%E7%94%A8"><span class="toc-number">3.0.3.</span> <span class="toc-text">模块调用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B9%E7%9B%AE%E8%BF%90%E8%A1%8C"><span class="toc-number">3.0.4.</span> <span class="toc-text">项目运行</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

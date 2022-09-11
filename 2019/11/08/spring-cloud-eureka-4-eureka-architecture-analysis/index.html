@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Eureka架构分析 | 余思博客</title><meta name="keywords" content="springcloud"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Eureka详解在前面通过一个简单的demo演示了服务注册与发现，构建了Eureka服务治理体系中的三个核心角色：服务注册中心、服务提供者、服务消费者。通过对前一篇的学习我们已经对Eureka的服务治理机制有了一些初步的认识，并学会了如何搭建单节点和高可用的服务注册中心，也知道了如何使用Eureka的注解和配置将SpringBoot应用纳入Eureka的服务治理体系中，成为服务提供者或是消费者。同">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Eureka架构分析">
+<meta property="og:url" content="http://envyzhan.asia/2019/11/08/spring-cloud-eureka-4-eureka-architecture-analysis/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="Eureka详解在前面通过一个简单的demo演示了服务注册与发现，构建了Eureka服务治理体系中的三个核心角色：服务注册中心、服务提供者、服务消费者。通过对前一篇的学习我们已经对Eureka的服务治理机制有了一些初步的认识，并学会了如何搭建单节点和高可用的服务注册中心，也知道了如何使用Eureka的注解和配置将SpringBoot应用纳入Eureka的服务治理体系中，成为服务提供者或是消费者。同">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2019-11-08T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-10-29T15:03:24.179Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springcloud">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2019/11/08/spring-cloud-eureka-4-eureka-architecture-analysis/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Eureka架构分析',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-10-29 23:03:24'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Eureka架构分析</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2019-11-08T11:23:04.000Z" title="发表于 2019-11-08 19:23:04">2019-11-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-29T15:03:24.179Z" title="更新于 2020-10-29 23:03:24">2020-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springcloud/">springcloud</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Eureka架构分析"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Eureka详解"><a href="#Eureka详解" class="headerlink" title="Eureka详解"></a>Eureka详解</h1><p>在前面通过一个简单的demo演示了服务注册与发现，构建了Eureka服务治理体系中的三个核心角色：服务注册中心、服务提供者、服务消费者。通过对前一篇的学习我们已经对Eureka的服务治理机制有了一些初步的认识，并学会了如何搭建单节点和高可用的服务注册中心，也知道了如何使用Eureka的注解和配置将SpringBoot应用纳入Eureka的服务治理体系中，成为服务提供者或是消费者。同时对于客户端负载均衡的服务消费也有了一些简单的接触，但是在实际工作中遇到的系统结构往往比前面列举的demo要复杂的多，此时如果仅仅依靠之前构建的服务治理内容，大多数情况是无法直接满足业务系统要求的，还需要结合实际情况来做一些配置、调整和扩展。因此本篇来学一些较深的知识，如Eureka的基础架构、节点间的通信机制、以及一些进阶的配置等。</p>
+<h1 id="基础架构"><a href="#基础架构" class="headerlink" title="基础架构"></a>基础架构</h1><p>在前面介绍服务治理时，举了一个例子，尽管该例子非常简单，但是却包含了整个Eureka服务治理基础架构的三个核心要素：服务注册中心、服务提供者、服务消费者。</p>
+<p><strong>服务注册中心</strong>，它是Eureka提供的服务端，提供服务注册与发现的功能，如前面实现的eureka-server。</p>
+<p><strong>服务提供者</strong>，顾名思义用来提供服务，它可以是SpringBoot应用，也可以是其他技术平台且遵循Eureka通信机制的应用。它将自己提供的服务注册到Eureka中，以供其他应用发现，如前面实现的HELLO-SERVICE。</p>
+<p><strong>服务消费者</strong>，顾名思义用来消费服务，它从服务注册中心获取服务列表，从而使消费者可以知道去哪里调用其所需要的服务。在前面使用的是Ribbon来消费服务，后续还会介绍使用Feign来消费服务。</p>
+<p>笔者通过实践发现在很多时候，服务提供者也是服务消费者，这一点需要引起注意。</p>
+<h1 id="服务治理机制"><a href="#服务治理机制" class="headerlink" title="服务治理机制"></a>服务治理机制</h1><p>在前面我们通过使用注解和配置就实现了强大的服务治理功能，接下来进一步学习Eureka基础架构中各个元素的一些通信行为，只有理解了它们才能理解基于Eureka实现的服务治理体系是如何运作起来的。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a78f3c8988ed59ef.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在上图中有6个元素，其中“服务注册中心-1”和“服务注册中心-2”相互注册形成了高可用集群。“服务提供者”启动了两个实例，一个注册到“服务注册中心-1”上，另一个注册到“服务注册中心-2”上。还有两个“服务消费者”，它们也都分别指向了一个注册中心。</p>
+<p>接下来就基于上面的结构来详细介绍，从服务注册开始到服务调用，及各个元素所涉及的一些重要的通信行为。</p>
+<h3 id="服务提供者"><a href="#服务提供者" class="headerlink" title="服务提供者"></a>服务提供者</h3><p>服务提供者，顾名思义用来提供服务，它可以是SpringBoot应用，也可以是其他技术平台且遵循Eureka通信机制的应用。换句话来说，服务提供者可以是用Java写的，也可以是用Python写的，还可以是用Golang写的，对于语言没有任何限制。服务提供者将自己提供的服务注册到Eureka中，以供其他应用发现然后调用。服务提供者主要有如下功能：服务注册、服务同步和服务续约等。</p>
+<h5 id="服务注册"><a href="#服务注册" class="headerlink" title="服务注册"></a>服务注册</h5><p>服务提供者在启动的时候会通过发送REST请求将自己注册到Eureka Server上，同时还携带了自身服务的一些元数据信息。Eureka Server在接收到这个REST请求之后，将元数据信息存储在一个双层结构的Map集合中，第一层的key是服务名，第二层的key是具体服务的实例名：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-cc395a8f16a5ef0d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在进行服务注册的时候，需要确认一下<code>eureka.client.register-with-eureka=true</code>这一参数是否设置正确，该值默认为true。请注意如果设置为false将不会启动注册操作。</p>
+<h5 id="服务同步"><a href="#服务同步" class="headerlink" title="服务同步"></a>服务同步</h5><p><img src="https://upload-images.jianshu.io/upload_images/8964398-a78f3c8988ed59ef.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>回到这张架构图，这里的两个服务提供者分别注册到了两个不同的服务注册中心上，也就是说它们的信息分别被两个服务注册中心所维护。此时由于服务注册中心之间进行了互相注册服务，使得当服务提供者发送注册请求到一个服务注册中心时，它会将该请求转发给集群中相连的其他注册中心，进而实现注册中心之间的服务同步。也就是说通过服务同步，两个服务提供者的服务信息可以通过这两个服务注册中心的任意一个得到。</p>
+<p>为了加深对此服务同步的理解，接下来通过实例来进行说明。（1）在前面我们搭建了两个节点的eureka-server服务注册中心peer1和peer2，两个服务注册中心是相互注册，那么现在就通过命令来启动它们：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start /min java -jar target/eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer1</span><br><span class="line">start /min java -jar target/eureka-server-0.0.1-SNAPSHOT.jar --spring.profiles.active=peer2</span><br></pre></td></tr></table></figure>
+<p>需要说明的是peer1和peer2使用的端口号分别是1111和1112。（2）接着修改hello-service服务的配置文件为如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"># 服务同步</span><br><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: hello-service</span><br><span class="line">---</span><br><span class="line"># p1向服务注册中心peer1注册</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://peer1:1111/eureka/</span><br><span class="line">spring:</span><br><span class="line">  profiles: p1</span><br><span class="line">server:</span><br><span class="line">  port: 8081</span><br><span class="line">---</span><br><span class="line"># p2向服务注册中心peer2注册</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://peer2:1112/eureka/</span><br><span class="line">spring:</span><br><span class="line">  profiles: p2</span><br><span class="line">server:</span><br><span class="line">  port: 8082</span><br></pre></td></tr></table></figure>
+<p>然后将其打包成jar包，并使用如下命令来启动这两个hello-service服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">start /min java -jar target/eureka-client-0.0.1-SNAPSHOT.jar --spring.profiles.active=p1</span><br><span class="line">start /min java -jar target/eureka-client-0.0.1-SNAPSHOT.jar --spring.profiles.active=p2</span><br></pre></td></tr></table></figure>
+<p>同样需要说明的是这两个实例使用的端口号分别是8081和8082，且实例p1填写的是peer1这个服务注册中心的地址，实例p2填写的是peer2这个服务注册中心的地址。</p>
+<p>（3）当两个服务提供者都启动成功之后，接下来查看两个服务注册中心的控制面板，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-bffd7ef5c611d9c8.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a70f5e27b4787dd9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到尽管实例p1填写的是peer1这个服务注册中心的地址，实例p2填写的是peer2这个服务注册中心的地址，但是由于服务注册中心互相注册的缘故，导致你在peer1注册中心可以看到p2的信息，在peer2中可以看到p1的信息。</p>
+<p>（4）既然都到了这个份上，那么就可以通过服务消费者来验证一下。修改ribbon-consumer服务的application.yml配置文件信息如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">spring:</span><br><span class="line">  application:</span><br><span class="line">    name: ribbon-consumer</span><br><span class="line">server:</span><br><span class="line">  port: 9000</span><br><span class="line">eureka:</span><br><span class="line">  client:</span><br><span class="line">    service-url:</span><br><span class="line">      defaultZone: http://peer1:1111/eureka/</span><br></pre></td></tr></table></figure>
+<p>仔细看，这里只是填写了peer1这个服务注册中心的地址，然后启动这个服务消费者，在浏览器地址栏中访问<code>http://peer1:9000/ribbon-consumer</code>，仔细观察p1和p2控制台的输出信息，可以看到每访问一下，控制台就会输出两次如下信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">/hello,host: localhost,service_id: HELLO-SERVICE</span><br></pre></td></tr></table></figure>
+<p>需要注意的是由于Ribbon客户端负载均衡的存在，使得每次只会在一个hello-service服务的控制台下两次输出上述信息。通过上面这个例子就验证了服务同步的正确性。</p>
+<h5 id="服务续约"><a href="#服务续约" class="headerlink" title="服务续约"></a>服务续约</h5><p>在注册完服务之后，服务提供者会维护一个心跳用来告诉服务注册中心Eureka Server：“我还活着”，以防止Eureka Server的“剔除任务”将该服务实例从服务列表中排除出去，我们称该操作为服务续约（Renew）。和服务续约有两个重要的属性，开发者可以关注并根据需要来进行调整：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">eureka.instance.lease-renewal-interval-in-seconds=30</span><br><span class="line">eureka.instance.lease-expiration-duration-in-seconds=90</span><br></pre></td></tr></table></figure>
+<p>其中第一个参数用于定义服务续约任务的调用间隔时间，默认为30秒；第二个参数用于定义服务失效的时间，默认为90秒。</p>
+<p>说完了服务提供者的主要功能，接下来聊一聊服务消费者的功能。</p>
+<h3 id="服务消费者"><a href="#服务消费者" class="headerlink" title="服务消费者"></a>服务消费者</h3><p>服务消费者，顾名思义用来消费服务，它从服务注册中心获取服务列表，从而使消费者可以知道去哪里调用其所需要的服务。在前面使用的是Ribbon来消费服务，后续还会介绍使用Feign来消费服务。服务消费者主要有如下功能：获取服务、服务调用和服务下线等。</p>
+<h5 id="获取服务"><a href="#获取服务" class="headerlink" title="获取服务"></a>获取服务</h5><p>在前面我们已经在服务注册中心注册了一个服务hello-service，并且该服务有两个实例p1和p2。当我们启动服务消费者的时候，它会发送一个REST请求给服务注册中心，用于获取该服务注册中心上面注册的服务清单。出于性能考虑，服务注册中心Eureka Server会维护一份只读的服务清单来返回给客户端，同时该缓存清单会每隔30秒更新一次。</p>
+<p>获取服务是服务消费者的基础，所以必须确保服务注册中心Eureka Server上的<code>eureka.client.fetch-registry=true</code>参数没有被修改成false，该值默认为true。若希望修改缓存清单的更新时间，可以通过<code>eureka.client.registry-fetch-interval-seconds=30</code>这个参数来实现修改，该参数默认值为30，单位为秒。</p>
+<h5 id="服务调用"><a href="#服务调用" class="headerlink" title="服务调用"></a>服务调用</h5><p>服务消费者在获取服务清单以后，通过服务名可以获得具体提供服务的实例名和该实例的元数据信息。因为有这些服务实例的详细信息，所以客户端可以根据自己的需要来决定具体调用哪个实例。在Ribbon中默认采用轮询的方式来进行调用，进而实现客户端的负载均衡。</p>
+<p>对于访问实例的选择，Eureka中有Region和Zone的概念，一个Region中可以包含多个Zone，每个服务客户端需要被注册到一个Zone中，所以每个客户端对应一个Region和一个Zone。在进行服务调用的时候，优先访问同处一个Zone中的服务提供方，若访问不到，就访问其他的Zone，关于Region和Zone的内容，笔者将会在后续源码学习中进行介绍。</p>
+<h5 id="服务下线"><a href="#服务下线" class="headerlink" title="服务下线"></a>服务下线</h5><p>在系统运行过程中必然会面临关闭或者重启服务的某个实例的情况，在服务关闭期间，我们不希望客户端继续调用已经关闭的实例，所以在客户端程序中，当服务实例进行<strong>正常的关闭操作</strong>时，它会触发一个服务下线的REST请求给Eureka Server，告诉服务注册中心：“我要下线了”。服务注册中心收到请求后，会将该服务状态置为DOWN，表示服务已下线，并将该事件传播出去，这样就可以避免服务消费者调用一个已经下线的服务提供者。</p>
+<p>学习了服务提供者和服务消费者的功能后，接下来开始学习最基础也是最重要的服务注册中心。</p>
+<h3 id="服务注册中心"><a href="#服务注册中心" class="headerlink" title="服务注册中心"></a>服务注册中心</h3><p>服务注册中心，它是Eureka提供的服务端，提供服务注册与发现的功能，如前面实现的eureka-server。当然除此之外也提供了失效剔除和自我保护等功能。</p>
+<h5 id="失效剔除"><a href="#失效剔除" class="headerlink" title="失效剔除"></a>失效剔除</h5><p>在前面介绍服务消费者的时候介绍了服务下线这个问题，正常的服务下线发生流程有一个前提，那就是服务正常关闭，但是在实际运行中服务有可能不会正常关闭，比如系统故障、网络故障等原因导致服务提供者非正常下线，而此时服务注册中心并未收到“服务下线”的请求。那么此时对于已经下线的服务，Eureka采用了定时清除机制。Eureka Server在启动的时候会创建一个定时任务，每隔一段时间（默认为60秒）就去将当前服务提供者列表中超时（默认为90秒）还没续约的服务剔除出去，通过这种方式来避免服务消费者调用了一个无效的服务。</p>
+<h5 id="自我保护"><a href="#自我保护" class="headerlink" title="自我保护"></a>自我保护</h5><p>由于在前面笔者将服务注册中心Eureka Server的自我保护模式给关闭了，因此接下来需要打开，在application.yml配置文件中新增如下配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">eureka:</span><br><span class="line">  server:</span><br><span class="line">    enable-self-preservation: true</span><br></pre></td></tr></table></figure>
+<p>当然了这个值默认就是true，可以不用设置，代表默认开启Eureka Server的自我保护机制。</p>
+<p>启动一下项目，我们来看看这个自我保护会有什么提示信息，可以看到其实就是一句红色警告信息：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-24f6a9a15a1cbdc3.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在前面讲过服务注册到Eureka Server之后，会维护一个心跳连接，用于告诉Eureka Server自己还活着。Eureka Server在运行期间会统计心跳失败的比例在15分钟内是否低于85%，如果出现低于的情况（在单机调试的时候很容易满足，而在实际生产环境上通常是由于网络不稳定造成的），Eureka Server会将当前的实例注册信息保护起来，让这些实例不会过期，尽可能保护这些注册信息。但是在这段保护期内实例若出现问题，那么客户端就很容易拿到实际已经不存在的服务实例，会出现调用失败的情况，所以客户端必须要有容错机制，如使用请求重试、断路器等机制。</p>
+<p>前面也说了，由于在本地单机调试很容易触发服务注册中心的保护机制，这会使得注册中心维护的服务实例不那么准确。所以通常在进行本地开发的时候，可以将服务注册中心的自我保护模式进行关闭，以确保服务注册中心可以将不可用的实例正确给剔除掉。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2019/11/08/spring-cloud-eureka-4-eureka-architecture-analysis/">http://envyzhan.asia/2019/11/08/spring-cloud-eureka-4-eureka-architecture-analysis/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springcloud/">springcloud</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2019/11/10/spring-cloud-eureka-5-eureka-sourcecode-analysis/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Eureka源码分析</div></div></a></div><div class="next-post pull-right"><a href="/2019/11/06/spring-cloud-eureka-3-service-register-center-cluster/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Eureka高可用注册中心</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2019/12/22/spring-cloud-bus-2-integrating-rabbitmq/" title="Bus整合RabbitMQ"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-22</div><div class="title">Bus整合RabbitMQ</div></div></a></div><div><a href="/2019/12/12/spring-cloud-config-1-basic-use/" title="Config基础使用"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-12</div><div class="title">Config基础使用</div></div></a></div><div><a href="/2019/12/14/spring-cloud-config-2-detailed-explanation-of-server/" title="Config服务端详解"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-14</div><div class="title">Config服务端详解</div></div></a></div><div><a href="/2019/12/16/spring-cloud-config-3-health-monitoring/" title="Config健康监测"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-12-16</div><div class="title">Config健康监测</div></div></a></div><div><a href="/2019/11/01/spring-cloud-eureka-1-introdution/" title="Spring Cloud Eureka介绍"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-01</div><div class="title">Spring Cloud Eureka介绍</div></div></a></div><div><a href="/2019/11/03/spring-cloud-eureka-2-service-register-center/" title="搭建Eureka服务注册中心"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-11-03</div><div class="title">搭建Eureka服务注册中心</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Eureka%E8%AF%A6%E8%A7%A3"><span class="toc-number">1.</span> <span class="toc-text">Eureka详解</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E7%A1%80%E6%9E%B6%E6%9E%84"><span class="toc-number">2.</span> <span class="toc-text">基础架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%B2%BB%E7%90%86%E6%9C%BA%E5%88%B6"><span class="toc-number">3.</span> <span class="toc-text">服务治理机制</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%8F%90%E4%BE%9B%E8%80%85"><span class="toc-number">3.0.1.</span> <span class="toc-text">服务提供者</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C"><span class="toc-number">3.0.1.0.1.</span> <span class="toc-text">服务注册</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E5%90%8C%E6%AD%A5"><span class="toc-number">3.0.1.0.2.</span> <span class="toc-text">服务同步</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E7%BB%AD%E7%BA%A6"><span class="toc-number">3.0.1.0.3.</span> <span class="toc-text">服务续约</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%B6%88%E8%B4%B9%E8%80%85"><span class="toc-number">3.0.2.</span> <span class="toc-text">服务消费者</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%8E%B7%E5%8F%96%E6%9C%8D%E5%8A%A1"><span class="toc-number">3.0.2.0.1.</span> <span class="toc-text">获取服务</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E8%B0%83%E7%94%A8"><span class="toc-number">3.0.2.0.2.</span> <span class="toc-text">服务调用</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E4%B8%8B%E7%BA%BF"><span class="toc-number">3.0.2.0.3.</span> <span class="toc-text">服务下线</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%8D%E5%8A%A1%E6%B3%A8%E5%86%8C%E4%B8%AD%E5%BF%83"><span class="toc-number">3.0.3.</span> <span class="toc-text">服务注册中心</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%A4%B1%E6%95%88%E5%89%94%E9%99%A4"><span class="toc-number">3.0.3.0.1.</span> <span class="toc-text">失效剔除</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%87%AA%E6%88%91%E4%BF%9D%E6%8A%A4"><span class="toc-number">3.0.3.0.2.</span> <span class="toc-text">自我保护</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

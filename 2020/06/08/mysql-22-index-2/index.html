@@ -1,0 +1,209 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>索引原理 | 余思博客</title><meta name="keywords" content="mysql"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面在前面我们对一些常用的数据检索算法和数据结构进行了学习，后面还遗留了B-树和B+树，因此接下来就开始学习这些知识。 B-树B-树读作B杠树，B-树是在平衡二叉树（AVL）上进化而来的，前面学习的几种树，每个节点上只有一个元素，而B-树节点中可以存放多个元素，其目的是为了降低树的高度。 一棵m阶的B-Tree有如下特点：（1）每个节点最多有m个孩子，m称为b树的阶；（2）除了根节点和叶子节点">
+<meta property="og:type" content="article">
+<meta property="og:title" content="索引原理">
+<meta property="og:url" content="http://envyzhan.asia/2020/06/08/mysql-22-index-2/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面在前面我们对一些常用的数据检索算法和数据结构进行了学习，后面还遗留了B-树和B+树，因此接下来就开始学习这些知识。 B-树B-树读作B杠树，B-树是在平衡二叉树（AVL）上进化而来的，前面学习的几种树，每个节点上只有一个元素，而B-树节点中可以存放多个元素，其目的是为了降低树的高度。 一棵m阶的B-Tree有如下特点：（1）每个节点最多有m个孩子，m称为b树的阶；（2）除了根节点和叶子节点">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-06-08T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-12-14T14:47:05.351Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="mysql">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/06/08/mysql-22-index-2/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '索引原理',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-12-14 22:47:05'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">索引原理</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-06-08T11:23:04.000Z" title="发表于 2020-06-08 19:23:04">2020-06-08</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-12-14T14:47:05.351Z" title="更新于 2020-12-14 22:47:05">2020-12-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/mysql/">mysql</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="索引原理"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>在前面我们对一些常用的数据检索算法和数据结构进行了学习，后面还遗留了B-树和B+树，因此接下来就开始学习这些知识。</p>
+<h1 id="B-树"><a href="#B-树" class="headerlink" title="B-树"></a>B-树</h1><p>B-树读作<code>B杠树</code>，B-树是在平衡二叉树（AVL）上进化而来的，前面学习的几种树，每个节点上只有一个元素，而B-树节点中可以存放多个元素，其目的是为了降低树的高度。</p>
+<p>一棵m阶的B-Tree有如下特点：<br>（1）每个节点最多有m个孩子，m称为b树的阶；<br>（2）除了根节点和叶子节点外，其它每个节点至少有Ceil(m/2)个孩子；<br>（3）若根节点不是叶子节点，则至少有2个孩子；<br>（4）所有叶子节点都在同一层，且不包含其它关键字信息；<br>（5）每个非终端节点包含n个关键字（键值）信息；<br>（6）关键字的个数n满足：ceil(m/2)-1 &lt;= n &lt;= m-1；<br>（7）ki(i=1,…n)为关键字，且关键字升序排序；<br>（8）Pi(i=1,…n)为指向子树根节点的指针。P(i-1)指向的子树的所有节点关键字均小于ki，但都大于k(i-1)。</p>
+<p>B-Tree结构的数据可以让系统高效的找到数据所在的磁盘块。为了描述B-Tree，首先定义一条记录为一个二元的数组[key, data] ，key为记录的键值，对应表中的主键值，data为一行记录中除主键之外的数据。对于不同的记录，key值互不相同。</p>
+<p>B-Tree中的每个节点根据实际情况可以包含大量的关键字信息和分支，下图为一个3阶的B-Tree：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-5194eb8a37c1bfc9.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>每个节点占用一个磁盘块的空间，一个节点上有两个升序排序的关键字和三个指向子树根节点的指针，指针存储的是子节点所在磁盘块的地址。两个键将数据划分为三个范围域，对应三个指针指向的子树的数据的范围域。以根节点为例，关键字为17和35，p1指针指向的子树的数据范围为小于17，p2指针指向的子树的数据范围为17~35，p3指针指向的子树的数据范围为大于35。</p>
+<p>接下来将通过查询关键字29来模拟这一查询过程：</p>
+<p>1、根据根节点找到磁盘块1，读入内存。【磁盘I/O操作第1次】；<br>2、比较关键字29在区间（17,35），找到磁盘块1的指针p2；<br>3、根据p2指针找到磁盘块3，读入内存。【磁盘I/O操作第2次】；<br>4、比较关键字29在区间（26,30），找到磁盘块3的指针p2；<br>5、根据p2指针找到磁盘块8，读入内存。【磁盘I/O操作第3次】；<br>6、在磁盘块8中的关键字列表中找到关键字29。</p>
+<p>通过上面的分析可以知道，想找到关键字29，需要发生3次磁盘I/O操作，和3次内存查找操作，由于内存中的关键字是一个有序表结构，可以利用二分法快速定位到目标数据，而3次磁盘I/O操作是影响整个B-Tree查找效率的决定因素。</p>
+<p>B-树相对于AVL树而言，B-树通过在节点中增加节点内部数据的个数来减少磁盘的IO操作。</p>
+<p>前面我们说过MySQL采用页方式来读写数据，每页是16KB。如果我们用B-树来存储MySQL记录，那么每个节点对应MySQL中的一页（16KB），假如每行记录加上树节点中的1个指针一共占160Byte，那么每个节点可以存储1000（16KB/160Byte）条数据，树高度为3的节点大概可以存储（第一层1000+第二层1000<sup>2</sup>+第三层1000<sup>3</sup>）10亿条记录，这个存储量是非常惊人的。也就是说一个高度为3的B-树，大概可以存储10亿条记录，而我们从10亿条记录中查找数据，只需3次IO操作就能定位到目标数据所在的页，而页内部的数据又是有序的，然后将其加载到内存中使用二分法查找，这个速度其实是非常快的。</p>
+<p>从上面的分析中可以知道，使用B-Tree定位某个值其实是非常快的，但是它也存在缺点—<strong>不利于范围查找</strong>。举个例子，假设我们需要查找[15,36]区间的数据，那么此时需要访问7个磁盘块（1、2、7、3、8、4和9），这样导致IO次数又增加了，而范围查找却是我们经常会用到的，因此这么来看，B-Tree也不太适合在磁盘中存储需要检索的数据。</p>
+<h1 id="B-树-1"><a href="#B-树-1" class="headerlink" title="B+树"></a>B+树</h1><p>首先看一个B+数的结构示意图：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-fc49f344b6f24293.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>一棵m阶的B+Tree有如下特点：<br>（1）每个节点至多有m个孩子，m称为b树的阶；<br>（2）除根节点外，每个结点至少有Ceil(m/2)个孩子，根结点至少有两个孩子；<br>（3）有k个子女的节点必有k个关键字；<br>（4）父节点中持有访问子节点的指针；<br>（5）父节点的关键字在子节点中都存在（如上面的1、20、35在每层都存在），要么是最小值，要么是最大值，如果节点中关键字是升序的方式，父节点的关键字是子节点的最小值；<br>（6）最底层的节点是叶子节点；<br>（7）除叶子节点外，其他节点不保存数据，只保存关键字和指针；<br>（8）叶子节点包含了所有数据的关键字以及data，叶子节点之间用链表连接起来，可以非常方便的支持范围查找。</p>
+<h3 id="B-树和B-树的区别"><a href="#B-树和B-树的区别" class="headerlink" title="B+树和B-树的区别"></a>B+树和B-树的区别</h3><p>（1）B+树中一个节点如果有k个关键字，最多可以包含k个子节点（k个关键字对应k个指针）；而b-树对应k+1个子节点（多了一个指向子节点的指针）；</p>
+<p>（2）B+树除叶子节点之外其他节点值存储关键字和指向子节点的指针，而B-树还存储了数据，这样同样大小情况下，B+树可以存储更多的关键字；</p>
+<p>（3）B+树叶子节点中存储了所有关键字及data，并且多个节点用链表连接，从上图中看子节点中数据从左向右是有序的，支持范围查找（先定位范围的最大值和最小值，然后子节点中依靠链表遍历范围数据）。</p>
+<h3 id="B-树和B-树使用选择"><a href="#B-树和B-树使用选择" class="headerlink" title="B+树和B-树使用选择"></a>B+树和B-树使用选择</h3><p>（1）B-树因为非叶子节点也保存具体数据，所以在查找某个关键字的时候，找到即可返回；而B+树所有的数据都在叶子节点，每次查找都得到叶子节点。因此在同样高度的B-树和B+树中，B-树查找某个关键字的效率更高；<br>（2）由于B+树所有的数据都在叶子节点，并且叶子节点之间有指针连接，因此在查找大于或者小于某个关键字的数据的时候，B+树只需找到给关键字然后沿着链表遍历即可；而B-树还需要遍历该关键字节点的根节点去搜索数据；<br>（3）由于B-树的每个节点（这里的节点可以理解为一个数据页）都存储主键+数据，而B+树的非叶子节点只存储关键字信息，而每个页的大小是有限的，所以同一页能存储的B-树的数据比B+树存储的要少。这样同样总量的数据，B-树的深度会更大，会增加查询时磁盘的IO次数，进而影响查询效率。</p>
+<h1 id="MySQL的存储引擎和索引"><a href="#MySQL的存储引擎和索引" class="headerlink" title="MySQL的存储引擎和索引"></a>MySQL的存储引擎和索引</h1><p>MySQL内部索引是由不同的引擎实现的，这里主要说一下InnoDB和MyISAM这两种引擎中的索引，这两种引擎中的索引都是使用B+树的结构来存储的。</p>
+<h3 id="密集索引"><a href="#密集索引" class="headerlink" title="密集索引"></a>密集索引</h3><p><strong>密集索引：文件中的每个搜索码值都对应一个索引值。</strong>可以理解为密集索引的叶子节点保存的不只是键值，还保存了位于同一行记录里的其他列的信息，由于密集索引决定了表的物理排列顺序，一个表只有一个物理排列顺序，所以一个表只能创建一个密集索引。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-f042e7bdc770739d.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="稀疏索引"><a href="#稀疏索引" class="headerlink" title="稀疏索引"></a>稀疏索引</h3><p><strong>稀疏索引：文件只为索引码的某些值建立索引项。</strong>可以理解为稀疏索引的叶子节点仅保存了键位信息以及该行数据的地址，有的稀疏索引仅保存了键位信息及其主键，那么定位到叶子节点之后仍然需要地址或者主键信息进一步定位到数据。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0c04b431a480faba.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>上面是对于一般的数据库而言，接下来对MySQL做具体分析。MySQL主要有两种存储引擎：MyISAM和InnoDB，这两种是主流引擎。</p>
+<h3 id="InnoDB中的索引"><a href="#InnoDB中的索引" class="headerlink" title="InnoDB中的索引"></a>InnoDB中的索引</h3><p>InnoDB中有2种索引：主键索引（也称聚集索引）和辅助索引（也称非聚集索引）。</p>
+<p>主键索引：每个表只有一个主键索引，叶子节点同时保存了主键的值和数据记录。</p>
+<p>辅助索引：叶子节点保存了索引字段的值以及主键的值。</p>
+<h3 id="MyISAM中的索引"><a href="#MyISAM中的索引" class="headerlink" title="MyISAM中的索引"></a>MyISAM中的索引</h3><p>不管是主键索引还是辅助索引，其结构都是一样的，叶子节点保存了索引字段的值以及数据记录的地址。</p>
+<h3 id="示例"><a href="#示例" class="headerlink" title="示例"></a>示例</h3><p>为了更好的说明这两种索引的区别，这里假定有一个学生表，它存储了4行数据，其中Id作为主键索引，Name作为辅助索引，那么下图就清晰的展示了主键索引和辅助索引的差异：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9aebe296262bf349.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h5 id="InnoDB数据检索过程"><a href="#InnoDB数据检索过程" class="headerlink" title="InnoDB数据检索过程"></a>InnoDB数据检索过程</h5><p>（1）如果需要查询Id=14的数据，只需在左侧的主键索引中检索即可；<br>（2）如果要搜索Name=’Ellison’的数据，那么需要两个步骤：（i）首先在辅助索引中检索到Name=’Ellison’的数据，进而获取到其Id为14；（ii）再到主键索引中检索Id为14的记录。</p>
+<p>辅助索引这个查询过程在MySQL中称之为回表。</p>
+<h5 id="MyISAM数据检索过程"><a href="#MyISAM数据检索过程" class="headerlink" title="MyISAM数据检索过程"></a>MyISAM数据检索过程</h5><p>（1）在索引中找到对应的关键字，获取关键字对应的记录的地址；<br>（2）通过记录的地址查找到对应的数据记录。</p>
+<h5 id="解惑"><a href="#解惑" class="headerlink" title="解惑"></a>解惑</h5><p>由于我们日常用的最多的是InnoDB引擎，因此这里着重介绍InnoDB索引的情况。在InnoDB引擎中，最好使用主键索引，这样只需一次索引就能找到对应数据；如果使用辅助索引，那么会涉及到回表操作，因此会比主键索引消耗的时间多一些。</p>
+<p>现在有一个疑问，就是InnoDB中的辅助索引为什么不和MyISAM那样存储记录的地址？</p>
+<p>我们知道，表中的数据发生变更时，会影响其他记录地址的变化，如果辅助索引中记录数据的地址，此时会受到影响，而主键的值一般很少会更新，因此当页中的记录发生地址变更的时候，对辅助索引是没有影响的。</p>
+<h1 id="页结构"><a href="#页结构" class="headerlink" title="页结构"></a>页结构</h1><p>接下来学习Mysql中的页结构，页是真正存储记录的地方，对应B+树中的一个节点，页也是MySQL中读写数据的最小单位，页结构的设计的好坏会影响数据的查询速度。</p>
+<h3 id="页结构详解"><a href="#页结构详解" class="headerlink" title="页结构详解"></a>页结构详解</h3><p>MySQL中的页是InnoDB中存储数据的基本单位，也是MySQL中管理数据的最小单位，和磁盘交互的时候都是以页进行，默认大小是16K。前面也说了MySQL使用B+树来存储数据，而且页就相当于B+树中的一个节点。</p>
+<p>页的结构如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d5c83b4da31e3791.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>由上图可以知道，每个Page都有通用的头和尾，不同的是中间的部分会根据Page的类型而发生变化。Page头部中有些我们关系的数据，因此接下来看一下Page头部的详细信息，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-589a881622007b4e.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这里重点关注和数据组织结构相关的字段，可以发现其中Page的头部保存了两个指针，分别指向前一个和后一个Page，言外之意Page连接起来的结构就是双向链表，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8d2a55781008de57.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来看一下Page的主体内容，这里着重关注行数据和索引的存储，可以发现它们都位于Page的User Records部分。User Records占据了Page的大部分空间，User Records由一条一条的Record组成。在一个Page内部，单链表的头尾由固定内容的两条记录来表示，字符串形式的“Infimum”代表开头，“Supremum”代表结尾，这两个用来代表开头结尾的Record存储在System Records中。“Infimum”、“Supremum”和“User Records”组成了一个单向链表结构。</p>
+<p>起初数据是按照插入的先后顺序进行排列，但是后来随着新数据的插入和旧数据的删除，数据的物理顺序会变得混乱，但是它们之间依然通过链表来保持逻辑上的先后顺序，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ba4da7adf7c990ba.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p> 把User Record的组织形式和若干Page组合起来，就可以形成一个较为完整的形式，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-d4933ecfa0940dde.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来看一下B+树的结构，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b977cfb087f9c5a0.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>InnoDB为了快速查找记录，在页中定义了一个称之为Page Directory的目录槽（Slots）。每个槽位占用两个字节（用于保存指向记录的地址），Page Directory中的多个Slot组成了一个有序数组（可以使用二分法快速定位），行记录被Page Directory分成了多个块，块与块之间有序，能够加速记录的查找，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-3f5ce7df0cb7ccdf.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>从图中可以看出，每个行记录的都有一个n_owned的区域，也就是图中粉色的区域。n_owned标识所属的Slot这个块有多少条数据，伪记录Infimum的n_owned值总是1，记录Supremum的n_owned的取值范围为[1,8]，其他用户记录的n_owned的取值范围为[4,8]，并且只有每个块中最大的那条记录的n_owned才会有值，其他的用户记录的n_owned为0。</p>
+<h3 id="数据检索过程"><a href="#数据检索过程" class="headerlink" title="数据检索过程"></a>数据检索过程</h3><p>在Page中查询数据的时候，先通过B+树中的查询方法定位到数据所在的页，然后将页整体加载到内存中，接着通过二分法在Page Directory中检索数据，来不断缩小范围。</p>
+<p>举个例子，假设需要检索7，那么通过二分查找法查找到7位于Slot2和Slot3所指向的记录中间，然后从Slot3指向的记录5开始向后一个个的查找，此时就能找到记录7；如果里面没有7，那么就继续查找，直到Slot2中的记录8结束。</p>
+<p>n_owned范围控制在[4,8]内，可以保证每个Slot内的范围数量可以控制在[4,8]个，可以加速目标数据的查找。当有数据插入的时候，Page Directory为了控制每个Slot对应块中记录的个数([4,8])，此时Page Directory中会对Slot的数量进行调整。</p>
+<h3 id="Page结构小结"><a href="#Page结构小结" class="headerlink" title="Page结构小结"></a>Page结构小结</h3><p>接下来将对Page结构进行一个小结：（1）B+树中叶子节点之间使用双向链表进行连接，可以实现范围查找；（2）页内部的记录之间采用单向链表连接，便于访问下一条记录；（3）为了加快页内部记录的查询，对页内记录加上了一个有序的稀疏索引，即页目录（Page Directory）。</p>
+<p>也就是说MySQL中的索引使用到了B+树，链表、二分查找法等，进而实现了快速定位目标数据、快速范围查找数据。</p>
+<h3 id="文章总结"><a href="#文章总结" class="headerlink" title="文章总结"></a>文章总结</h3><p>本文首先学习了B-树和B+树这两种数据结构，并在此基础上学习了两者的区别和使用选择。之后学习了MySQL中的密集索引和稀疏索引，已经InnoDB和MyISAM中的索引，最后介绍了MySQL中的页结构和数据的检索过程。通过本文的学习，使得我们对MySQL的索引变得更加清晰。</p>
+<p>参考大佬： <a target="_blank" rel="noopener" href="https://blog.jcole.us/">jcole</a></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/06/08/mysql-22-index-2/">http://envyzhan.asia/2020/06/08/mysql-22-index-2/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/mysql/">mysql</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/07/10/nginx-1-introduction/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Nginx简介</div></div></a></div><div class="next-post pull-right"><a href="/2020/06/03/mysql-21-index-1/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">索引入门和检索算法</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/05/01/mysql-1-introduction/" title="MySQL概述"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-01</div><div class="title">MySQL概述</div></div></a></div><div><a href="/2020/05/10/mysql-10-authroize-management/" title="MySQL用户权限管理"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-10</div><div class="title">MySQL用户权限管理</div></div></a></div><div><a href="/2020/05/22/mysql-14-how-to-use-null/" title="NULL使用记录"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-22</div><div class="title">NULL使用记录</div></div></a></div><div><a href="/2020/05/24/mysql-15-how-to-learn-view/" title="视图学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-24</div><div class="title">视图学习</div></div></a></div><div><a href="/2020/05/27/mysql-16-how-to-learn-variable/" title="变量学习"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-27</div><div class="title">变量学习</div></div></a></div><div><a href="/2020/05/28/mysql-17-procedure-and-function/" title="存储过程和自定义函数"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-05-28</div><div class="title">存储过程和自定义函数</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#B-%E6%A0%91"><span class="toc-number">2.</span> <span class="toc-text">B-树</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#B-%E6%A0%91-1"><span class="toc-number">3.</span> <span class="toc-text">B+树</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#B-%E6%A0%91%E5%92%8CB-%E6%A0%91%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">3.0.1.</span> <span class="toc-text">B+树和B-树的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#B-%E6%A0%91%E5%92%8CB-%E6%A0%91%E4%BD%BF%E7%94%A8%E9%80%89%E6%8B%A9"><span class="toc-number">3.0.2.</span> <span class="toc-text">B+树和B-树使用选择</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MySQL%E7%9A%84%E5%AD%98%E5%82%A8%E5%BC%95%E6%93%8E%E5%92%8C%E7%B4%A2%E5%BC%95"><span class="toc-number">4.</span> <span class="toc-text">MySQL的存储引擎和索引</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AF%86%E9%9B%86%E7%B4%A2%E5%BC%95"><span class="toc-number">4.0.1.</span> <span class="toc-text">密集索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A8%80%E7%96%8F%E7%B4%A2%E5%BC%95"><span class="toc-number">4.0.2.</span> <span class="toc-text">稀疏索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#InnoDB%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95"><span class="toc-number">4.0.3.</span> <span class="toc-text">InnoDB中的索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#MyISAM%E4%B8%AD%E7%9A%84%E7%B4%A2%E5%BC%95"><span class="toc-number">4.0.4.</span> <span class="toc-text">MyISAM中的索引</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%A4%BA%E4%BE%8B"><span class="toc-number">4.0.5.</span> <span class="toc-text">示例</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#InnoDB%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">4.0.5.0.1.</span> <span class="toc-text">InnoDB数据检索过程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#MyISAM%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">4.0.5.0.2.</span> <span class="toc-text">MyISAM数据检索过程</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E8%A7%A3%E6%83%91"><span class="toc-number">4.0.5.0.3.</span> <span class="toc-text">解惑</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E9%A1%B5%E7%BB%93%E6%9E%84"><span class="toc-number">5.</span> <span class="toc-text">页结构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%A1%B5%E7%BB%93%E6%9E%84%E8%AF%A6%E8%A7%A3"><span class="toc-number">5.0.1.</span> <span class="toc-text">页结构详解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E6%A3%80%E7%B4%A2%E8%BF%87%E7%A8%8B"><span class="toc-number">5.0.2.</span> <span class="toc-text">数据检索过程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Page%E7%BB%93%E6%9E%84%E5%B0%8F%E7%BB%93"><span class="toc-number">5.0.3.</span> <span class="toc-text">Page结构小结</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%87%E7%AB%A0%E6%80%BB%E7%BB%93"><span class="toc-number">5.0.4.</span> <span class="toc-text">文章总结</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

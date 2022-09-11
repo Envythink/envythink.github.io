@@ -1,0 +1,169 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Python高级编程（8）：抽象基类(Abstract Base Classes模块) | 余思博客</title><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="在java里面，继承都是单继承的，只有接口才支持多继承，而且接口是不支持实例化的，同样在Python里面的抽象基类也是不支持实例化的，这一点要非常明确。 其次，在动态语言（Python，JavaScript等）里面，是没有变量的类型的，它只是一个符号，可以指向任何类型的变量，所以它就不支持多态了，从语言上来说就是多态语言了。动态语言在声明变量的时候，是不用声明变量的类型的，但是也就少了编译时检查错">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Python高级编程（8）：抽象基类(Abstract Base Classes模块)">
+<meta property="og:url" content="http://envyzhan.asia/2017/07/10/python-advanced-8/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="在java里面，继承都是单继承的，只有接口才支持多继承，而且接口是不支持实例化的，同样在Python里面的抽象基类也是不支持实例化的，这一点要非常明确。 其次，在动态语言（Python，JavaScript等）里面，是没有变量的类型的，它只是一个符号，可以指向任何类型的变量，所以它就不支持多态了，从语言上来说就是多态语言了。动态语言在声明变量的时候，是不用声明变量的类型的，但是也就少了编译时检查错">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2017-07-10T03:23:04.000Z">
+<meta property="article:modified_time" content="2020-10-24T07:25:33.278Z">
+<meta property="article:author" content="余思">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2017/07/10/python-advanced-8/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Python高级编程（8）：抽象基类(Abstract Base Classes模块)',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: false,
+  postUpdate: '2020-10-24 15:25:33'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Python高级编程（8）：抽象基类(Abstract Base Classes模块)</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2017-07-10T03:23:04.000Z" title="发表于 2017-07-10 11:23:04">2017-07-10</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-24T07:25:33.278Z" title="更新于 2020-10-24 15:25:33">2020-10-24</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/pythonbase/">pythonbase</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Python高级编程（8）：抽象基类(Abstract Base Classes模块)"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><p>在java里面，继承都是单继承的，只有接口才支持多继承，而且接口是不支持实例化的，同样在Python里面的抽象基类也是不支持实例化的，这一点要非常明确。</p>
+<p>其次，在动态语言（Python，JavaScript等）里面，是没有变量的类型的，它只是一个符号，可以指向任何类型的变量，所以它就不支持多态了，从语言上来说就是多态语言了。动态语言在声明变量的时候，是不用声明变量的类型的，但是也就少了编译时检查错误的环节，这样我们写的代码出了错如果不运行，我们是很难知道的。这也就是动态语言与静态语言相比的一个劣势，无法做错误检查（没有编译，无法检查）。</p>
+<p>在Python设计的理念里，鸭子类型是很重要的，我们要把它放在第一位。在java里面，某个类具有某个功能是看它继承了某个函数，但是在Python里面则是具有了某些魔法函数，就具有了某个功能。（鸭子类型和魔法函数构成了我们Python里面的协议）</p>
+<p>回过来，我们谈抽象基类，抽象基类的意思是<strong>在这个基类里面，我们设定一些方法，然后所有继承这个基类的类都必须覆盖这个基类的方法；抽象基类是无法进行实例化的</strong>。可能还是不是很明白，我们通过两种情况来加深对它的理解。</p>
+<p>第一种情况：我们去检查某个类是否具有某个方法：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">class Company(object):</span><br><span class="line">    def __init__(self, employee_list):</span><br><span class="line">        self.employee = employee_list</span><br><span class="line"></span><br><span class="line">    def __len__(self):</span><br><span class="line">        return len(self.employee)</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">com = Company([&quot;tom&quot;, &quot;bob&quot;, &quot;jane&quot;])</span><br><span class="line">print(len(com))</span><br><span class="line"></span><br><span class="line"># 输出结果： 3</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>上面的例子我们可以知道这个Company类是具有长度的。那么现在又有问题了，我们如何知道这个类是否具有某个方法呢？Python里面内置了一个函数<code>hasattr</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">print(hasattr(com, &quot;__len__&quot;))</span><br><span class="line"></span><br><span class="line"># 输出结果： True</span><br></pre></td></tr></table></figure>
+<p>但是这样我们觉得不是很方便，如果可以判断某个对象的类型就好了，只要是某个类型就具有该类型的方法，这样就好用多了。Python里面内置了一个函数<code>isinstance</code>，我们可以用到抽象基类里面的<code>Sized</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"># 我们希望在某些情况之下判定某个对象的类型</span><br><span class="line">from collections.abc import Sized</span><br><span class="line">print(isinstance(com, Sized))</span><br><span class="line"></span><br><span class="line"># 输出结果： True</span><br></pre></td></tr></table></figure>
+
+<p>另一种情况就是需要强制某个子类必须实现某种方法:</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br></pre></td><td class="code"><pre><span class="line"># 我们需要强制某个子类必须实现某种方法</span><br><span class="line"># 如何自己定义一个抽象基类，从而指定子类必须实现的方法呢？</span><br><span class="line"></span><br><span class="line">class CacheBase(object):</span><br><span class="line">    def get(self, key):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    def set(self, key, value):</span><br><span class="line">        raise NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class RedisCache(CacheBase):</span><br><span class="line">    def set(self, key, value):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">redisss = RedisCache</span><br><span class="line">redisss().set(&quot;key&quot;, &quot;value&quot;)</span><br><span class="line"></span><br><span class="line"># 正常运行</span><br></pre></td></tr></table></figure>
+<p>在上面的例子中，我们RedisCache这个类继承了CacheBase这个类，但是又重写了它的set方法，如果我们不去重写它的set方法，结果会是怎样？我们来运行一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"></span><br><span class="line">class RedisCache(CacheBase):</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">redisss = RedisCache</span><br><span class="line">redisss().set(&quot;key&quot;, &quot;value&quot;)</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">raise NotImplementedError</span><br><span class="line">NotImplementedError</span><br><span class="line"></span><br></pre></td></tr></table></figure>
+<p>你肯定也猜到了这一点，所以我们需要强制我们的子类继承我们基类的同时必须重写基类的方法。</p>
+<p>不过这个函数有一个缺点，就是只有在调用的时候才会出异常，我们现在试着改造一下它，使它在初始化的时候就能抛出异常：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line">import abc # 全局abc</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class CacheBase(metaclass=abc.ABCMeta):  # 元类编程里面会介绍</span><br><span class="line"></span><br><span class="line">    @abc.abstractmethod</span><br><span class="line">    def get(self, key):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    @abc.abstractmethod</span><br><span class="line">    def set(self, key, value):</span><br><span class="line">        raise NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class RedisCache(CacheBase):</span><br><span class="line">    pass</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">redisss = RedisCache()</span><br><span class="line"></span><br><span class="line"># 我们在初始化的时候就出了问题；</span><br><span class="line"> redisss = RedisCache()</span><br><span class="line">TypeError: Can&#x27;t instantiate abstract class RedisCache with abstract methods get, set</span><br></pre></td></tr></table></figure>
+<p>我们尝试去重写一个set方法，然后再运行一下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line">import abc # 全局abc</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class CacheBase(metaclass=abc.ABCMeta):  # 元类编程里面会介绍</span><br><span class="line"></span><br><span class="line">    @abc.abstractmethod</span><br><span class="line">    def get(self, key):</span><br><span class="line">        pass</span><br><span class="line"></span><br><span class="line">    @abc.abstractmethod</span><br><span class="line">    def set(self, key, value):</span><br><span class="line">        raise NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">class RedisCache(CacheBase):</span><br><span class="line">    def set(self, key, value):</span><br><span class="line">        raise NotImplementedError</span><br><span class="line"></span><br><span class="line"></span><br><span class="line">redisss = RedisCache()</span><br><span class="line"></span><br><span class="line"># 运行结果：</span><br><span class="line">redisss = RedisCache()</span><br><span class="line">TypeError: Can&#x27;t instantiate abstract class RedisCache with abstract methods get</span><br></pre></td></tr></table></figure>
+<p>这样我们重写了set方法就不会报错了。</p>
+<p><strong>番外：</strong>python的抽象基类和java的abstact class和interface的区别是什么？</p>
+<p>java的继承模式是只能继承一个类，但是可以继承多个接口。这个是为了代码重用和设计便于理解。</p>
+<p>python的抽象基类在很多程度上并不是为了解决这个问题，python的抽象基类最重要的是为了实现类别的判断以及强制实现某些方法，从概念上来讲听起来好像差不多，但实际上你对python的抽象基类了解以后，也会发现在python中判断某个类型的类别实际上还是去判断某个类是否有某个具体的方法，所以本质上python是基于协议的一种语言，也就是方法名称更重要， 抽象基类只不过是是的判断某个类具有哪些方法名用起来更方便而已。所以你可以发现你如果某个类中实现了某个方法， 如果这个方法正好和某个抽象类的方法名一致，你即使不继承这个抽象基类你也会判断到你当前的类是基类的实例，所以抽象基类并不是很重要，方法名是最重要的。但是java的类型则是严格的继承关系，最多是可以动态的将某个子类赋给父类而已。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2017/07/10/python-advanced-8/">http://envyzhan.asia/2017/07/10/python-advanced-8/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2017/07/10/python-advanced-9/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Python高级编程（9）：isinstance和type的区别</div></div></a></div><div class="next-post pull-right"><a href="/2017/07/09/python-advanced-7/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Python高级编程（7）：鸭子类型和多态</div></div></a></div></nav></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>

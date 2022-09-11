@@ -1,0 +1,198 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Docker仓库 | 余思博客</title><meta name="keywords" content="docker"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面Docker三个核心概念已经详细学习了前两个，接下来学习第三个概念—仓库(Repository)。仓库是集中存放镜像的地方，它分为公共仓库和私有仓库。注意仓库(Repository)和注册服务器(Registry)两者是不同的，实际上注册服务器是存放仓库的具体服务器，一个注册服务器上可以有多个仓库，每个仓库下面有多个镜像，因此你完全可以将仓库理解为是注册服务器上的一个具体的项目或目录。举个">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Docker仓库">
+<meta property="og:url" content="http://envyzhan.asia/2020/04/15/docker-4-docker-and-repository/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面Docker三个核心概念已经详细学习了前两个，接下来学习第三个概念—仓库(Repository)。仓库是集中存放镜像的地方，它分为公共仓库和私有仓库。注意仓库(Repository)和注册服务器(Registry)两者是不同的，实际上注册服务器是存放仓库的具体服务器，一个注册服务器上可以有多个仓库，每个仓库下面有多个镜像，因此你完全可以将仓库理解为是注册服务器上的一个具体的项目或目录。举个">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7">
+<meta property="article:published_time" content="2020-04-15T11:23:04.000Z">
+<meta property="article:modified_time" content="2020-10-29T14:56:21.735Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="docker">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7"><link rel="shortcut icon" href="/img/favicon.png"><link rel="canonical" href="http://envyzhan.asia/2020/04/15/docker-4-docker-and-repository/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="preconnect" href="//busuanzi.ibruce.info"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Docker仓库',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2020-10-29 22:56:21'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><hr/></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Docker仓库</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2020-04-15T11:23:04.000Z" title="发表于 2020-04-15 19:23:04">2020-04-15</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2020-10-29T14:56:21.735Z" title="更新于 2020-10-29 22:56:21">2020-10-29</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/docker/">docker</a></span></div><div class="meta-secondline"><span class="post-meta-separator">|</span><span class="post-meta-pv-cv" id="" data-flag-title="Docker仓库"><i class="far fa-eye fa-fw post-meta-icon"></i><span class="post-meta-label">阅读量:</span><span id="busuanzi_value_page_pv"><i class="fa-solid fa-spinner fa-spin"></i></span></span></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>Docker三个核心概念已经详细学习了前两个，接下来学习第三个概念—仓库(Repository)。仓库是集中存放镜像的地方，它分为公共仓库和私有仓库。注意仓库(Repository)和注册服务器(Registry)两者是不同的，实际上注册服务器是存放仓库的具体服务器，一个注册服务器上可以有多个仓库，每个仓库下面有多个镜像，因此你完全可以将仓库理解为是注册服务器上的一个具体的项目或目录。举个例子，对于地址为<code>private-docker.com/ubuntu</code>的仓库来说，前面的<code>private-docker.com</code>是注册服务器地址；后者的<code>ubuntu</code>是仓库名称。通过上面的简单介绍，相信开发者已经对仓库和注册服务器有了基本的认识。在本文中将介绍如何使用Docker Hub官方仓库进行登录、下载、上传等操作，如何使用国内社区提供的仓库来下载镜像，创建和使用私有仓库的相关操作。</p>
+<h1 id="Docker-Hub官方仓库"><a href="#Docker-Hub官方仓库" class="headerlink" title="Docker Hub官方仓库"></a>Docker Hub官方仓库</h1><p><a target="_blank" rel="noopener" href="https://hub.docker.com/">Docker Hub</a>是Docker官方提供的最大公共镜像仓库。一般来说，开发者需要的镜像都可以在Docker Hub官方仓库上找得到并直接下载。</p>
+<h3 id="登录"><a href="#登录" class="headerlink" title="登录"></a>登录</h3><p>开发者可以执行<code>docker login</code>命令来输入用户名、密码和邮箱来完成注册和登录功能。注意注册成功后会在本地用户目录下自动创建<code>.docker/config.json</code>文件，该文件用于保存用户的认证信息，这样后续就可以直接登录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker login</span><br><span class="line">Login with your Docker ID to push and pull images from Docker Hub. If you don&#x27;t have a Docker ID, head over to https://hub.docker.com to create one.</span><br><span class="line">Username: licheetools</span><br><span class="line">Password: </span><br><span class="line">WARNING! Your password will be stored unencrypted in /root/.docker/config.json.</span><br><span class="line">Configure a credential helper to remove this warning. See</span><br><span class="line">https://docs.docker.com/engine/reference/commandline/login/#credentials-store</span><br><span class="line"></span><br><span class="line">Login Succeeded</span><br></pre></td></tr></table></figure>
+<p>查看一下这个<code>/root/.docker/config.json</code>文件，可以看到信息如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-c83f7e2d573195cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这样登录成功的用户就可以上传自己制作的镜像到Docker Hub官方仓库中。</p>
+<h3 id="搜索镜像"><a href="#搜索镜像" class="headerlink" title="搜索镜像"></a>搜索镜像</h3><p>请注意搜索镜像是不需要用户登录的，开发者可以使用<code>docker search [image]</code>命令来查找官方仓库中的镜像，并使用<code>docker pull [image]</code>命令来下载镜像到本地：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ce94abe3111a459f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在前面学习镜像的时候，就已经知道如何使用<code>docker search [image]</code>命令来搜寻镜像。这里举个例子，如需要查找名称为deepin的镜像，使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker search deepin</span><br><span class="line">NAME                                            DESCRIPTION                                     STARS               OFFICIAL            AUTOMATED</span><br><span class="line">x11docker/deepin                                Deepin desktop from China. Based on bestwu/d…   16                                      [OK]</span><br><span class="line">deepin/deepin-core                              Deepin server base images                       8                                       [OK]</span><br><span class="line">......</span><br></pre></td></tr></table></figure>
+<p>可以看到里面有一个OFFICIAL关键字，因此根据OFFICIAL可以将其分为官方镜像和扩展镜像。</p>
+<p>官方镜像如ubuntu等，这种一般是基础镜像，也称为根镜像。这些镜像是由Docker公司创建、验证、支持、提供的，且这种镜像往往使用单个单词作为名字；</p>
+<p>扩展镜像如bestwu/deepin等，是由Docker用户bestwu创建并维护的，带有用户名称为前缀，表明是某个用户下的某仓库。开发者可以通过用户名称前缀<code>user_name/镜像名</code>来指定使用某个用户提供的镜像。</p>
+<p>举个例子，现在我们需要将这个bestwu/deepin镜像下载到本地，只需使用<code>docker pull bestwu/deepin</code>命令即可下载到本地。用户也可以在登录后通过使用<code>docker push [image]</code>命令来将本地镜像推送到Docker Hub官方仓库。</p>
+<h3 id="自动创建"><a href="#自动创建" class="headerlink" title="自动创建"></a>自动创建</h3><p>自动创建(Automated Builds)是Docker Hub提供的自动化服务，它可以自动跟随项目代码的变更而重新构建镜像。</p>
+<p>举个例子，假设用户构建了某应用镜像，如果应用发布新版本，那么正常情况下需要用户手动来更新镜像。而如果使用自动创建，那么它允许用户通过Docker Hub来指定跟踪一个目标网站（目前支持GitHub和BitBucket）上的项目，一旦项目发生新的提交，那么就会自动执行创建。</p>
+<p>那么问题来了，我们应该如何配置自动创建呢？通常有以下5个步骤：<br>（1）创建并登陆Docker Hub和待跟踪的目标网站如GitHub；<br>（2）待跟踪的目标网站如GitHub，必须允许Docker Hub来访问服务；<br>（3）在Docker Hub中配置一个需要使用“自动创建”的项目；<br>（4）选取一个目标网站中的项目（注意需要包含Dockerfile）和分支；<br>（5）指定Dockerfile的位置并提交创建。<br>通过以上5个步骤的操作，之后就可以在Docker Hub的“自动创建”页面中跟踪每次创建的状态。</p>
+<h3 id="国内第三方镜像市场"><a href="#国内第三方镜像市场" class="headerlink" title="国内第三方镜像市场"></a>国内第三方镜像市场</h3><p>国内也有一些第三方的镜像市场，像腾讯云、阿里云、网易云等，但是笔者最常使用的是DaoCloud，因此这里以<a target="_blank" rel="noopener" href="https://hub.daocloud.io/">DaoCloud</a>为了进行说明：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0146a3ace6a54654.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h5 id="查看镜像"><a href="#查看镜像" class="headerlink" title="查看镜像"></a>查看镜像</h5><p>开发者可以直接访问<a target="_blank" rel="noopener" href="https://hub.daocloud.io/">DaoCloud</a>，往下拉就能看到已经存在的仓库和存储镜像，包括Minecraft、Python、Nginx等热门仓库和镜像。</p>
+<h5 id="下载镜像"><a href="#下载镜像" class="headerlink" title="下载镜像"></a>下载镜像</h5><p>请注意，之前我们使用<code>docker pull [image]</code>命令来下载镜像其实后面是省略了仓库名称和注册服务器的地址，因为默认是从Docker Hub官方仓库下载。但是这里是从DaoCloud镜像市场下载，因此需要在其后面添加注册服务器地址，此时下载镜像命令变为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull [image] http://f1361db2.m.daocloud.io/&lt;namespace&gt;/&lt;repository&gt;:&lt;tag&gt;</span><br></pre></td></tr></table></figure>
+<p>但是每次都需要在命令后面添加注册服务器地址是一件非常令人头疼的事，因此可以使用镜像代理服务来加速Docker镜像的获取过程。CentOS系统只需在<code>/etc/docker/daemon.json</code>文件中添加一行配置即可，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">&#123;&quot;registry-mirrors&quot;: [&quot;http://f1361db2.m.daocloud.io&quot;]&#125;</span><br></pre></td></tr></table></figure>
+<p>当然也可以在启动配置参数中添加<code>--registry-mirror=proxy_URL</code>来指定镜像代理服务器地址，这样直接使用<code>docker pull</code>命令其实就是从DaoCloud镜像市场中下载。</p>
+<h3 id="搭建本地私有仓库"><a href="#搭建本地私有仓库" class="headerlink" title="搭建本地私有仓库"></a>搭建本地私有仓库</h3><h5 id="使用registry镜像创建私有仓库"><a href="#使用registry镜像创建私有仓库" class="headerlink" title="使用registry镜像创建私有仓库"></a>使用registry镜像创建私有仓库</h5><p>安装完Docker后，开发者可以使用官方提供的registry镜像来简单搭建一套本地私有仓库环境，命令如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker run -d -p 5000:5000 registry:2</span><br></pre></td></tr></table></figure>
+<p>其中的<code>docker run</code>就是运行容器，<code>-d</code>表示创建出来的容器在后台去运行，-p是端口映射，<code>5000:5000</code>以冒号为界，前面是宿主机的端口，后面是容器的端口，就是把宿主机的5000端口映射到容器的5000端口，而<code>registry:2</code>表示使用名称为registry且tag为2的镜像。执行上述命令就会自动下载并启动一个registry容器，进而创建本地的私有仓库服务。但是默认情况下，该仓库会被创建在容器的<code>var/llib/registry</code>目录下。</p>
+<p>其实我们可以在执行上述命令的时候，通过使用<code>-v</code>参数来将容器内的指定目录映射到宿主机本地的指定路径，关于路径映射会在下一篇文章中进行介绍，这里了解就行。</p>
+<p>举个例子，使用registry:2镜像来搭建一个本地私有仓库，要求其在后台运行，且将宿主机的5000端口映射到该运行容器的5000端口，同时将宿主机的<code>/opt/data/registry</code>目录映射到容器的<code>/var/lib/registry</code>目录，此时使用的命令为：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker run -d -p 5000:5000 -v /opt/data/registry:/var/lib/registry registry:2</span><br><span class="line">daeea681e14c759368edc865b687e663cf920afcb843e2c02e58226e7b856182</span><br><span class="line">[root@envythink ~]# docker ps</span><br><span class="line">CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS                    NAMES</span><br><span class="line">daeea681e14c        registry:2          &quot;/entrypoint.sh /etc…&quot;   27 seconds ago      Up 25 seconds       0.0.0.0:5000-&gt;5000/tcp   intelligent_euler</span><br></pre></td></tr></table></figure>
+<p>这样就会在本地启动一个监听端口为5000的私有仓库服务。</p>
+<h5 id="管理私有仓库"><a href="#管理私有仓库" class="headerlink" title="管理私有仓库"></a>管理私有仓库</h5><p>前面我们已经在虚拟机内搭建了一个监听端口为5000的私有仓库，虚拟机地址为192.168.31.101，因此该私有仓库地址为<code>http://192.168.31.101:5000</code>，接下来我们就尝试在虚拟机内（Centos7）测试上传和下载镜像功能。</p>
+<p>首先查看一下在这个Centos7内存在的所有镜像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker images</span><br><span class="line">REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">example/ubuntu                   v1.0                8f60b46a2816        12 hours ago        72.9MB</span><br><span class="line">registry                         2                   2d4f4b5309b1        4 months ago        26.2MB</span><br></pre></td></tr></table></figure>
+<p>接着使用<code>systemctl stop firewalld</code>命令来关闭宿主机的防火墙。然后使用<code>docker tag</code>命令将example/ubuntu:v1.0镜像标记为<code>192.168.31.101:5000/envythink:v1.0</code>，也就是其格式必须为<code>docker tag IMAGE[:TAG] [REGISTRYHOST/][USRNAME/]NAME[:TAG]</code>，如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker tag example/ubuntu:v1.0 192.168.31.101:5000/envythink:v1.0</span><br><span class="line">[root@envythink ~]# docker images</span><br><span class="line">REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">192.168.31.101:5000/envythink    v1.0                8f60b46a2816        12 hours ago        72.9MB</span><br><span class="line">example/ubuntu                   v1.0                8f60b46a2816        12 hours ago        72.9MB</span><br><span class="line">registry                         2                   2d4f4b5309b1        4 months ago        26.2MB</span><br></pre></td></tr></table></figure>
+<p>接着再使用<code>docker push</code>命令来将之前标记的镜像进行上传，你会发现提示下面的错误信息：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker push 192.168.31.101:5000/envythink:v1.0</span><br><span class="line">The push refers to repository [1192.168.31.101:5000/envythink:v1.0]</span><br><span class="line">Get https://192.168.31.101:5000/v2/: http: server gave HTTP response to HTTPS client</span><br></pre></td></tr></table></figure>
+<p>请注意由于笔者Docker使用的是19.03.13版本，对安全性要求较高，要求仓库支持SSL/TLS证书。此处因为是内部使用的私有仓库，因此可以自行配置证书或者关闭对仓库的安全性检查，这里就选择不使用https这种传输方式，所以使用<code>vi /etc/docker/daemon.json</code>命令来编辑docker配置文件，然后将<code>&quot;insecure-registries&quot;:[&quot;192.168.31.101&quot;]</code>这行代码添加到JSON信息的另一行（里面的IP是宿主机的地址），如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">&#123;</span><br><span class="line">  &quot;registry-mirrors&quot;: [&quot;https://xwiu9ci3.mirror.aliyuncs.com&quot;],</span><br><span class="line">  &quot;insecure-registries&quot;: [&quot;192.168.31.101:5000&quot;]</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>之后依次执行下面两条命令来重新启动Docker：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# systemctl daemon-reload</span><br><span class="line">[root@envythink ~]# systemctl restart docker</span><br></pre></td></tr></table></figure>
+<p>接下来就使用<code>docker start</code>命令来启动之前使用registry镜像创建的私有仓库，然后再次使用<code>docker push</code>命令来将之前标记的镜像上传到私有仓库中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker push 192.168.31.101:5000/envythink:v1.0</span><br><span class="line">The push refers to repository [192.168.31.101:5000/envythink]</span><br><span class="line">d9d45faca0a6: Pushed </span><br><span class="line">v1.0: digest: sha256:b263df38f4e682601cae6087c346df156a1c24d0aa5d0bb0206ffb331d505afb size: 528</span><br></pre></td></tr></table></figure>
+<p>之后开发者可以将本地名为<code>192.168.31.101:5000/envythink:v1.0</code>的镜像给删除掉，然后再使用<code>docker pull</code>命令来从私有仓库中下载该镜像到本地：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker pull 192.168.31.101:5000/envythink:v1.0</span><br><span class="line">v1.0: Pulling from envythink</span><br><span class="line">Digest: sha256:b263df38f4e682601cae6087c346df156a1c24d0aa5d0bb0206ffb331d505afb</span><br><span class="line">Status: Downloaded newer image for 192.168.31.101:5000/envythink:v1.0</span><br><span class="line">192.168.31.101:5000/envythink:v1.0</span><br></pre></td></tr></table></figure>
+<p>之后就可以为它添加一个通用的标签envy/ubuntu:latest，这样方便后续使用：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">[root@envythink ~]# docker tag 192.168.31.101:5000/envythink:v1.0 envy/ubuntu:latest</span><br><span class="line">[root@envythink ~]# docker images</span><br><span class="line">REPOSITORY                       TAG                 IMAGE ID            CREATED             SIZE</span><br><span class="line">192.168.31.101:5000/envythink    v1.0                8f60b46a2816        12 hours ago        72.9MB</span><br><span class="line">envy/ubuntu                      latest              8f60b46a2816        12 hours ago        72.9MB</span><br></pre></td></tr></table></figure>
+<p>前面我们是直接不使用https传输方式，如果要使用https传输方式，那么就需要使用安全证书，开发者可以从知名的CA服务商，如verisign申请公开的SSL/TLS证书，也可以使用OpenSSL等软件来自行生成。</p>
+<p>在企业的生产环境中，往往使用私有仓库来维护内部镜像，不过这里只是简单的搭建了而已，还没有较为详细的介绍其相关配置，这个后续会介绍。当然除了使用官方提供的registry项目外，还可以使用其他的开源方案，如nexus来搭建私有化的容器镜像仓库。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2020/04/15/docker-4-docker-and-repository/">http://envyzhan.asia/2020/04/15/docker-4-docker-and-repository/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/docker/">docker</a></div><div class="post_share"><div class="social-share" data-image="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2020/04/16/docker-5-docker-data-management/"><img class="prev-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Docker数据管理</div></div></a></div><div class="next-post pull-right"><a href="/2020/04/09/docker-3-operate-docker-container/"><img class="next-cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">操作Docker容器</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2020/04/20/docker-6-port-mapping-and-container-linking/" title="端口映射与容器互联"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-20</div><div class="title">端口映射与容器互联</div></div></a></div><div><a href="/2020/04/23/docker-8-build-images-base-on-dockerfile/" title="基于Dockerfile创建镜像"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-23</div><div class="title">基于Dockerfile创建镜像</div></div></a></div><div><a href="/2020/04/01/docker-1-docker-and-container/" title="Docker与容器"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-01</div><div class="title">Docker与容器</div></div></a></div><div><a href="/2020/04/05/docker-2-use-docker-images/" title="使用Docker镜像"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-05</div><div class="title">使用Docker镜像</div></div></a></div><div><a href="/2020/04/09/docker-3-operate-docker-container/" title="操作Docker容器"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-09</div><div class="title">操作Docker容器</div></div></a></div><div><a href="/2020/04/16/docker-5-docker-data-management/" title="Docker数据管理"><img class="cover" src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2020-04-16</div><div class="title">Docker数据管理</div></div></a></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="https://i.loli.net/2021/02/24/5O1day2nriDzjSu.png" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">214</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">16</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">15</div></a></div><a id="card-info-btn" target="_blank" rel="noopener" href="https://github.com/xxxxxx"><i class="fab fa-github"></i><span>Follow Me</span></a></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">This is my Blog</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker-Hub%E5%AE%98%E6%96%B9%E4%BB%93%E5%BA%93"><span class="toc-number">2.</span> <span class="toc-text">Docker Hub官方仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%99%BB%E5%BD%95"><span class="toc-number">2.0.1.</span> <span class="toc-text">登录</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%9C%E7%B4%A2%E9%95%9C%E5%83%8F"><span class="toc-number">2.0.2.</span> <span class="toc-text">搜索镜像</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%87%AA%E5%8A%A8%E5%88%9B%E5%BB%BA"><span class="toc-number">2.0.3.</span> <span class="toc-text">自动创建</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9B%BD%E5%86%85%E7%AC%AC%E4%B8%89%E6%96%B9%E9%95%9C%E5%83%8F%E5%B8%82%E5%9C%BA"><span class="toc-number">2.0.4.</span> <span class="toc-text">国内第三方镜像市场</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%9F%A5%E7%9C%8B%E9%95%9C%E5%83%8F"><span class="toc-number">2.0.4.0.1.</span> <span class="toc-text">查看镜像</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%B8%8B%E8%BD%BD%E9%95%9C%E5%83%8F"><span class="toc-number">2.0.4.0.2.</span> <span class="toc-text">下载镜像</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%90%AD%E5%BB%BA%E6%9C%AC%E5%9C%B0%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93"><span class="toc-number">2.0.5.</span> <span class="toc-text">搭建本地私有仓库</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8registry%E9%95%9C%E5%83%8F%E5%88%9B%E5%BB%BA%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93"><span class="toc-number">2.0.5.0.1.</span> <span class="toc-text">使用registry镜像创建私有仓库</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E7%AE%A1%E7%90%86%E7%A7%81%E6%9C%89%E4%BB%93%E5%BA%93"><span class="toc-number">2.0.5.0.2.</span> <span class="toc-text">管理私有仓库</span></a></li></ol></li></ol></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Druid数据库连接池使用体验"/></a><div class="content"><a class="title" href="/2022/03/11/1-druid-database-connection-pool-experience/" title="Druid数据库连接池使用体验">Druid数据库连接池使用体验</a><time datetime="2022-03-11T09:55:30.000Z" title="发表于 2022-03-11 17:55:30">2022-03-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+OAuth2实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/15/oauth2-9-oauth2-and-springboot-to-sso/" title="SpringBoot+OAuth2实现单点登录">SpringBoot+OAuth2实现单点登录</a><time datetime="2021-01-15T11:23:04.000Z" title="发表于 2021-01-15 19:23:04">2021-01-15</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="OAuth2.0+JWT实现单点登录"/></a><div class="content"><a class="title" href="/2021/01/12/oauth2-8-oauth2-and-jwt-to-sso/" title="OAuth2.0+JWT实现单点登录">OAuth2.0+JWT实现单点登录</a><time datetime="2021-01-12T11:23:04.000Z" title="发表于 2021-01-12 19:23:04">2021-01-12</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="授权码模式实例优化"/></a><div class="content"><a class="title" href="/2021/01/09/oauth2-7-authorization-code-pattern-optimization/" title="授权码模式实例优化">授权码模式实例优化</a><time datetime="2021-01-09T11:23:04.000Z" title="发表于 2021-01-09 19:23:04">2021-01-09</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例"><img src="data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="一个完整的客户端模式实例"/></a><div class="content"><a class="title" href="/2021/01/07/oauth2-6-a-complete-example-of-client-pattern/" title="一个完整的客户端模式实例">一个完整的客户端模式实例</a><time datetime="2021-01-07T11:23:04.000Z" title="发表于 2021-01-07 19:23:04">2021-01-07</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2020 - 2022 By 余思</div><div class="framework-info"><span>框架 </span><a target="_blank" rel="noopener" href="https://hexo.io">Hexo</a><span class="footer-separator">|</span><span>主题 </span><a target="_blank" rel="noopener" href="https://github.com/jerryc127/hexo-theme-butterfly">Butterfly</a></div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"></div><script async data-pjax src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script></div></body></html>
