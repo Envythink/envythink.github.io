@@ -2,6 +2,24 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://envyzhan.asia/categories/flutter/index.html</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/categories/other/index.html</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://envyzhan.asia/2022/03/11/1-druid-database-connection-pool-experience/</loc>
     
     <lastmod>2022-09-11</lastmod>
@@ -1964,15 +1982,6 @@
   </url>
   
   <url>
-    <loc>http://envyzhan.asia/categories/nginx/index.html</loc>
-    
-    <lastmod>2020-10-24</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://envyzhan.asia/categories/mysql/index.html</loc>
     
     <lastmod>2020-10-24</lastmod>
@@ -2117,15 +2126,6 @@
   </url>
   
   <url>
-    <loc>http://envyzhan.asia/categories/algorithm/index.html</loc>
-    
-    <lastmod>2020-03-04</lastmod>
-    
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>
-  
-  <url>
     <loc>http://envyzhan.asia/tags/index.html</loc>
     
     <lastmod>2020-03-04</lastmod>
@@ -2173,7 +2173,7 @@
 
   <url>
     <loc>http://envyzhan.asia/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -2181,112 +2181,112 @@
   
   <url>
     <loc>http://envyzhan.asia/tags/mybatis/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/spring/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/cicd/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/docker/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/hadoop/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/mysql/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/nginx/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/OAuth2/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/shiro/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springcloud-alibaba/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springcloud/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springboot/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springsecurity/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/maven-tools/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springmvc/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/elasticsearch/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -2295,105 +2295,105 @@
   
   <url>
     <loc>http://envyzhan.asia/categories/ssm/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/devops/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/docker/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/mysql/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/nginx/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/OAuth2/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/pythonbase/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/shiro/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/springcloud/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/springboot/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/springsecurity/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/tools/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/java/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/elasticsearch/</loc>
-    <lastmod>2022-09-11</lastmod>
+    <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

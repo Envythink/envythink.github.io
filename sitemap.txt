@@ -1,3 +1,5 @@
+http://envyzhan.asia/categories/flutter/index.html
+http://envyzhan.asia/categories/other/index.html
 http://envyzhan.asia/2022/03/11/1-druid-database-connection-pool-experience/
 http://envyzhan.asia/about/index.html
 http://envyzhan.asia/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/
@@ -216,7 +218,6 @@ http://envyzhan.asia/2018/01/01/java-advanced-1-generic-paradigm/
 http://envyzhan.asia/categories/go/index.html
 http://envyzhan.asia/categories/java/index.html
 http://envyzhan.asia/categories/redis/index.html
-http://envyzhan.asia/categories/nginx/index.html
 http://envyzhan.asia/categories/mysql/index.html
 http://envyzhan.asia/categories/tools/index.html
 http://envyzhan.asia/categories/springsecurity/index.html
@@ -233,7 +234,6 @@ http://envyzhan.asia/categories/flask/index.html
 http://envyzhan.asia/categories/django/index.html
 http://envyzhan.asia/categories/devops/index.html
 http://envyzhan.asia/categories/datastructs/index.html
-http://envyzhan.asia/categories/algorithm/index.html
 http://envyzhan.asia/tags/index.html
 http://envyzhan.asia/categories/index.html
 http://envyzhan.asia/comment/index.html
