@@ -2,6 +2,78 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://envyzhan.asia/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2022/07/08/2022-k8s-5-deploy-microservices-on-a-complete-cluster/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2022/07/06/2022-k8s-4-complete-cluster-construction/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2022/07/04/2022-k8s-3-simple-environemnt-use/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2021/06/12/dart-02-oop-basic/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2021/06/10/dart-01-basic-grammar/</loc>
+    
+    <lastmod>2022-09-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://envyzhan.asia/2022/06/18/14-springboot-easily-implements-interface-encryptioon-and-decryption/</loc>
     
     <lastmod>2022-09-12</lastmod>
@@ -2402,6 +2474,20 @@
   </url>
   
   <url>
+    <loc>http://envyzhan.asia/tags/Kubernetes/</loc>
+    <lastmod>2022-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/tags/dart/</loc>
+    <lastmod>2022-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
     <loc>http://envyzhan.asia/tags/elasticsearch/</loc>
     <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
@@ -2496,6 +2582,20 @@
   
   <url>
     <loc>http://envyzhan.asia/categories/tools/</loc>
+    <lastmod>2022-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/categories/Kubernetes/</loc>
+    <lastmod>2022-09-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/categories/dart/</loc>
     <lastmod>2022-09-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>

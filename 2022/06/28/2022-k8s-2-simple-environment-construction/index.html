@@ -1,0 +1,261 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Kubernetes基础知识 | 余思博客</title><meta name="keywords" content="Kubernetes"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="Kubernetes简介Kubernetes，简称K8s，是用8代替名字中间的8个字符“ubernete”而成的缩写。是Google开源的一个容器编排引擎，它支持自动化部署、大规模可伸缩、应用容器化管理，用于管理云平台中多个主机上的容器化的应用。Kubernetes的目标是让部署容器化的应用简单并且高效，Kubernetes提供了应用部署，规划，更新，维护的一种机制。 在生产环境中部署一个应用程序">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Kubernetes基础知识">
+<meta property="og:url" content="http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="Kubernetes简介Kubernetes，简称K8s，是用8代替名字中间的8个字符“ubernete”而成的缩写。是Google开源的一个容器编排引擎，它支持自动化部署、大规模可伸缩、应用容器化管理，用于管理云平台中多个主机上的容器化的应用。Kubernetes的目标是让部署容器化的应用简单并且高效，Kubernetes提供了应用部署，规划，更新，维护的一种机制。 在生产环境中部署一个应用程序">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2022-06-28T09:55:30.000Z">
+<meta property="article:modified_time" content="2022-09-12T08:40:06.348Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="Kubernetes">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Kubernetes基础知识',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2022-09-12 16:40:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">235</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Kubernetes基础知识</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2022-06-28T09:55:30.000Z" title="发表于 2022-06-28 17:55:30">2022-06-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2022-09-12T08:40:06.348Z" title="更新于 2022-09-12 16:40:06">2022-09-12</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/Kubernetes/">Kubernetes</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="Kubernetes简介"><a href="#Kubernetes简介" class="headerlink" title="Kubernetes简介"></a>Kubernetes简介</h1><p>Kubernetes，简称K8s，是用8代替名字中间的8个字符“ubernete”而成的缩写。是Google开源的一个容器编排引擎，它支持自动化部署、大规模可伸缩、应用容器化管理，用于管理云平台中多个主机上的容器化的应用。Kubernetes的目标是让部署容器化的应用简单并且高效，Kubernetes提供了应用部署，规划，更新，维护的一种机制。</p>
+<p>在生产环境中部署一个应用程序时，通常要部署该应用的多个实例以便对应用请求进行负载均衡。在Kubernetes中，我们可以创建多个容器，每个容器里面运行一个应用实例，然后通过内置的负载均衡策略，实现对这一组应用实例的管理、发现、访问，而这些细节都不需要运维人员去进行复杂的手工配置和处理。</p>
+<h1 id="Kubernetes集群"><a href="#Kubernetes集群" class="headerlink" title="Kubernetes集群"></a>Kubernetes集群</h1><p><a target="_blank" rel="noopener" href="https://kubernetes.io/zh-cn/">Kubernetes</a> 协调一个高可用计算机集群，每个计算机作为独立单元互相连接工作。Kubernetes 以更高效的方式跨集群自动分发和调度应用容器。一个Kubernetes集群包含两种类型的资源：Master（调度整个集群）和Nodes（负责运行应用）。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-8332cf68b444bf54.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="Master调度整个集群"><a href="#Master调度整个集群" class="headerlink" title="Master调度整个集群"></a>Master调度整个集群</h3><p>Master协调集群中的所有活动，例如调度应用、维护应用的所需状态、应用扩容以及推出新的更新。</p>
+<h3 id="Nodes负责运行应用"><a href="#Nodes负责运行应用" class="headerlink" title="Nodes负责运行应用"></a>Nodes负责运行应用</h3><p>Node是一个虚拟机或者物理机，它在Kubernetes集群中充当工作机器的角色。每个Node都有Kubelet，它管理Node，而且是Node与Master通信的代理。 Node还具有用于处理容器操作的工具，如Docker或rkt。</p>
+<p>请注意生产级别的Kubernetes集群至少包含三个Node，因为如果一个Node出现故障，那么其对应的etcd成员和控制平面节点都会丢失，并且冗余会受到影响。当然了，开发者可以通过添加更多控制平面节点方式来降低这种风险 。</p>
+<p>在Kubernetes上部署应用时，需要告诉Master来启动应用容器，之后Master就会编排容器在集群的Node上运行。 Node使用Master暴露的Kubernetes API与Master通信。当然了，终端用户也可以使用Kubernetes API与集群进行交互。</p>
+<p>Kubernetes既可以部署在物理机上，也可以部署在虚拟机上。开发者可以使用Minikube开始部署Kubernetes集群。 Minikube是一种轻量级的Kubernetes实现，可在本地计算机上创建VM并部署仅包含一个节点的简单集群。Minikube可用于Linux，macOS和Windows系统。Minikube CLI提供了用于引导集群工作的多种操作，包括启动、停止、查看状态和删除。</p>
+<h1 id="Kubernetes应用部署"><a href="#Kubernetes应用部署" class="headerlink" title="Kubernetes应用部署"></a>Kubernetes应用部署</h1><p>一旦运行了Kubernetes集群，就可以在其上部署容器化应用程序。 为此，你需要创建Kubernetes Deployment配置。Deployment指挥Kubernetes如何创建和更新应用程序的实例。创建Deployment后，Kubernetes master将应用程序实例调度到集群中的各个节点上。</p>
+<p>创建应用程序实例后，Kubernetes Deployment控制器会持续监视这些实例。 如果托管实例的节点关闭或被删除，则Deployment控制器会将该实例替换为集群中另一个节点上的实例。 这提供了一种自我修复机制来解决机器故障维护问题。</p>
+<p>在没有Kubernetes这种编排系统之前，启动应用程序通常会采取安装脚本这一方式，但它们不允许从机器故障中恢复。Kubernetes Deployments提供了一种与众不同的应用程序管理方法，通过创建应用程序实例并使它们在节点之间运行。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-86d72371396d79dc.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>你可以使用Kubernetes命令行界面 <strong>Kubectl</strong> 创建和管理Deployment。Kubectl使用Kubernetes API 与集群进行交互。创建Deployment 时，你需要指定应用程序的容器镜像以及要运行的副本数。你可以稍后通过更新Deployment来更改该信息。</p>
+<h1 id="Kubernetes中的概念"><a href="#Kubernetes中的概念" class="headerlink" title="Kubernetes中的概念"></a>Kubernetes中的概念</h1><h3 id="Pod"><a href="#Pod" class="headerlink" title="Pod"></a>Pod</h3><p>Pod是Kubernetes处理的最基本单元，容器本身不会直接分配到主机上，而是会封装到名为Pod的对象中：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a020c6f11413799f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在上图中Pod1里面有一个应用容器，且该Pod有一个独立的IP地址。Pod2里面有一个应用容器，还挂载了一个磁盘，该Pod也有一个独立的IP地址。</p>
+<p>Pod3里面有两个应用容器，还挂载了一个磁盘，该Pod也有一个独立的IP地址。也就是说这个Pod中的两个应用容器是可以共享IP与磁盘。</p>
+<p>Pod4里面有多个应用容器和磁盘，该Pod也有一个独立的IP地址。也就是说同一个Pod中可以有任意多个应用容器（多个容器间网络共享）和磁盘（多个共享目录）。</p>
+<h3 id="Node"><a href="#Node" class="headerlink" title="Node"></a>Node</h3><p>Pod是运行在Node上的，kubelet负责调度Pod的运行。只要资源足够，一个Node上可以有任意多个Pod。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-3b6cc5f1a8669401.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h3 id="Service"><a href="#Service" class="headerlink" title="Service"></a>Service</h3><p><img src="https://upload-images.jianshu.io/upload_images/8964398-2c8d3ac05e843df2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>粗蓝线框的节点是Master节点，其他的都是Node节点。看一下左下角的Node节点，里面运行了一个Pod，然后这个Pod的外面有一层黄色的虚线，这层虚线就是Service。这个Pod有一个IP，地址是10.10.10.1，这个Service也有一个IP，地址是10.10.9.1，可以看到Service和Pod的IP是不一样的。现在有个问题，为什么Pod有了IP，而外面还包一层Service，同时它也有独立的IP呢？</p>
+<p>原因在于Pod是运行在具体的一个Node上，可能在某些场景下这个Pod出了问题（不稳定挂掉了或者服务容器异常退出，甚至整个Node挂掉了），这样的话这个Node就挂掉了，服务就无法访问了。那可能会去其他的位置重新启动一个Node，运行Pod，此时Pod的IP地址肯定变化了，因此就需要一个Service。当我们的Pod出了问题，它的IP地址发生了变化，此时我们还可以通过Service的IP来找到这个Pod。注意Service的IP与其生命周期是对应的，只要这个Service没有被删除，那么Service的IP就会一直存在，并且永远不会发生变化。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2c8d3ac05e843df2.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来看上面两个Node，左侧Node中只有一个Pod，而右侧Node中有两个Pod，一共三个Pod。在多个Pod的情况下，一般都是同一个应用的多个副本，也就是对同一个应用进行扩容，由1个实例变成3个实例，然后它们对外会提供相同的服务。此时这个Service的IP除了可以向上面那样，定位到Pod的地址之外，还有另外一个作用，即对多个Pod的地址进行负载均衡。举个例子，如轮询访问每个Pod。当然了这个Pod不一定是一模一样的，也可以是同一应用的不同版本。比如我在进行灰度发布的时候，一个可能是旧版本，一个可能是新版本，这都是可以的。所以说Kubernetes并没有对Pod本身做任何限制，那怕是完全不同的应用，你也可以将其作为一个Service去管理。只是一般情况下，我们都不会这么做。</p>
+<p>Service的概念我们已经知道了，那么Kubernetes是如何确定哪些Pod属于同一个Service呢？Kubernetes使用Label Selector来进行确定。当我们定义一个Service的时候，可以给它指定一个标签，如<code>s:app=B</code>，有这样一对标签的时候，就可以认为它属于ServiceB。之后它会去搜索所有的Pod，发现上面三个Pod都携带有<code>app=B</code>标签，那么这三个Pod就会自动归属于这个ServiceB。这就让Service和Pod之间的耦合变得很松，非常灵活。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2a426db0b2191d90.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接下来梳理几个概念，首先是Pod，Pod里面可以运行多个容器，Service里面可以包含多个Pod，然后Development就比较宽泛，可以是部署Pod，也可以是部署Service。</p>
+<p>接下来看一下通过Development来完成应用的扩容过程：首先从Master节点发起了一个Development，向给这个Service里面的Pod扩容成4个实例，而目前就只有一个实例。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-1261d3c9878ba39f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>扩容的目标对象是Pod，Pod才是一个真实存在的东西，才有扩容和缩容的概念，而Service是没有的，Service只是一个逻辑上存在的东西。它只是通过Label Selector将一组Pod划分为一个逻辑组，从而实现它们的负载均衡而已。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a2783b07670d2b9b.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后就扩容完成了，在其他的两个节点上，也有了运行的Pod，一共是4个实例。然后这个Service就自动将新的Pod包含进来，那么问题来了，它是如何知道这些新的Pod呢？肯定是通过标签，既然是扩容，那么新Pod的标签和原来的Pod的标签是一样的，然后它通过标签选择，将新的Pod都选择上，接着Service就可以对外进行负载均衡，将流量转发给每个Pod。当某个Pod出问题的时候，Service会通过某种机制，不会将流量转发给出现问题的Pod上。</p>
+<p>接下来看一下滚动更新的过程：首先停掉了一个旧的Pod，然后又新启动了一个Pod，此时这个Service中就同时有旧的版本和新的版本：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7d06f1f15b9f0fee.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>接着又停掉了最下面那个Pod，又启动了一个新的Pod：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-a7c59cbcfcb569e7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>如此进行，直到所有旧的Pod都更新完成，滚动更新就结束了。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-29af65060a479877.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在所有的更新和扩容的过程，这个Service的IP都是始终保持不变的，以上就是Kubernetes中的核心概念。</p>
+<h1 id="Kubernetes整体架构"><a href="#Kubernetes整体架构" class="headerlink" title="Kubernetes整体架构"></a>Kubernetes整体架构</h1><p>接下来我们看一下Kubernetes的整体架构，下面这张图初看可能觉得非常乱：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6ad6ac17a412e734.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>首先上面这一块是Master节点，然后下面两块分别都是Node节点。Master节点中部署的都是Kubernetes的核心模块，中间的虚线框表示APIServer，它提供了资源操作的唯一入口，并且提供认证、授权和Kubernetes的访问控制。开发者可以通过kuberctl或者自己开发的客户端通过HTTP请求以RESTful API的形式来访问这个APIServer，进而实现对整个集群的控制。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-cbcd7e364e6f1a14.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>ControllerManager负责维护集群的状态，如故障检测、扩缩容、滚动更新等。Scheduler负责资源的调度，它会按照预定的调度策略，将Pod调度给相应的Node节点。前面学习的Mesos和Docker Swarm也都有调度模块，也有非常多的调度策略可以选择，而Kubernetes则有更加丰富的调度策略，关于这一块后面会详细进行介绍。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ec9354017f73b5c4.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>右上角还有一个ETCD，主要用作于一致性存储，保存了Pod，Service，还有集群的一些状态等信息，其实就相当于所有的这些Kubernetes集群需要持久化的数据都会存储到这个ETCD中。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-101e46cba059c589.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>在这个Master节点中还运行了一个kube-dns组件，它负责整个集群的DNS服务，注意这个组件不是必须的。不过一般我们都选择安装它，因为通过名字访问是一个非常重要的功能。右侧还有一个名为dashboard的组件，它提供了集群数据管理的可视化界面。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-999fad975491287c.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>再来看一下Node节点。从上图中可以看到，每个Node节点中都有一个Kubelet，Kubelet负责维护当前节点上的容器的生命周期，也负责维护当前节点的网络等。在每个Node节点上都运行一个kube-proxy，kube-proxy负责Service，负责提供内部的服务发现和负载均衡，相当于为Service这个概念提供了一个落地的方法。</p>
+<p>接下来看一下一个Pod Developed全过程：首先用户执行kubectl，向APIServer发起一个命令，然后请求经过认证之后，再由Schedluer的各种策略来评分计算，得到一个目标的Node，然后告诉APIServer。</p>
+<p>APIServer就会请求相关Node的kubelet，然后通过这个kubelet将这个Pod运行起来，同时APIServer会将这个Pod的信息存储到ETCD中。当Pod运行起来之后，这个ControllerManager就会负责管理这个Pod的状态。举个例子，假设这个Pod不小心挂了，那么ControllerManager就会重新创建一个一样的Pod，Pod的扩缩容也是由这个ControllerManager来管理的。此时这个Pod有一个独立的IP地址，我们可以在整个集群内使用这个IP来访问它。但是这个Pod的IP是容易发生变化，比如异常重启、服务升级时IP就变化了。再有一个就是当存在多个实例的时候，我们也不可能实时的去关注这些Pod的IP，并访问它们，于是就有了Service。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-9e6b98c295d73335.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>图中绿色虚线内有三个Pod，它们同属一一个Service，不再此绿色虚线内的Pod则是单独存在的，并没有提供Service的入口。而具体完成Service工作的则是kube-proxy模块，可以看到在每个Node上都有一个kube-proxy。在任何一个节点上访问这个Service的虚拟IP（即给Service分配的IP）都可以访问到这三个Pod，因此这两个节点对这一个Service都会有一个IP的指向，负载均衡的访问它们。Service的IP虽然在集群内部是可以访问得到，但是在这个集群之外呢？我们是想要在集群外的服务，访问集群内的一个服务，此时应该怎么办？这一点kube-proxy也考虑到了，它可以将服务端口直接暴露在当前的Node上，然后外面的请求直接访问Node上的一个IP就可以关联到这个Service了。</p>
+<p>我们在学习Docker Swarm的时候，知道在容器中可以通过名字来访问其他的容器，Kubernetes也是可以的，这就是kube-dns所做的工作，它提供了整个集群的dns服务，让每个Pod都可以通过名字来访问对方。也就是说，任何一个Pod都可以通过名字来访问另一个Pod。</p>
+<h1 id="Kubernetes-Scheduler调度策略"><a href="#Kubernetes-Scheduler调度策略" class="headerlink" title="Kubernetes Scheduler调度策略"></a>Kubernetes Scheduler调度策略</h1><p>Scheduler用于决定每个Pod应该调度到哪个节点上，Kubernetes的分配方式有两种：预选规则（preselect）和优选规则（optimize-select）。</p>
+<p>【预选规则】预选规则（preselect）这里介绍五个比较重要的规则：NodiskConflict、CheckNodeMemoryPressure、NodeSelector、FitResource和Affinity。<br>（1）NodiskConflict，即看看有没有挂载的冲突。如果一个Pod需要一个挂载，然后在这台机器上，这个挂载已经被其他Pod占用的话，这就是挂载冲突，它不会让挂载冲突这件事情发生。<br>（2）CheckNodeMemoryPressure，即检查当前节点的内存压力，所有内存压力为0的节点可以调度，当然了还存在对磁盘的检查等等。<br>（3）NodeSelector，即选择指定hostname或者具有某些标签的节点，这是非常基础的，所有的服务编排框架都有这样的功能。<br>（4）FitResource，这也是非常基础的，Node需要满足Pod的CPU、内存、GPU等资源的要求。<br>（5）Affinity，亲和性，这个逻辑比较复杂，它可以满足很多需求，如一个Pod必须与另一个Pod运行在一起，一个Pod最好与另一个Pod运行在一起，这是两种描述，它都可以实现。既然有亲和性，那么就有反亲和性，即一个Pod不能与另一个Pod运行在一起，一个Pod最好不要与另一个Pod运行在一起。</p>
+<p>【优选规则】优选规则（optimize-select）是指通过预选规则选出来一系列的Node之后，对这些Node进行打分。Kubernetes会使用一组优先级函数去处理每一个待选的Node，每一个优先级函数会返回一个0-10的分数，分数越高表示这台机器越好，越适合，同时每个函数也会对应一个权重，最终选择一个分值最高的机器来部署Pod。</p>
+<p>这里介绍三个比较重要的规则：SelectorSpreadPriority、LeastRequestedPriority和AffinityPriority。</p>
+<p>（1）SelectorSpreadPriority。对于同一个Service或者Controller的Pod，尽量会分布在不同的机器上，如果指定了区域，则会尽量将Pod分散在不同区域的不同主机上。<br>（2）LeastRequestedPriority。如果一个新的Pod需要分配节点，那么这个节点的优先级就由节点空闲的那部分容量的比值来决定。其实就是使用节点上Pod的总容量减去新的Pod的容量得到的值再除以总容量。也就是说当这个Pod运行在这个节点上之后，当前节点还存在多少空闲，如果空闲越高则分数越大。<br>（3）AffinityPriority，调度综合亲和性机制。Node Selector在调度的时候将Pod限定在某些节点上的时候，它是支持多种操作符的，如in、not in、exists、gt/lt等，它不会去限定对Label的精确匹配，然后会根据这些匹配条件和匹配结果进行一个算法级别的打分。</p>
+<h1 id="Kubernetes-Pod通讯"><a href="#Kubernetes-Pod通讯" class="headerlink" title="Kubernetes Pod通讯"></a>Kubernetes Pod通讯</h1><p>接下来学习Kubernetes Pod与Pod之间的通讯方式有三种，下面分别进行介绍。</p>
+<p>第一种，Pod的内部通讯，同一个Pod中的容器之间的相互通信。这就是近的两个Pod之间的通讯，同一个Pod肯定是运行在同一个主机上，然后它有共享的网络，同一个IP，所以它们之间的访问可以使用localhost加上端口号就能进行访问，这是最简单的一种通信方式：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-144babbc777e7e1f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>第二种，同一个Node上，不同Pod间的通讯。同一个Node上的Pod，它的默认路由都是docker0，由于它们都关联在同一个网桥docker0上，地址网段是相通的，所以它们之间可以直接通过该网桥来进行通讯。然后访问的方式就是可通过Pod的IP来直接访问：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-0c647c864ed5f872.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>第三种，不同Node上，不同Pod间的通讯。它们要想实现访问，需要满足几个条件，一个是Pod的IP不能冲突（不能有相同的IP），其次就是Pod的IP要和Node所在IP关联起来，通过这个关联让Pod之间可以相互访问：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-287c7cdb834a0c7d.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h1 id="Kubernetes服务发现"><a href="#Kubernetes服务发现" class="headerlink" title="Kubernetes服务发现"></a>Kubernetes服务发现</h1><p>Kubernetes服务发现主要有两个组件，一个是kube-proxy，另一个则是kube-dns。</p>
+<p>kube-proxy其实分为两种类型，一种是ClusterIP，这种对于每个服务都按照一个IPtable规则，会给相关的Pod做一个虚拟IP，会将虚拟IP的流量直接重定向到后端服务的一个集合。这个虚拟IP只能在集群内访问，并且是固定的，前提是Service不删除。另一种则是NodePort，NodePort就是在每一个Node上都起一个监听端口，相当于将服务暴露在节点上，这样就可以让集群外部的服务，通过NodeIP和NodePort去访问到我们集群内部的服务。</p>
+<p>kube-dns是Kubernetes的一个插件，负责集群内部的DNS解析，目的是在集群内部可以让Pod之间通过名字来进行访问。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/">http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/Kubernetes/">Kubernetes</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2022/07/04/2022-k8s-3-simple-environemnt-use/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">Kubernetes简易环境使用</div></div></a></div><div class="next-post pull-right"><a href="/2022/06/28/2022-k8s-1-basic-knowledge/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">Kubernetes基础知识</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/06/28/2022-k8s-1-basic-knowledge/" title="Kubernetes基础知识"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-28</div><div class="title">Kubernetes基础知识</div></div></a></div><div><a href="/2022/07/08/2022-k8s-5-deploy-microservices-on-a-complete-cluster/" title="在完整Kubernetes集群上部署微服务"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-08</div><div class="title">在完整Kubernetes集群上部署微服务</div></div></a></div><div><a href="/2022/07/04/2022-k8s-3-simple-environemnt-use/" title="Kubernetes简易环境使用"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-04</div><div class="title">Kubernetes简易环境使用</div></div></a></div><div><a href="/2022/07/06/2022-k8s-4-complete-cluster-construction/" title="Kubernetes完整集群搭建"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-07-06</div><div class="title">Kubernetes完整集群搭建</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">235</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">18</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">17</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问啃饼思录！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">Kubernetes简介</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E9%9B%86%E7%BE%A4"><span class="toc-number">2.</span> <span class="toc-text">Kubernetes集群</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Master%E8%B0%83%E5%BA%A6%E6%95%B4%E4%B8%AA%E9%9B%86%E7%BE%A4"><span class="toc-number">2.0.1.</span> <span class="toc-text">Master调度整个集群</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nodes%E8%B4%9F%E8%B4%A3%E8%BF%90%E8%A1%8C%E5%BA%94%E7%94%A8"><span class="toc-number">2.0.2.</span> <span class="toc-text">Nodes负责运行应用</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E5%BA%94%E7%94%A8%E9%83%A8%E7%BD%B2"><span class="toc-number">3.</span> <span class="toc-text">Kubernetes应用部署</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E4%B8%AD%E7%9A%84%E6%A6%82%E5%BF%B5"><span class="toc-number">4.</span> <span class="toc-text">Kubernetes中的概念</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Pod"><span class="toc-number">4.0.1.</span> <span class="toc-text">Pod</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Node"><span class="toc-number">4.0.2.</span> <span class="toc-text">Node</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Service"><span class="toc-number">4.0.3.</span> <span class="toc-text">Service</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E6%95%B4%E4%BD%93%E6%9E%B6%E6%9E%84"><span class="toc-number">5.</span> <span class="toc-text">Kubernetes整体架构</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes-Scheduler%E8%B0%83%E5%BA%A6%E7%AD%96%E7%95%A5"><span class="toc-number">6.</span> <span class="toc-text">Kubernetes Scheduler调度策略</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes-Pod%E9%80%9A%E8%AE%AF"><span class="toc-number">7.</span> <span class="toc-text">Kubernetes Pod通讯</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Kubernetes%E6%9C%8D%E5%8A%A1%E5%8F%91%E7%8E%B0"><span class="toc-number">8.</span> <span class="toc-text">Kubernetes服务发现</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/" title="SpringBoot整合Canal实现数据增量同步"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot整合Canal实现数据增量同步"/></a><div class="content"><a class="title" href="/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/" title="SpringBoot整合Canal实现数据增量同步">SpringBoot整合Canal实现数据增量同步</a><time datetime="2022-08-02T09:55:30.000Z" title="发表于 2022-08-02 17:55:30">2022-08-02</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/08/2022-k8s-5-deploy-microservices-on-a-complete-cluster/" title="在完整Kubernetes集群上部署微服务"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="在完整Kubernetes集群上部署微服务"/></a><div class="content"><a class="title" href="/2022/07/08/2022-k8s-5-deploy-microservices-on-a-complete-cluster/" title="在完整Kubernetes集群上部署微服务">在完整Kubernetes集群上部署微服务</a><time datetime="2022-07-08T09:55:30.000Z" title="发表于 2022-07-08 17:55:30">2022-07-08</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/06/2022-k8s-4-complete-cluster-construction/" title="Kubernetes完整集群搭建"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes完整集群搭建"/></a><div class="content"><a class="title" href="/2022/07/06/2022-k8s-4-complete-cluster-construction/" title="Kubernetes完整集群搭建">Kubernetes完整集群搭建</a><time datetime="2022-07-06T09:55:30.000Z" title="发表于 2022-07-06 17:55:30">2022-07-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/07/04/2022-k8s-3-simple-environemnt-use/" title="Kubernetes简易环境使用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes简易环境使用"/></a><div class="content"><a class="title" href="/2022/07/04/2022-k8s-3-simple-environemnt-use/" title="Kubernetes简易环境使用">Kubernetes简易环境使用</a><time datetime="2022-07-04T09:55:30.000Z" title="发表于 2022-07-04 17:55:30">2022-07-04</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2022/06/28/2022-k8s-2-simple-environment-construction/" title="Kubernetes基础知识"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Kubernetes基础知识"/></a><div class="content"><a class="title" href="/2022/06/28/2022-k8s-2-simple-environment-construction/" title="Kubernetes基础知识">Kubernetes基础知识</a><time datetime="2022-06-28T09:55:30.000Z" title="发表于 2022-06-28 17:55:30">2022-06-28</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2022  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: 'ed0abf652f17de30fd33b717ea992f12',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>

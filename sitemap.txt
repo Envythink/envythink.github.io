@@ -1,3 +1,11 @@
+http://envyzhan.asia/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/
+http://envyzhan.asia/2022/07/08/2022-k8s-5-deploy-microservices-on-a-complete-cluster/
+http://envyzhan.asia/2022/07/06/2022-k8s-4-complete-cluster-construction/
+http://envyzhan.asia/2022/07/04/2022-k8s-3-simple-environemnt-use/
+http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/
+http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/
+http://envyzhan.asia/2021/06/12/dart-02-oop-basic/
+http://envyzhan.asia/2021/06/10/dart-01-basic-grammar/
 http://envyzhan.asia/2022/06/18/14-springboot-easily-implements-interface-encryptioon-and-decryption/
 http://envyzhan.asia/2022/06/06/13-spring-boot-implements-graphic-verification-code/
 http://envyzhan.asia/2022/05/26/12-springboot-realizes-the-repeated-reading-of-json-data/
@@ -268,6 +276,8 @@ http://envyzhan.asia/tags/springcloud/
 http://envyzhan.asia/tags/springsecurity/
 http://envyzhan.asia/tags/maven-tools/
 http://envyzhan.asia/tags/springmvc/
+http://envyzhan.asia/tags/Kubernetes/
+http://envyzhan.asia/tags/dart/
 http://envyzhan.asia/tags/elasticsearch/
 http://envyzhan.asia/categories/springboot/
 http://envyzhan.asia/categories/ssm/
@@ -282,5 +292,7 @@ http://envyzhan.asia/categories/shiro/
 http://envyzhan.asia/categories/springcloud/
 http://envyzhan.asia/categories/springsecurity/
 http://envyzhan.asia/categories/tools/
+http://envyzhan.asia/categories/Kubernetes/
+http://envyzhan.asia/categories/dart/
 http://envyzhan.asia/categories/java/
 http://envyzhan.asia/categories/elasticsearch/
