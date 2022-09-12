@@ -1,3 +1,15 @@
+http://envyzhan.asia/2022/06/18/14-springboot-easily-implements-interface-encryptioon-and-decryption/
+http://envyzhan.asia/2022/06/06/13-spring-boot-implements-graphic-verification-code/
+http://envyzhan.asia/2022/05/26/12-springboot-realizes-the-repeated-reading-of-json-data/
+http://envyzhan.asia/2022/05/26/11-springboot-implements-timed-tasks/
+http://envyzhan.asia/2022/05/18/10-use-springboot-and-vue-to-achieve-a-code-generator/
+http://envyzhan.asia/2022/04/26/9-what-you-need-to-know-about-freemarker-template-engine/
+http://envyzhan.asia/2022/04/15/8-customize-the-starter-scenario-launcher-in-springboot/
+http://envyzhan.asia/2022/04/10/7-talk-about-the-automatic-assembly-principle-of-springboot/
+http://envyzhan.asia/2022/03/30/6-springboot-custom-parameter-parser/
+http://envyzhan.asia/2022/03/24/5-an-annotation-cooperates-with-redis-to-realize-interface-current-limition/
+http://envyzhan.asia/2022/03/20/4-dynamic-switching-of-visual-multiple-data-sources/
+http://envyzhan.asia/2022/03/18/3-dynamic-switching-of-multiple-data-sources/
 http://envyzhan.asia/2022/03/14/2-springboot-configuring-multiple-data-sources/
 http://envyzhan.asia/categories/flutter/index.html
 http://envyzhan.asia/categories/other/index.html
@@ -241,6 +253,7 @@ http://envyzhan.asia/comment/index.html
 http://envyzhan.asia/categories/pythonbase/index.html
 http://envyzhan.asia/link/index.html
 http://envyzhan.asia/
+http://envyzhan.asia/tags/springboot/
 http://envyzhan.asia/tags/mybatis/
 http://envyzhan.asia/tags/spring/
 http://envyzhan.asia/tags/cicd/
@@ -252,11 +265,11 @@ http://envyzhan.asia/tags/OAuth2/
 http://envyzhan.asia/tags/shiro/
 http://envyzhan.asia/tags/springcloud-alibaba/
 http://envyzhan.asia/tags/springcloud/
-http://envyzhan.asia/tags/springboot/
 http://envyzhan.asia/tags/springsecurity/
 http://envyzhan.asia/tags/maven-tools/
 http://envyzhan.asia/tags/springmvc/
 http://envyzhan.asia/tags/elasticsearch/
+http://envyzhan.asia/categories/springboot/
 http://envyzhan.asia/categories/ssm/
 http://envyzhan.asia/categories/devops/
 http://envyzhan.asia/categories/docker/
@@ -267,7 +280,6 @@ http://envyzhan.asia/categories/OAuth2/
 http://envyzhan.asia/categories/pythonbase/
 http://envyzhan.asia/categories/shiro/
 http://envyzhan.asia/categories/springcloud/
-http://envyzhan.asia/categories/springboot/
 http://envyzhan.asia/categories/springsecurity/
 http://envyzhan.asia/categories/tools/
 http://envyzhan.asia/categories/java/
