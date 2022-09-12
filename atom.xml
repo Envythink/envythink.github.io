@@ -163,8 +163,8 @@
   
   <entry>
     <title>Kubernetes基础知识</title>
-    <link href="http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/"/>
-    <id>http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/</id>
+    <link href="http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/"/>
+    <id>http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/</id>
     <published>2022-06-28T09:55:30.000Z</published>
     <updated>2022-09-12T08:40:06.348Z</updated>
     
@@ -187,8 +187,8 @@
   
   <entry>
     <title>Kubernetes基础知识</title>
-    <link href="http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/"/>
-    <id>http://envyzhan.asia/2022/06/28/2022-k8s-1-basic-knowledge/</id>
+    <link href="http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/"/>
+    <id>http://envyzhan.asia/2022/06/28/2022-k8s-2-simple-environment-construction/</id>
     <published>2022-06-28T09:55:30.000Z</published>
     <updated>2022-09-12T08:40:06.348Z</updated>
     
