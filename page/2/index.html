@@ -50,7 +50,7 @@
   isHome: true,
   isHighlightShrink: false,
   isToc: false,
-  postUpdate: '2023-03-14 14:53:19'
+  postUpdate: '2023-03-14 15:00:01'
 }</script><noscript><style type="text/css">
   #nav {
     opacity: 1
@@ -148,7 +148,7 @@ Swagger-UI常用的一些注解如下所示：（1）@Api：用于修饰Controll
 使用的框架简介SpringBoot一个基于Spring的快速搭建Java企业级应用的开发框架。
 Mybatis generatorMybatis代码生成器，可根据数据库生成对应的model、mapper.xml、mapper接口以及Example，这样一般的单表查询不用再手写mapper。
 PagerHelperMyBatis分页插件，只需几行简单事务代码就能实现分页功能。如果你使用的是SpringBoot，那么只要整合了PagerHelper就自动整合了MyBatis：
-12345PageHelper.startPage(pageNum, pageSize);//之后进行查询操作将自动进行分页List&lt;PmsBrand&gt; brandList = brandMapper.selectByExample(new PmsBrandExample());//通过构造PageInfo对象获取分页信息，如当 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2022/08/18/17-practice-of-function-switch-in-business/" title="功能开关在业务中的实践"><img class="post_bg" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="功能开关在业务中的实践"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/08/18/17-practice-of-function-switch-in-business/" title="功能开关在业务中的实践">功能开关在业务中的实践</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-08-18T09:55:30.000Z" title="发表于 2022-08-18 17:55:30">2022-08-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/springboot/">springboot</a></span></div><div class="content">写在前面最近在搞一个报名送油卡的活动，这个活动不定期举办，因此需要考虑可配置性，起初考虑后台做个时间配置框，根据指定的时间来生效，但是后续发现这样有个弊端，即只能针对一个活动或者相同时间的多个活动生效，而实际上我们的活动有多个，权衡再三决定使用功能开关来实现。
+12345PageHelper.startPage(pageNum, pageSize);//之后进行查询操作将自动进行分页List&lt;PmsBrand&gt; brandList = brandMapper.selectByExample(new PmsBrandExample());//通过构造PageInfo对象获取分页信息，如当 ...</div></div></div><div class="recent-post-item"><div class="post_cover left"><a href="/2022/08/18/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践"><img class="post_bg" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="功能开关在业务中的实践"></a></div><div class="recent-post-info"><a class="article-title" href="/2022/08/18/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践">功能开关在业务中的实践</a><div class="article-meta-wrap"><span class="post-meta-date"><i class="far fa-calendar-alt"></i><span class="article-meta-label">发表于</span><time datetime="2022-08-18T09:55:30.000Z" title="发表于 2022-08-18 17:55:30">2022-08-18</time></span><span class="article-meta"><span class="article-meta-separator">|</span><i class="fas fa-inbox"></i><a class="article-meta__categories" href="/categories/springboot/">springboot</a></span></div><div class="content">写在前面最近在搞一个报名送油卡的活动，这个活动不定期举办，因此需要考虑可配置性，起初考虑后台做个时间配置框，根据指定的时间来生效，但是后续发现这样有个弊端，即只能针对一个活动或者相同时间的多个活动生效，而实际上我们的活动有多个，权衡再三决定使用功能开关来实现。
 功能开关功能开关其实是一种代码可配置性的实践，说到底就是通过控制开关的状态来实现对功能的决定控制。
 功能开关的实现有很多种方式，可以使用MySQL或者Redis等数据库，出于对后续数据扩展和对存储容量的考量，此处使用Bit数组来实现。
 Bit数组原理既然是数组，那么下标必然从0开始，bit只有两种取值，要么为0，要么为1：
