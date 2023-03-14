@@ -2,6 +2,114 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/13/2023-7-integrate-mongodb-to-realize-user's-product-browsing-record/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/02/12/2023-6-use-elasticsearch-to-realize-complex-product-search/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/01/20/2023-5-integrate-elasticsearch-to-realize-product-search/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/01/14/2023-4-integrate-springsecurity-and-jwt-to-achieve-authentication-and-authorization/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/01/12/2023-3-integrate-redis-to-achieve-data-caching/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/01/10/2023-2-integrate-swagger-ui-to-realize-online-API-documentation/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2023/01/08/2023-1-project-skeleton-construction/</loc>
+    
+    <lastmod>2023-03-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://envyzhan.asia/2022/08/18/17-practice-of-function-switch-in-business/</loc>
     
     <lastmod>2022-09-12</lastmod>
@@ -2380,7 +2488,7 @@
 
   <url>
     <loc>http://envyzhan.asia/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -2388,126 +2496,133 @@
   
   <url>
     <loc>http://envyzhan.asia/tags/springboot/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/mybatis/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/spring/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/cicd/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/docker/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/hadoop/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/mysql/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/nginx/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/OAuth2/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/shiro/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springcloud-alibaba/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springcloud/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springsecurity/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/maven-tools/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/springmvc/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/Kubernetes/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/dart/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/tags/elasticsearch/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/tags/SpringBoot/</loc>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -2516,119 +2631,126 @@
   
   <url>
     <loc>http://envyzhan.asia/categories/springboot/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/ssm/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/devops/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/docker/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/mysql/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/nginx/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/OAuth2/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/pythonbase/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/shiro/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/springcloud/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/springsecurity/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/tools/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/Kubernetes/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/dart/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/java/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://envyzhan.asia/categories/elasticsearch/</loc>
-    <lastmod>2022-09-12</lastmod>
+    <lastmod>2023-03-14</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/categories/SpringBoot/</loc>
+    <lastmod>2023-03-14</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>

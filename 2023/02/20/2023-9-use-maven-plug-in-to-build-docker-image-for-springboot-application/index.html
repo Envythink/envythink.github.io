@@ -1,0 +1,258 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>使用Maven插件为SpringBoot应用构建Docker镜像 | 余思博客</title><meta name="keywords" content="SpringBoot"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面本篇在第二篇《整合Swagger-UI实现在线API文档》的基础上，使用Maven插件为SpringBoot应用构建Docker镜像，并上传至私有镜像仓库Docker Registry中。 Docker Registry开发者可以使用Docker提供的registry这一镜像来搭建属于自己的私有仓库，这里选择版本为2的镜像即可，先将其下载到本地： 1docker pull registry">
+<meta property="og:type" content="article">
+<meta property="og:title" content="使用Maven插件为SpringBoot应用构建Docker镜像">
+<meta property="og:url" content="http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面本篇在第二篇《整合Swagger-UI实现在线API文档》的基础上，使用Maven插件为SpringBoot应用构建Docker镜像，并上传至私有镜像仓库Docker Registry中。 Docker Registry开发者可以使用Docker提供的registry这一镜像来搭建属于自己的私有仓库，这里选择版本为2的镜像即可，先将其下载到本地： 1docker pull registry">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2023-02-20T03:51:30.000Z">
+<meta property="article:modified_time" content="2023-03-14T06:47:18.708Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="SpringBoot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '使用Maven插件为SpringBoot应用构建Docker镜像',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-03-14 14:47:18'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">249</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">18</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">使用Maven插件为SpringBoot应用构建Docker镜像</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-02-20T03:51:30.000Z" title="发表于 2023-02-20 11:51:30">2023-02-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-03-14T06:47:18.708Z" title="更新于 2023-03-14 14:47:18">2023-03-14</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/SpringBoot/">SpringBoot</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本篇在第二篇《整合Swagger-UI实现在线API文档》的基础上，使用Maven插件为SpringBoot应用构建Docker镜像，并上传至私有镜像仓库Docker Registry中。</p>
+<h1 id="Docker-Registry"><a href="#Docker-Registry" class="headerlink" title="Docker Registry"></a>Docker Registry</h1><p>开发者可以使用Docker提供的registry这一镜像来搭建属于自己的私有仓库，这里选择版本为2的镜像即可，先将其下载到本地：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull registry:2</span><br></pre></td></tr></table></figure>
+<p>这里有它的快速使用方法，其实就是一条命令：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-ec61be9dc5bbcc53.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>执行下面的命令即可创建一个私有仓库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker run -d -p 5000:5000 --restart=always --name registry2 registry:2</span><br></pre></td></tr></table></figure>
+<h1 id="Docker开启远程API"><a href="#Docker开启远程API" class="headerlink" title="Docker开启远程API"></a>Docker开启远程API</h1><p>打开<code>docker.service</code>文件：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vi /usr/lib/systemd/system/docker.service</span><br></pre></td></tr></table></figure>
+<p>将其中的如下代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock</span><br></pre></td></tr></table></figure>
+<p>修改为如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ExecStart=/usr/bin/dockerd -H tcp://0.0.0.0:2375 -H unix://var/run/docker.sock</span><br></pre></td></tr></table></figure>
+<h1 id="让Docker支持http上传镜像"><a href="#让Docker支持http上传镜像" class="headerlink" title="让Docker支持http上传镜像"></a>让Docker支持http上传镜像</h1><p>使用如下命令来让Docker支持http上传镜像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">echo &#x27;&#123; &quot;insecure-registries&quot;:[&quot;192.168.51.160:5000&quot;] &#125;&#x27; &gt; /etc/docker/daemon.json</span><br></pre></td></tr></table></figure>
+<p>修改完上述配置信息后，接下来需要使用如下命令来让配置生效：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">systemctl daemon-reload</span><br></pre></td></tr></table></figure>
+<p>接着重启Docker服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">systemctl stop docker</span><br><span class="line">systemctl start docker</span><br></pre></td></tr></table></figure>
+<p>最后开启防火墙的Docker构建端口，使用的命令如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=2375/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<h1 id="使用Maven构建Docker镜像"><a href="#使用Maven构建Docker镜像" class="headerlink" title="使用Maven构建Docker镜像"></a>使用Maven构建Docker镜像</h1><p>再次强调，本篇代码是在第二篇《整合Swagger-UI实现在线API文档》的基础上进行修改的。</p>
+<p>开发者可以复制一份<code>shop-swagger-ui</code>源码，将其名字修改为<code>shop-docker</code>，然后对应包和文件中的信息也记得修改，本篇后续所有操作均在<code>shop-docker</code>这一Module中进行。</p>
+<p><strong>第一步</strong>，在POM文件中新增<code>docker-maven-plugin</code>依赖：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line">&lt;build&gt;</span><br><span class="line">    &lt;plugins&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;groupId&gt;org.springframework.boot&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;spring-boot-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;groupId&gt;org.apache.maven.plugins&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;maven-surefire-plugin&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;2.22.1&lt;/version&gt;</span><br><span class="line">            &lt;configuration&gt;</span><br><span class="line">                &lt;skipTests&gt;true&lt;/skipTests&gt;</span><br><span class="line">            &lt;/configuration&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">        &lt;plugin&gt;</span><br><span class="line">            &lt;groupId&gt;com.spotify&lt;/groupId&gt;</span><br><span class="line">            &lt;artifactId&gt;docker-maven-plugin&lt;/artifactId&gt;</span><br><span class="line">            &lt;version&gt;1.1.0&lt;/version&gt;</span><br><span class="line">            &lt;executions&gt;</span><br><span class="line">                &lt;execution&gt;</span><br><span class="line">                    &lt;id&gt;build-image&lt;/id&gt;</span><br><span class="line">                    &lt;phase&gt;package&lt;/phase&gt;</span><br><span class="line">                    &lt;goals&gt;</span><br><span class="line">                        &lt;goal&gt;build&lt;/goal&gt;</span><br><span class="line">                    &lt;/goals&gt;</span><br><span class="line">                &lt;/execution&gt;</span><br><span class="line">            &lt;/executions&gt;</span><br><span class="line">            &lt;configuration&gt;</span><br><span class="line">                &lt;imageName&gt;myshop-all/$&#123;project.artifactId&#125;:$&#123;project.version&#125;&lt;/imageName&gt;</span><br><span class="line">                &lt;dockerHost&gt;http://192.168.51.160:2375&lt;/dockerHost&gt;</span><br><span class="line">                &lt;baseImage&gt;openjdk:8u102&lt;/baseImage&gt;</span><br><span class="line">                &lt;entryPoint&gt;[&quot;java&quot;, &quot;-jar&quot;,&quot;/$&#123;project.build.finalName&#125;.jar&quot;]</span><br><span class="line">                &lt;/entryPoint&gt;</span><br><span class="line">                &lt;resources&gt;</span><br><span class="line">                    &lt;resource&gt;</span><br><span class="line">                        &lt;targetPath&gt;/&lt;/targetPath&gt;</span><br><span class="line">                        &lt;directory&gt;$&#123;project.build.directory&#125;&lt;/directory&gt;</span><br><span class="line">                        &lt;include&gt;$&#123;project.build.finalName&#125;.jar&lt;/include&gt;</span><br><span class="line">                    &lt;/resource&gt;</span><br><span class="line">                &lt;/resources&gt;</span><br><span class="line">            &lt;/configuration&gt;</span><br><span class="line">        &lt;/plugin&gt;</span><br><span class="line">    &lt;/plugins&gt;</span><br><span class="line">&lt;/build&gt;</span><br></pre></td></tr></table></figure>
+<p>解释一下上述配置信息：<br>（1）<code>executions.execution.phase</code>表示配置在maven打包应用时构建docker镜像；<br>（2）<code>imageName</code>用于指定镜像名称，其中<code>myshop-all</code>是仓库名称，<code>$&#123;project.artifactId&#125;</code>是镜像名称，<code>$&#123;project.version&#125;</code>是仓库名称；<br>（3）<code>dockerHost</code>表示设置镜像打包后上传的docker服务器地址；<br>（4）<code>baseImage</code>表示该应用所依赖的基础镜像，此处为openjdk:8u102；<br>（5）<code>entryPoint</code>表示设置docker容器启动时执行的命令；<br>（6）<code>resources.resource.targetPath</code>表示将打包后的资源文件复制到该目录；<br>（7）<code>resources.resource.directory</code>表示待复制的文件所在的目录，注意Maven打包的应用jar包会保存在target目录下；<br>（8）<code>resources.resource.includ</code>表示需要复制的文件，即打包好的应用的jar包。</p>
+<p><strong>第二步</strong>，修改<code>application.yml</code>配置文件，将其中的localhost修改为db：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">server:</span><br><span class="line">  port: 8080</span><br><span class="line">spring:</span><br><span class="line">  datasource:</span><br><span class="line">    url: jdbc:mysql://db:3306/shop?useUnicode=true&amp;characterEncoding=utf-8&amp;serverTimezone=Asia/Shanghai</span><br><span class="line">    username: root</span><br><span class="line">    password: envy123</span><br><span class="line">mybatis:</span><br><span class="line">  mapper-locations:</span><br><span class="line">    - classpath:mapper/*.xml</span><br><span class="line">    - classpath*:com/**/mapper/*.xml</span><br></pre></td></tr></table></figure>
+<p>实际上，我们可以将docker中的容器看做独立的虚拟机，这样<code>shop-docker</code>访问localhost时就不会访问到mysql，但是容器之间可通过指定服务名称来进行访问，如db，注意db这个名称需要在运行<code>shop-docker</code>容器时进行指定。</p>
+<p><strong>第三步</strong>，使用IDEA打包项目并构建镜像，请注意依赖的基础镜像需要先下载到本地，否则会出现镜像构建超时的情况。接着执行maven的package命令来构建镜像：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-7fba034b80d2f8cf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到镜像构建成功：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-c1f6abe0bac76a80.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>同时查看一下宿主机，可以看到宿主机上显示已经存在了该镜像：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-b76dce1634120500.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h1 id="运行shop-docker服务"><a href="#运行shop-docker服务" class="headerlink" title="运行shop-docker服务"></a>运行shop-docker服务</h1><h3 id="启动MySQL服务"><a href="#启动MySQL服务" class="headerlink" title="启动MySQL服务"></a>启动MySQL服务</h3><p><strong>第一步</strong>，下载MySQL5.7的docker镜像：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker pull mysql:5.7</span><br></pre></td></tr></table></figure>
+<p><strong>第二步</strong>，创建对应目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /mydata/mysql/log</span><br><span class="line">mkdir -p /mydata/mysql/data</span><br><span class="line">mkdir -p /mydata/mysql/conf</span><br></pre></td></tr></table></figure>
+<p><strong>第三步</strong>，启动MySQL服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 3306:3306 --name mysql \</span><br><span class="line">-v /mydata/mysql/log:/var/log/mysql \</span><br><span class="line">-v /mydata/mysql/data:/var/lib/mysql \</span><br><span class="line">-e MYSQL_ROOT_PASSWORD=envy123 \</span><br><span class="line">-d mysql:5.7</span><br></pre></td></tr></table></figure>
+<p>简单解释一下参数含义：<br>（1）<code>-p 3306:3306</code>，表示将容器的3306端口映射到宿主机的3306端口，注意格式为“宿主机端口:容器端口”；<br>（2）<code>-v /mydata/mysql/log:/var/log/mysql</code>，表示将容器的日志文件夹挂载到宿主机，注意格式为“宿主机:容器；<br>（3）<code>-v /mydata/mysql/data:/var/lib/mysql</code>，表示将容器的数据文件夹挂载到宿主机，注意格式为“宿主机:容器；<br>（4）<code>-e MYSQL_ROOT_PASSWORD=envy123</code>，表示初始化容器中root用户的密码。</p>
+<p><strong>第四步</strong>，进入到运行MySQL服务的docker容器中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker exec -it mysql /bin/bash</span><br></pre></td></tr></table></figure>
+<p><strong>第五步</strong>，使用MySQL命令进入客户端：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mysql -uroot -penvy123 --default-character-set=utf8</span><br></pre></td></tr></table></figure>
+<p><strong>第六步</strong>，创建shop数据库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">create database shop character set utf8;</span><br></pre></td></tr></table></figure>
+<p><strong>第七步</strong>，打开一个新的终端，安装上传下载插件，将<code>shop.sql</code>文件上传到Linux服务器上，可指定目录为<code>/mydata</code>：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">yum -y install lrzsz</span><br></pre></td></tr></table></figure>
+<p>然后将<code>shop.sql</code>文件拷贝到mysql容器的<code>/</code>目录下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">docker cp /mydata/shop.sql mysql:/</span><br></pre></td></tr></table></figure>
+<p>接着进入到<strong>第六步</strong>中的sql命令环境，将shop文件导入到数据库：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">use shop;</span><br><span class="line">source /shop.sql;</span><br></pre></td></tr></table></figure>
+<p><strong>第八步</strong>，root的账号的权限，使得任何ip都能访问到：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">grant all privileges on *.* to &#x27;root&#x27;@&#x27;%&#x27;;</span><br></pre></td></tr></table></figure>
+<p>这样就完成了MySQL的启动服务。</p>
+<h3 id="启动shop-docker应用服务"><a href="#启动shop-docker应用服务" class="headerlink" title="启动shop-docker应用服务"></a>启动shop-docker应用服务</h3><p><strong>第一步</strong>，创建对应目录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">mkdir -p /mydata/app/shop-docker/logs</span><br></pre></td></tr></table></figure>
+<p><strong>第二步</strong>，使用如下命令来启动该服务，注意这里我们需要使用<code>--link</code>参数来让应用使用db域名来访问MySQL服务：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">docker run -p 8080:8080 --link mysql:db \</span><br><span class="line">-v /etc/localtime:/etc/localtime \</span><br><span class="line">-v /mydata/app/shop-docker/logs:/var/logs \</span><br><span class="line">--name shop-docker \</span><br><span class="line">-d myshop-all/shop-docker:0.0.1-SNAPSHOT</span><br></pre></td></tr></table></figure>
+<p><strong>第三步</strong>，开放8080端口（注意只有当防火墙是运行状态下才需要进行此操作）：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">firewall-cmd --zone=public --add-port=8080/tcp --permanent</span><br><span class="line">firewall-cmd --reload</span><br></pre></td></tr></table></figure>
+<p><strong>第四步</strong>，打开浏览器，访问<code>http://宿主机IP:8080/swagger-ui.html</code>连接，查看shop-docker服务是否已经正常启动：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-aa1d43f4709beb17.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>然后我们测试一下“获取所有的品牌信息”的接口，可以看到数据是可以正常返回的：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-2ccba65288420c05.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-6ea6b1cffc43b619.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>这样我们就完成了使用Maven插件为SpringBoot应用构建Docker镜像，并运行项目这一功能。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/">http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/SpringBoot/">SpringBoot</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">使用Dockerfile为SpringBoot应用构建Docker镜像</div></div></a></div><div class="next-post pull-right"><a href="/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">整合RabbitMQ实现延迟消息</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/" title="使用Docker Compose部署SpringBoot应用"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-24</div><div class="title">使用Docker Compose部署SpringBoot应用</div></div></a></div><div><a href="/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/" title="使用Dockerfile为SpringBoot应用构建Docker镜像"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-23</div><div class="title">使用Dockerfile为SpringBoot应用构建Docker镜像</div></div></a></div><div><a href="/2023/01/10/2023-2-integrate-swagger-ui-to-realize-online-API-documentation/" title="整合Swagger-UI实现在线API文档"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-10</div><div class="title">整合Swagger-UI实现在线API文档</div></div></a></div><div><a href="/2023/01/12/2023-3-integrate-redis-to-achieve-data-caching/" title="整合Redis实现数据缓存"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-12</div><div class="title">整合Redis实现数据缓存</div></div></a></div><div><a href="/2023/02/13/2023-7-integrate-mongodb-to-realize-user's-product-browsing-record/" title="整合MongoDB实现用户商品浏览记录"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-02-13</div><div class="title">整合MongoDB实现用户商品浏览记录</div></div></a></div><div><a href="/2023/01/08/2023-1-project-skeleton-construction/" title="项目骨架搭建"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-01-08</div><div class="title">项目骨架搭建</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">249</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">19</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">18</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker-Registry"><span class="toc-number">2.</span> <span class="toc-text">Docker Registry</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#Docker%E5%BC%80%E5%90%AF%E8%BF%9C%E7%A8%8BAPI"><span class="toc-number">3.</span> <span class="toc-text">Docker开启远程API</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AE%A9Docker%E6%94%AF%E6%8C%81http%E4%B8%8A%E4%BC%A0%E9%95%9C%E5%83%8F"><span class="toc-number">4.</span> <span class="toc-text">让Docker支持http上传镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8Maven%E6%9E%84%E5%BB%BADocker%E9%95%9C%E5%83%8F"><span class="toc-number">5.</span> <span class="toc-text">使用Maven构建Docker镜像</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%BF%90%E8%A1%8Cshop-docker%E6%9C%8D%E5%8A%A1"><span class="toc-number">6.</span> <span class="toc-text">运行shop-docker服务</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8MySQL%E6%9C%8D%E5%8A%A1"><span class="toc-number">6.0.1.</span> <span class="toc-text">启动MySQL服务</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%90%AF%E5%8A%A8shop-docker%E5%BA%94%E7%94%A8%E6%9C%8D%E5%8A%A1"><span class="toc-number">6.0.2.</span> <span class="toc-text">启动shop-docker应用服务</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/" title="使用Jenkins+Gitlab一键打包部署SpringBoot应用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Jenkins+Gitlab一键打包部署SpringBoot应用"/></a><div class="content"><a class="title" href="/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/" title="使用Jenkins+Gitlab一键打包部署SpringBoot应用">使用Jenkins+Gitlab一键打包部署SpringBoot应用</a><time datetime="2023-02-26T14:55:30.000Z" title="发表于 2023-02-26 22:55:30">2023-02-26</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/" title="使用Docker Compose部署SpringBoot应用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Docker Compose部署SpringBoot应用"/></a><div class="content"><a class="title" href="/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/" title="使用Docker Compose部署SpringBoot应用">使用Docker Compose部署SpringBoot应用</a><time datetime="2023-02-24T02:55:30.000Z" title="发表于 2023-02-24 10:55:30">2023-02-24</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/" title="使用Dockerfile为SpringBoot应用构建Docker镜像"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Dockerfile为SpringBoot应用构建Docker镜像"/></a><div class="content"><a class="title" href="/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/" title="使用Dockerfile为SpringBoot应用构建Docker镜像">使用Dockerfile为SpringBoot应用构建Docker镜像</a><time datetime="2023-02-23T10:15:33.000Z" title="发表于 2023-02-23 18:15:33">2023-02-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/" title="使用Maven插件为SpringBoot应用构建Docker镜像"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="使用Maven插件为SpringBoot应用构建Docker镜像"/></a><div class="content"><a class="title" href="/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/" title="使用Maven插件为SpringBoot应用构建Docker镜像">使用Maven插件为SpringBoot应用构建Docker镜像</a><time datetime="2023-02-20T03:51:30.000Z" title="发表于 2023-02-20 11:51:30">2023-02-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/" title="整合RabbitMQ实现延迟消息"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="整合RabbitMQ实现延迟消息"/></a><div class="content"><a class="title" href="/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/" title="整合RabbitMQ实现延迟消息">整合RabbitMQ实现延迟消息</a><time datetime="2023-02-16T02:51:12.000Z" title="发表于 2023-02-16 10:51:12">2023-02-16</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2023  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: '2cd9109268b69f3648fe89ca4ada60c1',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>

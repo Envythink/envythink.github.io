@@ -1,3 +1,15 @@
+http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/
+http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/
+http://envyzhan.asia/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/
+http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/
+http://envyzhan.asia/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/
+http://envyzhan.asia/2023/02/13/2023-7-integrate-mongodb-to-realize-user's-product-browsing-record/
+http://envyzhan.asia/2023/02/12/2023-6-use-elasticsearch-to-realize-complex-product-search/
+http://envyzhan.asia/2023/01/20/2023-5-integrate-elasticsearch-to-realize-product-search/
+http://envyzhan.asia/2023/01/14/2023-4-integrate-springsecurity-and-jwt-to-achieve-authentication-and-authorization/
+http://envyzhan.asia/2023/01/12/2023-3-integrate-redis-to-achieve-data-caching/
+http://envyzhan.asia/2023/01/10/2023-2-integrate-swagger-ui-to-realize-online-API-documentation/
+http://envyzhan.asia/2023/01/08/2023-1-project-skeleton-construction/
 http://envyzhan.asia/2022/08/18/17-practice-of-function-switch-in-business/
 http://envyzhan.asia/2022/08/10/16-how-to-record-your-log-gracefully/
 http://envyzhan.asia/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/
@@ -281,6 +293,7 @@ http://envyzhan.asia/tags/springmvc/
 http://envyzhan.asia/tags/Kubernetes/
 http://envyzhan.asia/tags/dart/
 http://envyzhan.asia/tags/elasticsearch/
+http://envyzhan.asia/tags/SpringBoot/
 http://envyzhan.asia/categories/springboot/
 http://envyzhan.asia/categories/ssm/
 http://envyzhan.asia/categories/devops/
@@ -298,3 +311,4 @@ http://envyzhan.asia/categories/Kubernetes/
 http://envyzhan.asia/categories/dart/
 http://envyzhan.asia/categories/java/
 http://envyzhan.asia/categories/elasticsearch/
+http://envyzhan.asia/categories/SpringBoot/
