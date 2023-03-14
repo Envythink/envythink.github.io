@@ -1,3 +1,4 @@
+http://envyzhan.asia/2023/03/01/2023-100-practice-of-function-switch-in-business/
 http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/
 http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/
 http://envyzhan.asia/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/
@@ -10,7 +11,6 @@ http://envyzhan.asia/2023/01/14/2023-4-integrate-springsecurity-and-jwt-to-achie
 http://envyzhan.asia/2023/01/12/2023-3-integrate-redis-to-achieve-data-caching/
 http://envyzhan.asia/2023/01/10/2023-2-integrate-swagger-ui-to-realize-online-API-documentation/
 http://envyzhan.asia/2023/01/08/2023-1-project-skeleton-construction/
-http://envyzhan.asia/2022/08/18/2023-100-practice-of-function-switch-in-business/
 http://envyzhan.asia/2022/08/10/16-how-to-record-your-log-gracefully/
 http://envyzhan.asia/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/
 http://envyzhan.asia/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/
