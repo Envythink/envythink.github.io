@@ -1,0 +1,331 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>Redis各种数据类型巧用 | 余思博客</title><meta name="keywords" content="redis"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面最近参与了一个社交系统的前期需求评审会议，里面涉及到各种社交应用场景，使用Redis无疑是最合适不过的了。通常会保存这样的信息：一个key关联一个数据集合，同时要对集合中的数据进行各种操作，诸如统计、排序等。 那么本篇笔者将结合工作实际，列举六种典型使用Redis的业务场景，如下所示：（1）判断用户登录状态；（2）统计用户连续签到情况；（3）统计每天新增和第二天用户留存数；（4）统计网站访">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Redis各种数据类型巧用">
+<meta property="og:url" content="http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面最近参与了一个社交系统的前期需求评审会议，里面涉及到各种社交应用场景，使用Redis无疑是最合适不过的了。通常会保存这样的信息：一个key关联一个数据集合，同时要对集合中的数据进行各种操作，诸如统计、排序等。 那么本篇笔者将结合工作实际，列举六种典型使用Redis的业务场景，如下所示：（1）判断用户登录状态；（2）统计用户连续签到情况；（3）统计每天新增和第二天用户留存数；（4）统计网站访">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2023-04-20T02:55:30.000Z">
+<meta property="article:modified_time" content="2023-06-09T13:17:06.537Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="redis">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'Redis各种数据类型巧用',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-09 21:17:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">Redis各种数据类型巧用</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-04-20T02:55:30.000Z" title="发表于 2023-04-20 10:55:30">2023-04-20</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-09T13:17:06.537Z" title="更新于 2023-06-09 21:17:06">2023-06-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/redis/">redis</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>最近参与了一个社交系统的前期需求评审会议，里面涉及到各种社交应用场景，使用Redis无疑是最合适不过的了。通常会保存这样的信息：一个key关联一个数据集合，同时要对集合中的数据进行各种操作，诸如统计、排序等。</p>
+<p>那么本篇笔者将结合工作实际，列举六种典型使用Redis的业务场景，如下所示：<br>（1）判断用户登录状态；（2）统计用户连续签到情况；（3）统计每天新增和第二天用户留存数；（4）统计网站访客量（Unique Visitor，UV）；（5）最新评论列表；（6）积分排行榜。</p>
+<p>一般来说，我们面临的用户数量和访问量都是巨大的，如百万、千万级别用户数量，或者千万甚至亿级别的访问量，因此必须选择能够高效统计大量数据的集合类型。不过在此之前，首先需要了解常用的统计模式，并使用合理的数据类型来解决实际问题。</p>
+<p>这里我们一般会使用如下四种统计类型：二值状态统计、基数统计、排序统计和聚合统计。</p>
+<h1 id="二值状态统计"><a href="#二值状态统计" class="headerlink" title="二值状态统计"></a>二值状态统计</h1><h3 id="二值状态统计概念"><a href="#二值状态统计概念" class="headerlink" title="二值状态统计概念"></a>二值状态统计概念</h3><p>二值状态统计，即集合中的元素只有0和1这两种状态，统计对应状态出现的次数。</p>
+<p>举个例子，用户在进行打卡签到的时候，只有签到（1）或未签到（0）这两种；判断用户是否登录，也只有已登录（1）或未登录（0）这两种，它们均合适使用二值状态来进行统计。</p>
+<h3 id="判断用户登陆态"><a href="#判断用户登陆态" class="headerlink" title="判断用户登陆态"></a>判断用户登陆态</h3><p>可以使用BitMap来判断海量用户中某个用户是否登录，它提供了<code>GETBIT</code>、<code>SETBIT</code>等命令，通过一个偏移值offset对bit数组的offset位置的bit位进行读写操作，请注意offset从0开始。</p>
+<p>这样只需使用一个<code>login_status</code>集合来存储用户登录状态，然后将用户ID作为offset，如果用户在线则设置为1，下线则设置为0。后续开发者就可以通过<code>GETBIT</code>来判断对应用户是否在线。</p>
+<p><code>SETBIT</code>命令用法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETBIT &lt;key&gt; &lt;offset&gt; &lt;value&gt;</span><br></pre></td></tr></table></figure>
+<p>用于设置或者清空 key 的 value 在 offset 处的 bit 值（只能是 0 或者 1）。</p>
+<p><code>GETBIT</code>命令用法如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GETBIT &lt;key&gt; &lt;offset&gt;</span><br></pre></td></tr></table></figure>
+<p>用于获取 key 的 value 在 offset 处的 bit 位的值，注意当 key 不存在时，返回 0。</p>
+<p>举个例子，当我们需要判断userId为1001用户的登录情况，此时步骤如下：<br>（1）假定用户已经登录，往<code>login_status</code>集合中userId为1001的bit位处设置值为1：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETBIT login_status 1001 1</span><br></pre></td></tr></table></figure>
+<p>（2）判断该用户是否登录，返回值为1表示已登录，0表示未登录：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GETBIT login_status 1001</span><br></pre></td></tr></table></figure>
+<p>（3）用户进行退出操作，将对应的offset值设置为0：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETBIT login_status 1001 0</span><br></pre></td></tr></table></figure>
+<h3 id="统计用户每个月的签到情况"><a href="#统计用户每个月的签到情况" class="headerlink" title="统计用户每个月的签到情况"></a>统计用户每个月的签到情况</h3><p>在签到统计中，每个用户每天的签到使用1个Bit位表示，那么一年的签到只需365个Bit位。而一个月最多只有31天你，那么最多只要31个Bit位。</p>
+<p>现在有一个需求，统计userId为10010的用户在2021年8月份的签到打卡情况，此时该如何操作呢？可以将key设置为<code>userId:sign:&#123;userId&#125;:&#123;yyyyMM&#125;</code>这一格式，月份每一天的值减去1就可以作为offset，因为offset从0开始。</p>
+<p>第一步，假定userId为1001的用户在2021年8月18号签到打卡了：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SETBIT userId:sign:1001:202108 17 1</span><br></pre></td></tr></table></figure>
+<p>第二步，判断userId为1001的用户在2021年8月18号是否进行了签到打卡：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">GETBIT userId:sign:1001:202108 17</span><br></pre></td></tr></table></figure>
+<p>第三步，统计userId为1001的用户在2021年8月的签到打卡次数，可以使用<code>BITCOUNT</code>命令，该命令用于统计给定bit数组中，值为1的bit位的数量：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITCOUNT userId:sign:1001:202108</span><br></pre></td></tr></table></figure>
+<p>这样就实现了用户每个月签到打卡情况的统计，总的来说还是较为简单。</p>
+<h3 id="统计用户首次打卡时间"><a href="#统计用户首次打卡时间" class="headerlink" title="统计用户首次打卡时间"></a>统计用户首次打卡时间</h3><p>现在有个需求，获取userId为1001的用户在2021年8月份首次签到打卡的时间。</p>
+<p>Redis提供了<code>BITPOS</code>命令，用于返回第一个值为bitValue的offset的位置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITPOS key bitValue [start] [end]</span><br></pre></td></tr></table></figure>
+<p>默认情况下，<code>BITPOS</code>命令会检测整个位图，开发者可通过可选的start和end参数来指定需要检测的范围。</p>
+<p>可以通过如下命令来获取userId为1001的用户，在2021年8月份首次签到打卡的时间：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITPOS userId:sign:1001:202108 1</span><br></pre></td></tr></table></figure>
+<p>可以看到返回结果如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">&gt; BITPOS userId:sign:1001:202108 1</span><br><span class="line">&quot;17&quot;</span><br></pre></td></tr></table></figure>
+<p>请注意返回的是offset，实际值应该是offset+1，即第18天首次签到。</p>
+<h3 id="统计连续签到用户总数"><a href="#统计连续签到用户总数" class="headerlink" title="统计连续签到用户总数"></a>统计连续签到用户总数</h3><p>现在有一份数据，记录了一个亿用户连续7天的签到打卡记录，那么如何统计出这连续7天都连续打卡的用户总数呢？</p>
+<p>前面我们说过，将每天的日期作为 Bitmap的key，userId作为offset，如果用户签到打卡了，那么将offset位置处的bit设置为1。那么这个key所对应集合的每个bit 位的数据，则是一个用户在该日期的打卡记录。</p>
+<p>那么就存在 7 个这样的 Bitmap，可以对这 7 个 Bitmap 的对应的 bit 位做与运算。同样userID的offset都是一样的，当一个userID在 7 个 Bitmap 对应的 offset 位置的 bit的值为 1 ，就说明该用户 7 天连续打卡。之后将结果保存到一个新Bitmap 中，然后通过 <code>BITCOUNT</code>命令来统计 bit值为 1 的个数，就能得到连续打卡 7 天的用户总数。</p>
+<p>实际上Redis 提供了<code>BITOP</code>命令，用于对一个或者多个key的 Bitmap进行位与操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BITOP operation destkey key [key ...]</span><br></pre></td></tr></table></figure>
+<p>operation可以是 AND、OR、NOT、XOR等。BITOP 处理不同长度的字符串时，较短的那个字符串所缺少的部分会被看作 0 。空的 key 也被看作是包含 0 的字符串序列：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-85af4485654fc32f.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>定义了3 个 Bitmap，并将对应的 bit 位做与操作，然后将结果保存到新的 Bitmap中。上述操作指令表示将 3个 bitmap 进行 AND 操作，并将结果保存到 destmap 中，然后对 destmap 执行 BITCOUNT 操作。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">// 与操作</span><br><span class="line">BITOP AND destmap bitmap:01 bitmap:02 bitmap:03</span><br><span class="line">// 统计 bit 位 =  1 的个数</span><br><span class="line">BITCOUNT destmap</span><br></pre></td></tr></table></figure>
+<p>可以看到一个包含一亿bit位的 Bitmap占用的内存开销，大约是 12 MB 的内存（10^8/8/1024/1024），那么7 天的 Bitmap 的内存开销约为84 MB。不过开发者最好给 Bitmap 设置过期时间，让 Redis 删除过期的打卡数据，这样可以节省内存。</p>
+<h3 id="小结"><a href="#小结" class="headerlink" title="小结"></a>小结</h3><p>当开发者在实际开发过程中遇到只需统计数据的二值状态时，如判断用户是否登录、IP是否存在黑名单、打卡是否签到等就可以考虑使用BitMap。BitMap只需一个 bit 位就能表示 0 和 1，这在统计海量数据时，将极大减少内存的占用。</p>
+<h1 id="基数统计"><a href="#基数统计" class="headerlink" title="基数统计"></a>基数统计</h1><h3 id="基数统计概念"><a href="#基数统计概念" class="headerlink" title="基数统计概念"></a>基数统计概念</h3><p>基数统计，即统计一个集合中不重复元素的个数，常见于计算独立用户数（UV）。</p>
+<p>实现基数统计最直接的方法就是使用集合（Set）这种数据结构，当一个元素从未在此集合中出现过，那么便将其添加到集合中，否则不集合保持不变。如果页面访问量巨大，就需要一个非常大的Set来进行统计，这必然会浪费大量的空间。</p>
+<p>实际上这种数据不一定要很精准，可以采用Redis提供的<code>HyperLogLog</code>这一数据结构来解决这种场景的统计问题。</p>
+<p><code>HyperLogLog</code>是一种不精确的去重基数方案，其统计规则是基于概率实现的，标准误差 0.81%，这样的精度足以满足UV统计需求。</p>
+<h3 id="网站的-UV"><a href="#网站的-UV" class="headerlink" title="网站的 UV"></a>网站的 UV</h3><h5 id="采用Set实现"><a href="#采用Set实现" class="headerlink" title="采用Set实现"></a>采用Set实现</h5><p>一个用户一天内多次访问一个网站只能算作一次，因此最先想到的就是使用Redis提供的Set集合来实现。</p>
+<p>举个例子，ID为1001的用户访问index页面时，可以将这个信息放到集合中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SADD index:uv 1001</span><br></pre></td></tr></table></figure>
+<p>当这个ID为1001的用户多次访问首页时，Set集合的去重功能可以保证不会重复记录同一个用户ID。之后可通过SCARD命令来统计index页面的uv，该命令返回集合中元素的个数，也就是用户访问数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SCARD index:uv</span><br></pre></td></tr></table></figure>
+<h5 id="采用Hash实现"><a href="#采用Hash实现" class="headerlink" title="采用Hash实现"></a>采用Hash实现</h5><p>小明说也可以采用Hash这一数据结构来实现，将用户ID作为Hash集合的key，那么访问某个页面则执行HSET命令将value的值设置为1。这样即使用户重复访问，重复执行命令，也只会将这个userId的值设置为1。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HSET index:uv userId:1001 1</span><br></pre></td></tr></table></figure>
+<p>最后利用<code>HLEN</code>命令来统计Hash集合中的元素个数，也就是用户访问数：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">HLEN index:uv</span><br></pre></td></tr></table></figure>
+<h5 id="采用HyperLogLog实现"><a href="#采用HyperLogLog实现" class="headerlink" title="采用HyperLogLog实现"></a>采用HyperLogLog实现</h5><p>Set集合尽管好用，但是如果首页访问量过大，那么一个Set中就保存了上千万个用户的ID，这还仅仅是首页，还有其他页面，这对内存的消耗太大了，同理Hash这种数据结构也是一样的。</p>
+<p>此时就可以使用HyperLogLog这种数据结构，这是一种用于基数统计的数据集合类型，即使数据量很大，计算基数所需的空间也是固定的。每个HyperLogLog最多花费12KB的内存就可以计算2的64次方个元素的基数。</p>
+<p>Redis对HyperLogLog的存储进行了优化，在计数较小时，存储空间采用系数矩阵，占用空间很小。只有在计数很大，稀疏矩阵占用的空间超过了阈值，才会转变成稠密矩阵，占用 12KB 空间。</p>
+<p>开发者可使用<code>PFADD</code>命令，将访问index页面的每个用户ID添加到HyperLogLog中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PFADD index:uv userId1 userId2 userId3 userId4</span><br></pre></td></tr></table></figure>
+<p>然后使用<code>PFCOUNT</code>命令，统计ndex页面的UV值：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PFCOUNT index:uv</span><br></pre></td></tr></table></figure>
+<p>当然了，HyperLogLog除了提供上面使用的<code>PFADD</code>和<code>PFCOUNT</code>命令，还提供了<code>PFMERGE</code>命令，用于将多个HyperLogLog合并在一起形成一个新的HyperLogLog。<code>PFMERGE</code>命令语法格式如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">PFMERGE destkey sourcekey [sourcekey ...]</span><br></pre></td></tr></table></figure>
+<p>举个例子，在网站上有两个内容差不多的页面，运营人员说需要这两个页面的数据进行合并，也包含UV量，此时就可以使用<code>PFMERGE</code>命令，注意此时同一个用户访问这两个页面只算访问一次。</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">PFADD index:uv userId1 userId2 userId3  //3</span><br><span class="line">PFADD comment:uv userId1 userId3 userId4  //3</span><br><span class="line">PFMERGE website:uv index:uv comment:uv  //OK</span><br><span class="line">PFCOUNT website:uv  //4</span><br></pre></td></tr></table></figure>
+<p>可以看到这里我们将多个HyperLogLog进行了合并输出为一个新的HyperLogLog，新HyperLogLog的基数接近于所有输入HyperLogLog的可见集合的并集。</p>
+<h1 id="排序统计"><a href="#排序统计" class="headerlink" title="排序统计"></a>排序统计</h1><p>我们知道，Redis的4种集合类型（List、Set、Hash和SortedSet）中，只有List和SortedSet是有序的。</p>
+<ul>
+<li>List按照元素插入List的顺序进行排序，通常用于实现消息队列、最新列表、排行榜等；</li>
+<li>SortedSet则是根据元素的score权重进行排序，开发者可自己决定每个元素的权重值，通常用于实现按照一定规则的排行榜（积分数、点赞数、播放量等）。<h3 id="最新评论列表"><a href="#最新评论列表" class="headerlink" title="最新评论列表"></a>最新评论列表</h3><h5 id="功能实现"><a href="#功能实现" class="headerlink" title="功能实现"></a>功能实现</h5>开发者可以使用List的插入顺序来实现评论列表。举个例子，如微信公众平台的后台回复列表，每一个公众号的文章都对应一个List，这个List就保存了该文章所对应的用户评论。</li>
+</ul>
+<p>当一个用户评论index这个文章时，可以使用LPUSH命令将评论插入到List头部：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LPUSH index zhangsan lisi wangwu</span><br></pre></td></tr></table></figure>
+<p>接着我们再使用LRANGE命令来获取列表指定区间内的元素：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LRANGE index 0 3</span><br></pre></td></tr></table></figure>
+<p>输出结果如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">1)  &quot;wangwu&quot;</span><br><span class="line">2)  &quot;lisi&quot;</span><br><span class="line">3)  &quot;zhangsan&quot;</span><br></pre></td></tr></table></figure>
+<p><strong>请注意，并不是所有的最新列表都能使用List来实现，对于一些频繁更新的列表，不太建议使用List，因为List类型的分页可能导致列表元素重复或者漏掉。</strong></p>
+<p>举个例子，假设当前评论列表为<code>List = &#123;A,B,C,D&#125;</code>，其中左侧表示最新评论，即D是最早的评论：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LPUSH list D C B A</span><br></pre></td></tr></table></figure>
+<p>接下来第一页展示最新两个评论，获取到A和B：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LRANGE list 0 1</span><br></pre></td></tr></table></figure>
+<p>输出结果如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1)  &quot;A&quot;</span><br><span class="line">2)  &quot;B&quot;</span><br></pre></td></tr></table></figure>
+<p>按照我们预想的逻辑，第二页可通过<code>LRANGE list 2 3</code>来获取C和D：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LRANGE list 2 3</span><br></pre></td></tr></table></figure>
+<p>输出结果如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1)  &quot;C&quot;</span><br><span class="line">2)  &quot;D&quot;</span><br></pre></td></tr></table></figure>
+<p>这是没有问题的，但是如果在展示第二页评论之前，又往列表里面添加了一个新的评论E，评论E通过如下命令插入到List队首：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LPUSH list E</span><br></pre></td></tr></table></figure>
+<p>那么此时List就变成了<code>List = &#123;A,B,C,D&#125;</code>，此时我们再来执行之前预想的逻辑，第二页可通过<code>LRANGE list 2 3</code>来获取C和D：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">LRANGE list 2 3</span><br></pre></td></tr></table></figure>
+<p>输出结果如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">1)  &quot;B&quot;</span><br><span class="line">2)  &quot;C&quot;</span><br></pre></td></tr></table></figure>
+<p>可以看到评论B又出现了，原因在于List是利用元素所在的位置进行排序，而一旦有新的元素插入，那么原有数据在List中的位置都会往后移动一位，进而导致读取了旧的元素。</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-c0aee7c06f112e95.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<h5 id="注意事项"><a href="#注意事项" class="headerlink" title="注意事项"></a>注意事项</h5><p>因此只有在不需要分页（如每次只读取列表的前10个元素）或者更新频率比较低（如每天凌晨统计更新一下）的列表才适合使用List数据类型来实现。</p>
+<p>对于需要分页且更新较为频繁的列表，就必须使用有序集合 Sorted Set类型来实现。</p>
+<p>此外，List 类型无法实现通过时间范围查找的最新列表，此功能需要通过有序集合 Sorted Set 类型实现，举个例子以成交时间范围作为条件来查询的订单列表。</p>
+<h3 id="排行榜"><a href="#排行榜" class="headerlink" title="排行榜"></a>排行榜</h3><h5 id="功能实现-1"><a href="#功能实现-1" class="headerlink" title="功能实现"></a>功能实现</h5><p>对于最新列表的场景，List和Sorted Set都可以实现，那为啥还使用List呢？直接使用Sorted Set那不是更好，它还可以设置score权重值，排序更为灵活。</p>
+<p>原因在于Sorted Set 类型占用的内存容量是 List 类型的数倍之多，因此对于列表数量不多的情况，可以用 Sorted Set 类型来实现。如一周的音乐榜单，此时需要实时更新播放量，并且需要分页展示。除此以外，排序是根据播放量来决定的，此时List就无法满足。</p>
+<p>开发者可以歌曲ID保存到 Sorted Set 集合中，score 设置成每首歌曲的播放量，该歌曲每播放一次则设置<code>score = score +1</code>。</p>
+<p>举个例子，开发者可以使用<code>ZADD</code>命令，将《城府》和《稻香》这两首歌曲播放量放到musicTop集合中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZADD musicTop 100000 城府 9999999 稻香</span><br></pre></td></tr></table></figure>
+<p>然后《城府》这首歌每播放一次，就使用<code>ZINCRBY</code>命令，将score进行加1操作：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZINCRBY musicTop 1 城府</span><br></pre></td></tr></table></figure>
+<p>执行结果返回”100001”，这就说明播放次数确实增加了。接着我们需要获取音乐播放量排名前10的歌曲，目前最大播放量是N，可通过如下命令来获取：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZRANGEBYSCORE musicTop N-9 N WITHSCORES</span><br></pre></td></tr></table></figure>
+<p>开发者可通过<code>ZREVRANGE key start stop [WITHSCORES]</code>命令来将集合中的元素按照score的值进行递减（从大到小）进行排序。具有相同score的值的成员，则按照字典的逆序进行排列：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">ZREVRANGE musicTop 0 0 WITHSCORES</span><br><span class="line"> 1)  &quot;稻香&quot;</span><br><span class="line"> 2)  &quot;9999999&quot;</span><br></pre></td></tr></table></figure>
+<h5 id="注意事项-1"><a href="#注意事项-1" class="headerlink" title="注意事项"></a>注意事项</h5><p>即使集合中的元素更新较为频繁，那么Sorted Set也能通过 <code>ZRANGEBYSCORE</code>命令来准确地获取到按序排列的数据。</p>
+<p>当开发者遇到需要展示最新列表、排行榜等业务场景时，如果数据更新频繁或者需要分页显示，建议优先考虑使用 Sorted Set。</p>
+<h1 id="聚合统计"><a href="#聚合统计" class="headerlink" title="聚合统计"></a>聚合统计</h1><h3 id="聚合统计概念"><a href="#聚合统计概念" class="headerlink" title="聚合统计概念"></a>聚合统计概念</h3><p>聚合统计，指的是统计多个集合元素的聚合结果，常用的有：<br>（1）统计多个元素的共有数据（交集）；<br>（2）统计多个元素的所有数据（并集）；<br>（3）统计两个集合其中某个独有的元素（差集）。</p>
+<p>Redis的Set类型支持集合内的增删改查，底层使用Hash数据结构，因此无论是add、remove 都是 O(1) 时间复杂度。并且支持多个集合间的交集、并集、差集等操作，利用这些集合操作，可以很方便的解决上面提到的统计问题。</p>
+<h3 id="共同好友（交集）"><a href="#共同好友（交集）" class="headerlink" title="共同好友（交集）"></a>共同好友（交集）</h3><p>举个例子，新浪微博中共同关注的人就是聚合统计中的交集。我们可以将用户Id作为key，该用户关注的用户Id作为Set集合中的value。</p>
+<p>首先模拟两个用户关注的好友：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SADD userId:1001 1003 1004 1008</span><br><span class="line">SADD userId:1002 1004 1006 1009</span><br></pre></td></tr></table></figure>
+<p>然后统计这两个用户共同关注的好友，就可以使用集合的交集命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SINTERSTORE userId:1001-1002 userId:1001 userId:1002</span><br></pre></td></tr></table></figure>
+<p>之后两个用户交集都存在了userId:1001-1002这一集合中。</p>
+<h3 id="每日新增用户数（差集）"><a href="#每日新增用户数（差集）" class="headerlink" title="每日新增用户数（差集）"></a>每日新增用户数（差集）</h3><p>举个例子，统计某个App每天新增的用户注册数，只需对近两天的总注册用户量集合进行取差集操作即可。</p>
+<p>如2021-06-09的总注册用户量存在于<code>key=user:20210609</code>集合中，2021-06-10的总注册用户量存在于<code>key=user:20210610</code>集合中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SADD user:20210609 1001 1002 1003</span><br><span class="line">SADD user:20210610 1001 1002 1003 1004 1005</span><br></pre></td></tr></table></figure>
+<p>然后统计每日新增用户，就可以使用集合的差集命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SDIFFSTORE user:20210610-0609 user:20210610 user:20210609</span><br></pre></td></tr></table></figure>
+<p>之后两个用户差集都存在了userId:20210610-0609这一集合中，上面统计的是06-10比06-09号多的人数。</p>
+<p>实际上，新浪微博还有一个可能认识的人这一功能，也可以使用差集实现，即将你关注的好友所关注的人减去你们共同关注的人即是可能认识的人。</p>
+<h3 id="总共新增好友（并集）"><a href="#总共新增好友（并集）" class="headerlink" title="总共新增好友（并集）"></a>总共新增好友（并集）</h3><p>举个例子，统计某个App在2021-06-09和2021-06-10这两天，总的用户注册数，只需对近两天的总注册用户量集合进行取并集操作即可。</p>
+<p>如2021-06-09的总注册用户量存在于<code>key=user:20210609</code>集合中，2021-06-10的总注册用户量存在于<code>key=user:20210610</code>集合中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">SADD user:20210609 1001 1002 1003</span><br><span class="line">SADD user:20210610 1001 1002 1003 1004 1005</span><br></pre></td></tr></table></figure>
+<p>然后统计每日新增用户，就可以使用集合的差集命令：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">SUNIONSTORE user:20210610+0609 user:20210610 user:20210609</span><br></pre></td></tr></table></figure>
+<p>之后两个用户并集都存在了userId:20210610+0609这一集合中。</p>
+<h3 id="注意事项-2"><a href="#注意事项-2" class="headerlink" title="注意事项"></a>注意事项</h3><p>Set的交集、并集、差集等操作计算的复杂度较高，在数据量比较大的情况下，直接执行这些操作可能会导致Redis实例阻塞。可以考虑专门部署一个集群用于统计，让它专门负责聚合计算或者是将数据读取到客户端，在客户端完成聚合统计，这样可以避免由于阻塞而导致其他服务无法快速响应的局面。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/">http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/redis/">redis</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">基于请求参数校验的接口幂等性实现方案</div></div></a></div><div class="next-post pull-right"><a href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">聊一聊Redis中的布隆过滤器</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/" title="聊一聊Redis中的布隆过滤器"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2023-04-06</div><div class="title">聊一聊Redis中的布隆过滤器</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BA%8C%E5%80%BC%E7%8A%B6%E6%80%81%E7%BB%9F%E8%AE%A1"><span class="toc-number">2.</span> <span class="toc-text">二值状态统计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BA%8C%E5%80%BC%E7%8A%B6%E6%80%81%E7%BB%9F%E8%AE%A1%E6%A6%82%E5%BF%B5"><span class="toc-number">2.0.1.</span> <span class="toc-text">二值状态统计概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%88%A4%E6%96%AD%E7%94%A8%E6%88%B7%E7%99%BB%E9%99%86%E6%80%81"><span class="toc-number">2.0.2.</span> <span class="toc-text">判断用户登陆态</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E7%94%A8%E6%88%B7%E6%AF%8F%E4%B8%AA%E6%9C%88%E7%9A%84%E7%AD%BE%E5%88%B0%E6%83%85%E5%86%B5"><span class="toc-number">2.0.3.</span> <span class="toc-text">统计用户每个月的签到情况</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E7%94%A8%E6%88%B7%E9%A6%96%E6%AC%A1%E6%89%93%E5%8D%A1%E6%97%B6%E9%97%B4"><span class="toc-number">2.0.4.</span> <span class="toc-text">统计用户首次打卡时间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%9F%E8%AE%A1%E8%BF%9E%E7%BB%AD%E7%AD%BE%E5%88%B0%E7%94%A8%E6%88%B7%E6%80%BB%E6%95%B0"><span class="toc-number">2.0.5.</span> <span class="toc-text">统计连续签到用户总数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">2.0.6.</span> <span class="toc-text">小结</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1"><span class="toc-number">3.</span> <span class="toc-text">基数统计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9F%BA%E6%95%B0%E7%BB%9F%E8%AE%A1%E6%A6%82%E5%BF%B5"><span class="toc-number">3.0.1.</span> <span class="toc-text">基数统计概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BD%91%E7%AB%99%E7%9A%84-UV"><span class="toc-number">3.0.2.</span> <span class="toc-text">网站的 UV</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%87%87%E7%94%A8Set%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.0.2.0.1.</span> <span class="toc-text">采用Set实现</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%87%87%E7%94%A8Hash%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.0.2.0.2.</span> <span class="toc-text">采用Hash实现</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E9%87%87%E7%94%A8HyperLogLog%E5%AE%9E%E7%8E%B0"><span class="toc-number">3.0.2.0.3.</span> <span class="toc-text">采用HyperLogLog实现</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8E%92%E5%BA%8F%E7%BB%9F%E8%AE%A1"><span class="toc-number">4.</span> <span class="toc-text">排序统计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9C%80%E6%96%B0%E8%AF%84%E8%AE%BA%E5%88%97%E8%A1%A8"><span class="toc-number">4.0.1.</span> <span class="toc-text">最新评论列表</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.0.1.0.1.</span> <span class="toc-text">功能实现</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9"><span class="toc-number">4.0.1.0.2.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8E%92%E8%A1%8C%E6%A6%9C"><span class="toc-number">4.0.2.</span> <span class="toc-text">排行榜</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#%E5%8A%9F%E8%83%BD%E5%AE%9E%E7%8E%B0-1"><span class="toc-number">4.0.2.0.1.</span> <span class="toc-text">功能实现</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-1"><span class="toc-number">4.0.2.0.2.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%81%9A%E5%90%88%E7%BB%9F%E8%AE%A1"><span class="toc-number">5.</span> <span class="toc-text">聚合统计</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%81%9A%E5%90%88%E7%BB%9F%E8%AE%A1%E6%A6%82%E5%BF%B5"><span class="toc-number">5.0.1.</span> <span class="toc-text">聚合统计概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B1%E5%90%8C%E5%A5%BD%E5%8F%8B%EF%BC%88%E4%BA%A4%E9%9B%86%EF%BC%89"><span class="toc-number">5.0.2.</span> <span class="toc-text">共同好友（交集）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%AF%8F%E6%97%A5%E6%96%B0%E5%A2%9E%E7%94%A8%E6%88%B7%E6%95%B0%EF%BC%88%E5%B7%AE%E9%9B%86%EF%BC%89"><span class="toc-number">5.0.3.</span> <span class="toc-text">每日新增用户数（差集）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%80%BB%E5%85%B1%E6%96%B0%E5%A2%9E%E5%A5%BD%E5%8F%8B%EF%BC%88%E5%B9%B6%E9%9B%86%EF%BC%89"><span class="toc-number">5.0.4.</span> <span class="toc-text">总共新增好友（并集）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B3%A8%E6%84%8F%E4%BA%8B%E9%A1%B9-2"><span class="toc-number">5.0.5.</span> <span class="toc-text">注意事项</span></a></li></ol></li></ol></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/" title="巧用分页列表缓存，快速响应用户请求"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="巧用分页列表缓存，快速响应用户请求"/></a><div class="content"><a class="title" href="/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/" title="巧用分页列表缓存，快速响应用户请求">巧用分页列表缓存，快速响应用户请求</a><time datetime="2023-05-28T08:55:30.000Z" title="发表于 2023-05-28 16:55:30">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/" title="基于请求参数校验的接口幂等性实现方案"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于请求参数校验的接口幂等性实现方案"/></a><div class="content"><a class="title" href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/" title="基于请求参数校验的接口幂等性实现方案">基于请求参数校验的接口幂等性实现方案</a><time datetime="2023-05-10T02:55:30.000Z" title="发表于 2023-05-10 10:55:30">2023-05-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/" title="Redis各种数据类型巧用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis各种数据类型巧用"/></a><div class="content"><a class="title" href="/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/" title="Redis各种数据类型巧用">Redis各种数据类型巧用</a><time datetime="2023-04-20T02:55:30.000Z" title="发表于 2023-04-20 10:55:30">2023-04-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/" title="聊一聊Redis中的布隆过滤器"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊Redis中的布隆过滤器"/></a><div class="content"><a class="title" href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/" title="聊一聊Redis中的布隆过滤器">聊一聊Redis中的布隆过滤器</a><time datetime="2023-04-06T11:55:30.000Z" title="发表于 2023-04-06 19:55:30">2023-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/01/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="功能开关在业务中的实践"/></a><div class="content"><a class="title" href="/2023/03/01/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践">功能开关在业务中的实践</a><time datetime="2023-03-01T09:55:30.000Z" title="发表于 2023-03-01 17:55:30">2023-03-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2023  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: 'c60d6e58b4da7ea3d5494fb92a19938d',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>

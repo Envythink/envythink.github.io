@@ -1,0 +1,259 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>巧用分页列表缓存，快速响应用户请求 | 余思博客</title><meta name="keywords" content="springboot"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面最近在写数据报表逻辑，里面大部分场景都是统计数据，对数据时效性要求不高，不过要求数据能立即响应用户。于是尝试借助缓存来加快响应用户的时间，主要用到了分页列表缓存。 直接缓存分页列表说明最简单，也是最能想到的方法就是直接缓存分页列表。举个例子，如下所示，直接将每页的数据以列表形式进行缓存：  对应的伪代码如下所示： 123456789public List&lt;Product&gt; ge">
+<meta property="og:type" content="article">
+<meta property="og:title" content="巧用分页列表缓存，快速响应用户请求">
+<meta property="og:url" content="http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面最近在写数据报表逻辑，里面大部分场景都是统计数据，对数据时效性要求不高，不过要求数据能立即响应用户。于是尝试借助缓存来加快响应用户的时间，主要用到了分页列表缓存。 直接缓存分页列表说明最简单，也是最能想到的方法就是直接缓存分页列表。举个例子，如下所示，直接将每页的数据以列表形式进行缓存：  对应的伪代码如下所示： 123456789public List&lt;Product&gt; ge">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2023-05-28T08:55:30.000Z">
+<meta property="article:modified_time" content="2023-06-09T13:52:42.881Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '巧用分页列表缓存，快速响应用户请求',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2023-06-09 21:52:42'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">巧用分页列表缓存，快速响应用户请求</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2023-05-28T08:55:30.000Z" title="发表于 2023-05-28 16:55:30">2023-05-28</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2023-06-09T13:52:42.881Z" title="更新于 2023-06-09 21:52:42">2023-06-09</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springboot/">springboot</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>最近在写数据报表逻辑，里面大部分场景都是统计数据，对数据时效性要求不高，不过要求数据能立即响应用户。于是尝试借助缓存来加快响应用户的时间，主要用到了分页列表缓存。</p>
+<h1 id="直接缓存分页列表"><a href="#直接缓存分页列表" class="headerlink" title="直接缓存分页列表"></a>直接缓存分页列表</h1><h3 id="说明"><a href="#说明" class="headerlink" title="说明"></a>说明</h3><p>最简单，也是最能想到的方法就是直接缓存分页列表。举个例子，如下所示，直接将每页的数据以列表形式进行缓存：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-77510826a25930a8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>对应的伪代码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Product&gt; getPageList(String param, int pageNum, int pageSize) &#123;</span><br><span class="line">    String key = &quot;productPageList:pageNum:&quot; + pageNum+ &quot;pageSize:&quot; + pageSize+  &quot;param:&quot; + param ;</span><br><span class="line">    List&lt;Product&gt; productList = cacheUtil.get(key);</span><br><span class="line">    if(productList != null)return productList;</span><br><span class="line">    productList = queryFromDB(param,pageNum,pageSize);</span><br><span class="line">    if(productList != null) &#123;</span><br><span class="line">         cacheUtil.set(key , productList , Constants.ExpireTime);</span><br><span class="line">    &#125;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<h3 id="优缺点"><a href="#优缺点" class="headerlink" title="优缺点"></a>优缺点</h3><p>这种方式优点就是操作简单，性能也快，缺点就是缓存的粒度太粗。如果列表中数据发生增删，为了保证数据的一致性，需要修改分页列表缓存。</p>
+<p>当然了，可以有两种方式来解决 ：<br>（1）利用缓存的过期时间来惰性删除，不过这种要求业务能接受；<br>（2）使用Redis提供的<code>keys</code>命令来找到对应的分页缓存，之后执行删除操作。不过<code>keys</code>命令对性能影响很大，会导致 Redis产生较大的延迟，这一点在并发性要求高的业务下是很难满足的 。而且生产环境使用<code>keys</code>命令比较危险，很容易出现问题，因此不推荐使用<code>keys</code>命令。</p>
+<h1 id="先查询对象ID列表，再缓存每个对象"><a href="#先查询对象ID列表，再缓存每个对象" class="headerlink" title="先查询对象ID列表，再缓存每个对象"></a>先查询对象ID列表，再缓存每个对象</h1><p>前面说过直接缓存分页列表，导致缓存粒度较粗，很难保证数据的一致性，因此我们可以尝试细粒度缓存，即先查询对象ID列表，再缓存每个对象。</p>
+<h3 id="说明-1"><a href="#说明-1" class="headerlink" title="说明"></a>说明</h3><p>举个例子，如下所示，首先我们查询分页对象ID列表，然后再缓存每一个对象，后续通过对象ID和缓存的对象来聚合形成列表返回给前端：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-adbcc181311b464e.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>对应的伪代码如下所示：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line">public List&lt;Product&gt; getPageList(String param, int pageNum, int pageSize) &#123;</span><br><span class="line">    //1、构建返回对象</span><br><span class="line">    List&lt;Product&gt; result = new ArrayList&lt;&gt;(pageSize);</span><br><span class="line">    //2、从数据库中查询分页ID列表</span><br><span class="line">    List&lt;Long&gt; productIdList = queryproductIdListFromDB(param,pageNum,pageSize);</span><br><span class="line">    //3、为空则直接返回空列表</span><br><span class="line">    if(CollectionUtils.isEmpty(productIdList))&#123;</span><br><span class="line">        return new ArrayList();</span><br><span class="line">    &#125;</span><br><span class="line">    //4、批量从缓存中获取缓存对象列表</span><br><span class="line">    Map&lt;Long, Product&gt; cacheProductMap = cacheUtil.mget(productIdList);</span><br><span class="line">    //5、缓存中可能没有一些对象(没命中对象)，那么需要将这些对象ID存起来</span><br><span class="line">    List&lt;Long&gt; noHitpProductIdList = new ArrayList&lt;&gt;(productIdList.size());</span><br><span class="line">    noHitpProductIdList.forEach(productId-&gt;&#123;</span><br><span class="line">        if(!cacheProductMap.containsKey(productId))&#123;</span><br><span class="line">            noHitpProductIdList.add(productId);</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;)</span><br><span class="line">    //6、将前面没有命中的对象从数据库中查询并添加到缓存中</span><br><span class="line">    List&lt;Product&gt; noHitProductList = queryFromDBByIds(noHitpProductIdList);</span><br><span class="line">    if(CollectionUtils.isNotEmpty(noHitProductList))&#123;</span><br><span class="line">        Map&lt;Long, Product&gt; noHitProductMap = noHitProductList.stream()</span><br><span class="line">        .collect(Collectors.toMap(Product::getId, Function.identity()));</span><br><span class="line">        //将没有命中的对象添加到缓存中</span><br><span class="line">        cacheUtil.mset(noHitProductMap);</span><br><span class="line">        //将没有命中的对象添加到聚合Map中</span><br><span class="line">        cacheProductMap.putAll(noHitProductMap);</span><br><span class="line">    &#125;</span><br><span class="line">    //7、组装返回对象</span><br><span class="line">    productIdList.forEach(productId-&gt;&#123;</span><br><span class="line">      Product product = cacheProductMap.get(productId);</span><br><span class="line">      if(product != null)&#123;</span><br><span class="line">        result.add(product);</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;);</span><br><span class="line">    return result;</span><br><span class="line">&#125; </span><br></pre></td></tr></table></figure>
+<p>下面简单解释一下上述代码的含义：<br>（1）构建返回对象：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Product&gt; result = new ArrayList&lt;&gt;(pageSize);</span><br></pre></td></tr></table></figure>
+<p>（2）从数据库中查询分页ID列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Long&gt; productIdList = queryproductIdListFromDB(param,pageNum,pageSize);</span><br></pre></td></tr></table></figure>
+<p>其实这个就相当于执行如下的SQL语句：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select id from t_product order by id limit (pageNum -1)* size,size;</span><br></pre></td></tr></table></figure>
+<p>（3）为空则直接返回空列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">if(CollectionUtils.isEmpty(productIdList))&#123;</span><br><span class="line">      return new ArrayList();</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>（4）批量从缓存中获取缓存对象列表：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">Map&lt;Long, Product&gt; cacheProductMap = cacheUtil.mget(productIdList);</span><br></pre></td></tr></table></figure>
+<p>这里我们采用的是分布式缓存系统Redis，它天然支持批量查询命令，如mget、mset等。<br>（5）缓存中可能没有一些对象(没命中对象)，那么需要将这些对象ID存起来：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Long&gt; noHitpProductIdList = new ArrayList&lt;&gt;(productIdList.size());</span><br><span class="line">noHitpProductIdList.forEach(productId-&gt;&#123;</span><br><span class="line">    if(!cacheProductMap.containsKey(productId))&#123;</span><br><span class="line">        noHitpProductIdList.add(productId);</span><br><span class="line">    &#125;</span><br><span class="line">&#125;)</span><br></pre></td></tr></table></figure>
+<p>由于缓存中可能出现对象过期或者其他原因，导致缓存没有命中，此时我们需要找到哪些对象是没有命中的。<br>（6）将前面没有命中的对象从数据库中查询并添加到缓存中：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">List&lt;Product&gt; noHitProductList = queryFromDBByIds(noHitpProductIdList);</span><br><span class="line">if(CollectionUtils.isNotEmpty(noHitProductList))&#123;</span><br><span class="line">    Map&lt;Long, Product&gt; noHitProductMap = noHitProductList.stream()</span><br><span class="line">    .collect(Collectors.toMap(Product::getId, Function.identity()));</span><br><span class="line">    //将没有命中的对象添加到缓存中</span><br><span class="line">    cacheUtil.mset(noHitProductMap);</span><br><span class="line">     //将没有命中的对象添加到聚合Map中</span><br><span class="line">    cacheProductMap.putAll(noHitProductMap);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>可以看到首先我们从数据库中批量查询出未命中的对象列表，其实就相当于执行如下SQL：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">select * from t_product where id in (1,2,3......);</span><br></pre></td></tr></table></figure>
+<p>之后就将命中的对象添加到缓存和聚合Map中。<br>（7）组装返回对象：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">productIdList.forEach(productId-&gt;&#123;</span><br><span class="line">    Product product = cacheProductMap.get(productId);</span><br><span class="line">    if(product != null)&#123;</span><br><span class="line">      result.add(product);</span><br><span class="line">    &#125;</span><br><span class="line">  &#125;);</span><br></pre></td></tr></table></figure>
+<p>可以看到此时最坏的情况就是经过两次网络IO，第一次是数据库查询IO，第二次是Redis查询IO，我们就能得到所需要的数据。</p>
+<p>“先查询对象ID列表，再缓存每个对象”这种方案灵活性很高，我们还可以将查询对象ID列表这一操作从数据库中变为从Redis、ElasticSearch等。下图是博客文章的搜索流程：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-69072d5faeed1cb8.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>可以看到，此时搜索的分页结果中只包含业务对象 ID ，而对象的详细信息则从缓存和数据库中获取。</p>
+<h1 id="缓存对象ID列表同时缓存每个对象"><a href="#缓存对象ID列表同时缓存每个对象" class="headerlink" title="缓存对象ID列表同时缓存每个对象"></a>缓存对象ID列表同时缓存每个对象</h1><p>记得之前笔者在写一个社交APP的时候，遇到过Feed流的情况，需要以瀑布流的形式展示用户所关注的好友的动态。当时采用了推模式并结合Redis的ZSet数据结构来实现，将每一条动态ID存储在ZSet中，ZSet是一种有序的数据结构，由多个有序的唯一字符串组成，每个字符串都关联一个浮点类型的分数。</p>
+<p>ZSet 使用的是 member -&gt; score 结构 ，如下所示：</p>
+<p><img src="https://upload-images.jianshu.io/upload_images/8964398-82a033cd1cb7b693.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240"></p>
+<p>member是被排序的标识，也是默认的第二排序维度（ 即score相同时，Redis以member的字典序排列）；而score则是被排序的分值，存储类型是double。</p>
+<p>我们可以使用ZSet来存储动态 ID 列表，其中member是动态编号，score是创建时间，然后通过ZSet 的<code>ZREVRANGE</code>命令就可以实现分页效果，它用于按照成员的分数从大到小返回有序集合中的指定范围的成员：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ZREVRANGE key start stop [WITHSCORES]</span><br></pre></td></tr></table></figure>
+<p>当然了，为了实现分页效果，我们上面的start和stop的取值如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">int start = (pageNum -1) * pageSize;</span><br><span class="line">int stop = start + pageSize - 1;</span><br></pre></td></tr></table></figure>
+<p>这样通过<code>ZREVRANGE</code>命令，我们就可以查询出动态ID列表了。在获取到动态ID列表之后，我们还需要缓存每个动态对象的信息，这些动态对象包括详情、评论、点赞、转发等内容，这些内容是需要单独做缓存的：</p>
+<table>
+<thead>
+<tr>
+<th align="center">动态信息</th>
+<th align="center">Redis存储方式</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">动态</td>
+<td align="center">使用Hash来存储动态详情</td>
+</tr>
+<tr>
+<td align="center">点赞</td>
+<td align="center">使用ZSET来存储userId，前端显示用户头像，使用String缓存用户信息</td>
+</tr>
+<tr>
+<td align="center">收藏</td>
+<td align="center">使用String来存储userId和FeedId的映射关系</td>
+</tr>
+<tr>
+<td align="center">评论</td>
+<td align="center">使用ZSET来存储commentId，使用String缓存评论详情信息</td>
+</tr>
+</tbody></table>
+<p>当然，无论是查询还是更新缓存，笔者都是建议采用批量操作，这样效率更高。如果缓存对象结构简单，那么可以使用<code>mget</code>、<code>hmget</code>等命令；若结构复杂，可以使用pipleline，Lua脚本等方式。 笔者采用Redis的pipleline来实现批量操作。</p>
+<p>“缓存对象ID列表同时缓存每个对象”这种方案的流程如下所示：<br>（1）使用ZSet来存储动态 ID 列表，并通过传入分页参数和<code>ZREVRANGE</code>命令来动态查询ID列表；<br>（2）通过传递动态ID列表参数，并采用Redis的pipleline功能，从缓存中批量获取动态的详情，评论，点赞，收藏等数据 ，最终组装成所需列表并返回。</p>
+<h1 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h1><p>本篇主要学习了分页缓存的三种方案，如下所示：<br>（1）直接缓存分页列表；<br>（2）先查询对象ID列表，再缓存每个对象；<br>（3）缓存对象ID列表同时缓存每个对象。<br>这三种方式层层递进，最终采用细粒度控制缓存对象和批量加载缓存对象，进而实现快速响应用户请求这一目的。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/">http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springboot/">springboot</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="next-post pull-full"><a href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">基于请求参数校验的接口幂等性实现方案</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/05/26/11-springboot-implements-timed-tasks/" title="SpringBoot实现定时任务"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-26</div><div class="title">SpringBoot实现定时任务</div></div></a></div><div><a href="/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/" title="SpringBoot实现JSON数据重复读取"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="title">SpringBoot实现JSON数据重复读取</div></div></a></div><div><a href="/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/" title="SpringBoot整合Canal实现数据增量同步"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-02</div><div class="title">SpringBoot整合Canal实现数据增量同步</div></div></a></div><div><a href="/2022/03/20/4-dynamic-switching-of-visual-multiple-data-sources/" title="可视化多数据源动态切换"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-20</div><div class="title">可视化多数据源动态切换</div></div></a></div><div><a href="/2022/03/24/5-an-annotation-cooperates-with-redis-to-realize-interface-current-limition/" title="一个注解配合Redis实现接口限流"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-24</div><div class="title">一个注解配合Redis实现接口限流</div></div></a></div><div><a href="/2019/09/25/springboot-21-project-build-and-development/" title="项目构建与部署"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-25</div><div class="title">项目构建与部署</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">253</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%9B%B4%E6%8E%A5%E7%BC%93%E5%AD%98%E5%88%86%E9%A1%B5%E5%88%97%E8%A1%A8"><span class="toc-number">2.</span> <span class="toc-text">直接缓存分页列表</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B4%E6%98%8E"><span class="toc-number">2.0.1.</span> <span class="toc-text">说明</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BC%98%E7%BC%BA%E7%82%B9"><span class="toc-number">2.0.2.</span> <span class="toc-text">优缺点</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%85%88%E6%9F%A5%E8%AF%A2%E5%AF%B9%E8%B1%A1ID%E5%88%97%E8%A1%A8%EF%BC%8C%E5%86%8D%E7%BC%93%E5%AD%98%E6%AF%8F%E4%B8%AA%E5%AF%B9%E8%B1%A1"><span class="toc-number">3.</span> <span class="toc-text">先查询对象ID列表，再缓存每个对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%B4%E6%98%8E-1"><span class="toc-number">3.0.1.</span> <span class="toc-text">说明</span></a></li></ol></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BC%93%E5%AD%98%E5%AF%B9%E8%B1%A1ID%E5%88%97%E8%A1%A8%E5%90%8C%E6%97%B6%E7%BC%93%E5%AD%98%E6%AF%8F%E4%B8%AA%E5%AF%B9%E8%B1%A1"><span class="toc-number">4.</span> <span class="toc-text">缓存对象ID列表同时缓存每个对象</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">5.</span> <span class="toc-text">总结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/" title="巧用分页列表缓存，快速响应用户请求"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="巧用分页列表缓存，快速响应用户请求"/></a><div class="content"><a class="title" href="/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/" title="巧用分页列表缓存，快速响应用户请求">巧用分页列表缓存，快速响应用户请求</a><time datetime="2023-05-28T08:55:30.000Z" title="发表于 2023-05-28 16:55:30">2023-05-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/" title="基于请求参数校验的接口幂等性实现方案"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="基于请求参数校验的接口幂等性实现方案"/></a><div class="content"><a class="title" href="/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/" title="基于请求参数校验的接口幂等性实现方案">基于请求参数校验的接口幂等性实现方案</a><time datetime="2023-05-10T02:55:30.000Z" title="发表于 2023-05-10 10:55:30">2023-05-10</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/" title="Redis各种数据类型巧用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Redis各种数据类型巧用"/></a><div class="content"><a class="title" href="/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/" title="Redis各种数据类型巧用">Redis各种数据类型巧用</a><time datetime="2023-04-20T02:55:30.000Z" title="发表于 2023-04-20 10:55:30">2023-04-20</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/" title="聊一聊Redis中的布隆过滤器"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊Redis中的布隆过滤器"/></a><div class="content"><a class="title" href="/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/" title="聊一聊Redis中的布隆过滤器">聊一聊Redis中的布隆过滤器</a><time datetime="2023-04-06T11:55:30.000Z" title="发表于 2023-04-06 19:55:30">2023-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2023/03/01/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="功能开关在业务中的实践"/></a><div class="content"><a class="title" href="/2023/03/01/2023-100-practice-of-function-switch-in-business/" title="功能开关在业务中的实践">功能开关在业务中的实践</a><time datetime="2023-03-01T09:55:30.000Z" title="发表于 2023-03-01 17:55:30">2023-03-01</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2023  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: '5103217bf824628d8a96b48b562d7477',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>

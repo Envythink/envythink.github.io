@@ -1,3 +1,7 @@
+http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/
+http://envyzhan.asia/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/
+http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/
+http://envyzhan.asia/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/
 http://envyzhan.asia/2023/03/01/2023-100-practice-of-function-switch-in-business/
 http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/
 http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/
@@ -294,6 +298,7 @@ http://envyzhan.asia/tags/Kubernetes/
 http://envyzhan.asia/tags/dart/
 http://envyzhan.asia/tags/elasticsearch/
 http://envyzhan.asia/tags/SpringBoot/
+http://envyzhan.asia/tags/redis/
 http://envyzhan.asia/categories/springboot/
 http://envyzhan.asia/categories/ssm/
 http://envyzhan.asia/categories/devops/
@@ -312,3 +317,4 @@ http://envyzhan.asia/categories/dart/
 http://envyzhan.asia/categories/java/
 http://envyzhan.asia/categories/elasticsearch/
 http://envyzhan.asia/categories/SpringBoot/
+http://envyzhan.asia/categories/redis/
