@@ -2,7 +2,16 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://envyzhan.asia/2024/03/02/2024-1-six-common-configuration-methods-for-reading-properties/</loc>
+    <loc>http://envyzhan.asia/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/</loc>
+    
+    <lastmod>2024-05-22</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/</loc>
     
     <lastmod>2024-05-22</lastmod>
     

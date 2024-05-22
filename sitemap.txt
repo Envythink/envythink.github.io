@@ -1,4 +1,5 @@
-http://envyzhan.asia/2024/03/02/2024-1-six-common-configuration-methods-for-reading-properties/
+http://envyzhan.asia/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/
+http://envyzhan.asia/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/
 http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/
 http://envyzhan.asia/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/
 http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/
