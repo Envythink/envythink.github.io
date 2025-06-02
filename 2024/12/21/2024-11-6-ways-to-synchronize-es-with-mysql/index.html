@@ -1,0 +1,248 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>MySQL同步ES的6种方式 | 余思博客</title><meta name="keywords" content="springboot"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面我们知道，在分布式系统日益发展的今天，MySQL与Elasticsearch的协同已成为解决高并发查询与复杂检索的标配组合。但是，如何实现两者间数据的高效同步，已成为架构设计中不可忽视的问题。笔者结合实际工作经验和一些参考文章，给出常用的6种可行的同步方式，以供在后续架构设计中作参考。 小批量数据同步方式同步双写【适用场景】对数据实时性要求较高，且业务逻辑较为简单的场景，如支付记录同步等。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MySQL同步ES的6种方式">
+<meta property="og:url" content="http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面我们知道，在分布式系统日益发展的今天，MySQL与Elasticsearch的协同已成为解决高并发查询与复杂检索的标配组合。但是，如何实现两者间数据的高效同步，已成为架构设计中不可忽视的问题。笔者结合实际工作经验和一些参考文章，给出常用的6种可行的同步方式，以供在后续架构设计中作参考。 小批量数据同步方式同步双写【适用场景】对数据实时性要求较高，且业务逻辑较为简单的场景，如支付记录同步等。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2024-12-21T10:23:04.000Z">
+<meta property="article:modified_time" content="2025-06-02T13:19:54.916Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'MySQL同步ES的6种方式',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-06-02 21:19:54'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">263</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">MySQL同步ES的6种方式</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2024-12-21T10:23:04.000Z" title="发表于 2024-12-21 18:23:04">2024-12-21</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-02T13:19:54.916Z" title="更新于 2025-06-02 21:19:54">2025-06-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springboot/">springboot</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>我们知道，在分布式系统日益发展的今天，<font style="color:rgb(63, 63, 63);">MySQL与Elasticsearch的协同已成为解决高并发查询与复杂检索的标配组合。但是，如何实现两者间数据的高效同步，已成为架构设计中不可忽视的问题。笔者结合实际工作经验和一些参考文章，给出常用的6种可行的同步方式，以供在后续架构设计中作参考。</font></p>
+<h1 id="小批量数据同步方式"><a href="#小批量数据同步方式" class="headerlink" title="小批量数据同步方式"></a><font style="color:rgb(63, 63, 63);">小批量数据同步方式</font></h1><h2 id="同步双写"><a href="#同步双写" class="headerlink" title="同步双写"></a><font style="color:rgb(63, 63, 63);">同步双写</font></h2><p>【适用场景】对数据实时性要求较高，且业务逻辑较为简单的场景，如支付记录同步等。</p>
+<p>【实现方式】在代码中同时写入MySQL和ES。</p>
+<p>【示例代码】以下是同步双写的示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">@Transactional  </span><br><span class="line">public void createRecord(TRecord trecord) &#123;  </span><br><span class="line">    // 写入MySQL  </span><br><span class="line">    trecordMapper.insert(trecord);  </span><br><span class="line">    // 同步写入ES  </span><br><span class="line">    IndexRequest request = new IndexRequest(&quot;records&quot;)  </span><br><span class="line">        .id(trecord.getId())  </span><br><span class="line">        .source(JSON.toJSONString(trecord), XContentType.JSON);  </span><br><span class="line">    client.index(request, RequestOptions.DEFAULT);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>【缺点】</p>
+<p>（1）代码侵入：需要在所有涉及写入操作的地方都添加ES写入逻辑；</p>
+<p>（2）性能降低：双写会导致事务时间变长，降低TPS；</p>
+<p>（3）数据一致性难以得到保证：<font style="color:rgb(63, 63, 63);">如果ES写入失败，而MySQL写入成功，需要引入补偿机制。</font></p>
+<h2 id="异步双写"><a href="#异步双写" class="headerlink" title="异步双写"></a><font style="color:rgb(63, 63, 63);">异步双写</font></h2><p>【适用场景】对数据实时性要求不高，且业务逻辑较为简单的场景，如订单创建成功后状态修改，以供用户查询等。</p>
+<p>【实现方式】使用MQ来进行解耦和实现异步双写。</p>
+<p>【示意流程】以下是异步双写的流程：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1748308847462-1f11a8d8-7262-4039-96a6-918164ee5a0c.png"></p>
+<p>【示例代码】以下是异步双写的示例代码：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line">//生产者(业务服务)</span><br><span class="line">public void updateOrder(Order order) &#123;  </span><br><span class="line">    orderMapper.update(order);  </span><br><span class="line">    kafkaTemplate.send(&quot;order-update&quot;, order.getId());  </span><br><span class="line">&#125;  </span><br><span class="line"></span><br><span class="line">//消费者(消费服务)</span><br><span class="line">@KafkaListener(topics = &quot;order-update&quot;)  </span><br><span class="line">public void syncToES(String orderId) &#123;  </span><br><span class="line">    Order order = orderMapper.selectById(orderId);  </span><br><span class="line">    esClient.index(order);  </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>【优点】</p>
+<p>（1）大幅提升吞吐量：通过MQ实现削峰填谷；</p>
+<p>（2）故障隔离：ES宕机不影响业务正常进行</p>
+<p>【缺点】</p>
+<p>（1）存在消息堆积：突发流量可能会导致消费延迟；</p>
+<p>（2）消费顺序难以保证：必须通过分区来保证同一分区数据消费的顺序性。</p>
+<h2 id="Canal监听Binlog日志"><a href="#Canal监听Binlog日志" class="headerlink" title="Canal监听Binlog日志"></a>Canal监听Binlog日志</h2><p>【适用场景】对数据实时性要求较高，且业务逻辑较为复杂的场景，如商品上架后实时搜索等。</p>
+<p>【实现方式】使用MQ + Canal + ES来实现。</p>
+<p>【示意流程】以下是Canal监听Binlog日志的流程：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1748311466891-3581176a-f774-4034-a6cc-d5a6c597e8f0.png"></p>
+<p>在Canal中有一些关键配置，这个用于配置MySQL地址以及mq的主题：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"># canal.properties  </span><br><span class="line">canal.instance.master.address=127.0.0.1:3306  </span><br><span class="line">canal.mq.topic=canal.es.sync</span><br></pre></td></tr></table></figure>
+
+<p>【注意事项】</p>
+<p>（1）需要实现幂等消费：可通过id等唯一键来实现；</p>
+<p>（2）可能存在数据漂移：需要<font style="color:rgb(63, 63, 63);">处理DDL变更（开发者可通过Schema Registry来管理映射）。</font></p>
+<h2 id="Logstash定时拉取"><a href="#Logstash定时拉取" class="headerlink" title="Logstash定时拉取"></a><font style="color:rgb(63, 63, 63);">Logstash定时拉取</font></h2><p>【适用场景】对数据实时性要求不高，延迟较高，如用户行为T+1分析等。</p>
+<p>【示例配置】以下是Logstash定时拉取的示例配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">input &#123;</span><br><span class="line">  jdbc &#123;</span><br><span class="line">    jdbc_driver=&gt;&quot;com.mysql.jdbc.Driver&quot;</span><br><span class="line">    jdbc_url=&gt;&quot;jdbc:mysql://127.0.0.1:3306/user_log_db&quot;</span><br><span class="line">    schedule=&gt;&quot;*/5 * * * *&quot;# 每5分钟执行  </span><br><span class="line">    statement=&gt;&quot;SELECT * FROM user_log WHERE create_time &gt; :sql_last_value&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br><span class="line">output &#123;</span><br><span class="line">  elasticsearch &#123;</span><br><span class="line">    hosts=&gt;[&quot;es-host:9200&quot;]</span><br><span class="line">    index=&gt;&quot;user_logs&quot;</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>【优点】</p>
+<p>（1）代码零入侵：代码零入侵，非常适合历史数据的迁移；</p>
+<p>（2）配置灵活：可通过配置文件来指定配置参数。</p>
+<p>【缺点】</p>
+<p>（1）分钟级别延迟：无法实现实时搜索；</p>
+<p>（2）全表扫码压力大：数据同步是全量的，需要优化<font style="color:rgb(63, 63, 63);">增量字段索引</font>。</p>
+<h1 id="大数据量同步方式"><a href="#大数据量同步方式" class="headerlink" title="大数据量同步方式"></a>大数据量同步方式</h1><h2 id="DataX批量同步"><a href="#DataX批量同步" class="headerlink" title="DataX批量同步"></a>DataX批量同步</h2><p>【适用场景】将历史数据从MySQL迁移至ES中，大数据同步优先考虑此种方式。</p>
+<p>【示例配置】以下是DataX批量同步数据的示例配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br></pre></td><td class="code"><pre><span class="line">&#123;  </span><br><span class="line">&quot;job&quot;:&#123;</span><br><span class="line">    &quot;content&quot;:[&#123;</span><br><span class="line">      &quot;reader&quot;:&#123;</span><br><span class="line">        &quot;name&quot;:&quot;mysqlreader&quot;,</span><br><span class="line">        &quot;parameter&quot;:&#123;&quot;splitPk&quot;:&quot;id&quot;,&quot;querySql&quot;:&quot;SELECT * FROM orders&quot;&#125;</span><br><span class="line">      &#125;,</span><br><span class="line">      &quot;writer&quot;:&#123;</span><br><span class="line">        &quot;name&quot;:&quot;elasticsearchwriter&quot;,</span><br><span class="line">        &quot;parameter&quot;:&#123;&quot;endpoint&quot;:&quot;http://es-host:9200&quot;,&quot;index&quot;:&quot;orders&quot;&#125;</span><br><span class="line">      &#125;</span><br><span class="line">    &#125;]</span><br><span class="line">  &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>【调优配置】</p>
+<p>（1）<font style="color:rgb(63, 63, 63);">调整Channel数：为提升并发，需要调整Channel数，建议与分片数对齐；</font></p>
+<p><font style="color:rgb(63, 63, 63);">（2）使用limit：为避免发生OOM，需要使用limit关键字进行分页处理。</font></p>
+<h2 id="Flink流处理"><a href="#Flink流处理" class="headerlink" title="Flink流处理"></a><font style="color:rgb(63, 63, 63);">Flink流处理</font></h2><p>【适用场景】对于<font style="color:rgb(63, 63, 63);">复杂的ETL场景，或者</font>商品价格或者数量发生变化时，需要<font style="color:rgb(63, 63, 63);">关联用户画像，计算实时推荐评分时，推荐使用该方式</font>。</p>
+<p>【示例配置】以下是Flink流处理的示例配置：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();  </span><br><span class="line">env.addSource(new CanalSource())  </span><br><span class="line">   .map(record -&gt; parseToPriceEvent(record))  </span><br><span class="line">   .keyBy(event -&gt; event.getProductId())  </span><br><span class="line">   .connect(userProfileBroadcastStream)  </span><br><span class="line">   .process(new PriceRecommendationProcess())  </span><br><span class="line">   .addSink(new ElasticsearchSink());</span><br></pre></td></tr></table></figure>
+
+<p>【调优配置】</p>
+<p>（1）<font style="color:rgb(63, 63, 63);">状态管理：通过WaterMark机制，精准处理乱序事件；</font></p>
+<p><font style="color:rgb(63, 63, 63);">（2）维表关联：通过Broadcast State实现实时画像关联。</font></p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><font style="color:rgb(63, 63, 63);">小结</font></h1><p>下面通过一张表来展示上述6种方式的区别，后续在架构设计和开发过程中可以根据各种方式的特点来选择合适的方式：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1748313159832-ed4e3299-6e3e-4f37-9b7c-ce73f4a08897.png"></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/">http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springboot/">springboot</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">聊一聊常用的3种实时技术</div></div></a></div><div class="next-post pull-right"><a href="/2024/11/09/2024-12-10-common-ways-to-optimize-sql/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">SQL调优常用的10种方式</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/05/26/11-springboot-implements-timed-tasks/" title="SpringBoot实现定时任务"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-26</div><div class="title">SpringBoot实现定时任务</div></div></a></div><div><a href="/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/" title="SpringBoot实现JSON数据重复读取"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="title">SpringBoot实现JSON数据重复读取</div></div></a></div><div><a href="/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/" title="SpringBoot整合Canal实现数据增量同步"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-02</div><div class="title">SpringBoot整合Canal实现数据增量同步</div></div></a></div><div><a href="/2022/03/20/4-dynamic-switching-of-visual-multiple-data-sources/" title="可视化多数据源动态切换"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-20</div><div class="title">可视化多数据源动态切换</div></div></a></div><div><a href="/2022/03/24/5-an-annotation-cooperates-with-redis-to-realize-interface-current-limition/" title="一个注解配合Redis实现接口限流"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-24</div><div class="title">一个注解配合Redis实现接口限流</div></div></a></div><div><a href="/2019/09/25/springboot-21-project-build-and-development/" title="项目构建与部署"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-25</div><div class="title">项目构建与部署</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">263</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E6%89%B9%E9%87%8F%E6%95%B0%E6%8D%AE%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">2.</span> <span class="toc-text">小批量数据同步方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%90%8C%E6%AD%A5%E5%8F%8C%E5%86%99"><span class="toc-number">2.1.</span> <span class="toc-text">同步双写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%BC%82%E6%AD%A5%E5%8F%8C%E5%86%99"><span class="toc-number">2.2.</span> <span class="toc-text">异步双写</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Canal%E7%9B%91%E5%90%ACBinlog%E6%97%A5%E5%BF%97"><span class="toc-number">2.3.</span> <span class="toc-text">Canal监听Binlog日志</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Logstash%E5%AE%9A%E6%97%B6%E6%8B%89%E5%8F%96"><span class="toc-number">2.4.</span> <span class="toc-text">Logstash定时拉取</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%A4%A7%E6%95%B0%E6%8D%AE%E9%87%8F%E5%90%8C%E6%AD%A5%E6%96%B9%E5%BC%8F"><span class="toc-number">3.</span> <span class="toc-text">大数据量同步方式</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#DataX%E6%89%B9%E9%87%8F%E5%90%8C%E6%AD%A5"><span class="toc-number">3.1.</span> <span class="toc-text">DataX批量同步</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Flink%E6%B5%81%E5%A4%84%E7%90%86"><span class="toc-number">3.2.</span> <span class="toc-text">Flink流处理</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">4.</span> <span class="toc-text">小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/" title="SpringBoot+MCP实现本地工具调用实战"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+MCP实现本地工具调用实战"/></a><div class="content"><a class="title" href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/" title="SpringBoot+MCP实现本地工具调用实战">SpringBoot+MCP实现本地工具调用实战</a><time datetime="2025-04-06T10:03:01.000Z" title="发表于 2025-04-06 18:03:01">2025-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/" title="聊一聊最近很火的MCP协议"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊最近很火的MCP协议"/></a><div class="content"><a class="title" href="/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/" title="聊一聊最近很火的MCP协议">聊一聊最近很火的MCP协议</a><time datetime="2025-03-01T11:05:08.000Z" title="发表于 2025-03-01 19:05:08">2025-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/" title="如何在本地搭建LLM并使用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何在本地搭建LLM并使用"/></a><div class="content"><a class="title" href="/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/" title="如何在本地搭建LLM并使用">如何在本地搭建LLM并使用</a><time datetime="2025-02-23T09:03:01.000Z" title="发表于 2025-02-23 17:03:01">2025-02-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/" title="聊一聊常用的3种实时技术"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊常用的3种实时技术"/></a><div class="content"><a class="title" href="/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/" title="聊一聊常用的3种实时技术">聊一聊常用的3种实时技术</a><time datetime="2025-01-11T10:03:01.000Z" title="发表于 2025-01-11 18:03:01">2025-01-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/" title="MySQL同步ES的6种方式"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL同步ES的6种方式"/></a><div class="content"><a class="title" href="/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/" title="MySQL同步ES的6种方式">MySQL同步ES的6种方式</a><time datetime="2024-12-21T10:23:04.000Z" title="发表于 2024-12-21 18:23:04">2024-12-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2025  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: '12240ffa2731815d025b2299331a0b35',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>

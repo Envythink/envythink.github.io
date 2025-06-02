@@ -2,7 +2,52 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://envyzhan.asia/2024/12/01/2024-10-10-common-ways-to-optimize-sql/</loc>
+    <loc>http://envyzhan.asia/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://envyzhan.asia/2024/11/09/2024-12-10-common-ways-to-optimize-sql/</loc>
     
     <lastmod>2025-06-02</lastmod>
     

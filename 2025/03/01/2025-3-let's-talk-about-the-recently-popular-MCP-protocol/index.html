@@ -1,0 +1,229 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>聊一聊最近很火的MCP协议 | 余思博客</title><meta name="keywords" content="springboot"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面笔者最近在用Dify调用工具，但是发现效果非常不好，而且内部都是封装好的，不知道它是如何调用工具的。而现在公司恰好有些需求是要求让大模型直接调用本地文件，目前只能将文件上传上去，但是大模型的数据通常都是截止到某个时间点的，即训练的数据集始终是落后且固定的，无法实时获取数据。 当然我们可以使用联网搜索，也可以使用知识库，接口等方式将自己的数据上传给大模型，但是感觉使用起来还是差点意思，无法做">
+<meta property="og:type" content="article">
+<meta property="og:title" content="聊一聊最近很火的MCP协议">
+<meta property="og:url" content="http://envyzhan.asia/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面笔者最近在用Dify调用工具，但是发现效果非常不好，而且内部都是封装好的，不知道它是如何调用工具的。而现在公司恰好有些需求是要求让大模型直接调用本地文件，目前只能将文件上传上去，但是大模型的数据通常都是截止到某个时间点的，即训练的数据集始终是落后且固定的，无法实时获取数据。 当然我们可以使用联网搜索，也可以使用知识库，接口等方式将自己的数据上传给大模型，但是感觉使用起来还是差点意思，无法做">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2025-03-01T11:05:08.000Z">
+<meta property="article:modified_time" content="2025-06-02T13:50:06.832Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://envyzhan.asia/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: '聊一聊最近很火的MCP协议',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-06-02 21:50:06'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">263</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">聊一聊最近很火的MCP协议</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-03-01T11:05:08.000Z" title="发表于 2025-03-01 19:05:08">2025-03-01</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-06-02T13:50:06.832Z" title="更新于 2025-06-02 21:50:06">2025-06-02</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springboot/">springboot</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>笔者最近在用Dify调用工具，但是发现效果非常不好，而且内部都是封装好的，不知道它是如何调用工具的。而现在公司恰好有些需求是要求让大模型直接调用本地文件，目前只能将文件上传上去，但是大模型的数据通常都是截止到某个时间点的，即训练的数据集始终是落后且固定的，无法实时获取数据。</p>
+<p>当然我们可以使用联网搜索，也可以使用知识库，接口等方式将自己的数据上传给大模型，但是感觉使用起来还是差点意思，无法做到架构的统一化。鉴于此，MCP协议诞生了。</p>
+<h1 id="什么是MCP"><a href="#什么是MCP" class="headerlink" title="什么是MCP"></a>什么是MCP</h1><p><a target="_blank" rel="noopener" href="https://modelcontextprotocol.io/">MCP</a>全称（Model Context Protocol），即模型上下文协议，是美国一家Ai初创公司Anthropic于2024年11月推出的一种开放协议，旨在标准化大模型（LLM）与外部数据源、工具的交互方式。Anthropic<font style="color:rgb(63, 63, 63);">也是大语言模型Claude的母公司。</font></p>
+<p><font style="color:rgb(63, 63, 63);"></font></p>
+<p><font style="color:rgb(63, 63, 63);">MCP的主要目的在于解决当前AI模型因数据孤岛限制而无法充分发挥潜力的难题，MCP可以使AI应用能够在安全控制下，访问及操作本地和远程数据，为AI应用提供了连接万物的接口。</font></p>
+<p><font style="color:rgb(63, 63, 63);"></font></p>
+<p><font style="color:rgb(63, 63, 63);">即MCP可直接在AI与数据（包括本地数据和互联网数据）之间架起一座桥梁，通过MCP服务器和MCP客户端，开发者只需遵守这套协议，就能实现“万物互联”。有了MCP，可以和数据和文件系统、开发工具、Web和浏览器自动化、生产力和通信、各种社区生态能力全部集成，实现强大的协作工作能力，大模型+MCP+生态工具的价值将变得不可估量。</font></p>
+<p><font style="color:rgb(63, 63, 63);">举个例子，现在有一个图书管理系统，当你使用MCP进行改造后，不论是ChatGPT还是Claude，都能使用同一套指令实现图书的增删改查，而不用为每个Ai单独开发对应的接口。</font></p>
+<h1 id="MCP与Function-Calling的对比"><a href="#MCP与Function-Calling的对比" class="headerlink" title="MCP与Function Calling的对比"></a><font style="color:rgb(63, 63, 63);">MCP与Function Calling的对比</font></h1><p>我们知道，<font style="color:rgb(63, 63, 63);">Function Calling是AI模型调用函数的机制，而MCP是一个标准协议，它使AI模型与API无缝交互。AI Agent是一个自主运行的智能系统，利用Function Callling和MCP来分析和执行任务，实现特定目标。</font></p>
+<p>下面这张图便是MCP与<font style="color:rgb(63, 63, 63);">Function Calling的对比：</font></p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1748836799555-0d6fb5f9-1e23-4010-aa6a-58898b182383.png"></p>
+<h1 id="数据安全"><a href="#数据安全" class="headerlink" title="数据安全"></a>数据安全</h1><p>前<font style="color:rgb(63, 63, 63);">MCP通过标准化的数据访问接口，减少了与数据直接接触，降低了数据泄露风险，使AI应用能够在安全控制下，访问及操作本地和远程数据，为AI应用提供了连接万物的接口。</font></p>
+<p><font style="color:rgb(63, 63, 63);"></font></p>
+<p>实际上，MCP服务器内置了安全机制，确保只有经过验证的请求才能访问特定资源，相当于又加了一把安全锁。且MCP还支持多种加密算法，以确保数据在传输过程中的安全性。</p>
+<h1 id="MCP的核心原理"><a href="#MCP的核心原理" class="headerlink" title="MCP的核心原理"></a>MCP的核心原理</h1><p>MCP协议采用了独特的架构设计，将大模型与资源之间的通信划分为三个部分，即客户端、服务端和资源端。</p>
+<p>客户端负责将请求发送给MCP服务器，而服务器则将这些请求转发给对应的资源端。这种分层设计使得MCP协议能够很好的实现权限控制，确保只有经过授权的用户才能访问特定的资源。</p>
+<h2 id="MCP的基本工作流程"><a href="#MCP的基本工作流程" class="headerlink" title="MCP的基本工作流程"></a>MCP的基本工作流程</h2><p>MCP的基本工作流程如下：</p>
+<p>（1）<strong>初始化连接请求</strong>：客户端向服务器发送连接请求，建立通信通道；</p>
+<p>（2）<strong>发送请求</strong>：客户端根据需求来构建请求信息，并发送给服务器；</p>
+<p>（3）<strong>处理请求</strong>：服务器在接收到请求之后，解析请求内容，并执行对应的操作，如查询数据库，读取文件等；</p>
+<p>（4）<strong>返回结果</strong>：服务器将处理结果封装为响应消息，发送给客户端；</p>
+<p>（5）<strong>断开连接</strong>：任务完成后，客户端可以主动关闭连接或者等待服务器超时关闭。</p>
+<p>上述流程对应的示意图如下：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1748852069115-ad037623-c85e-4f35-8f3b-d69761e677c0.png"></p>
+<h2 id="MCP客户端工作流程"><a href="#MCP客户端工作流程" class="headerlink" title="MCP客户端工作流程"></a>MCP客户端工作流程</h2><p>下面是MCP客户端的工作流程，如下所示：</p>
+<p>（1）MCP客户端首先从MCP服务器获取可用的工具列表；</p>
+<p>（2）将用户的查询连同工具描述，通过Function Calling一起发送给LLM大模型；</p>
+<p>（3）LLM大模型根据需求来决定是否使用工具以及使用哪些工具；</p>
+<p>（4）如果需要使用工具，MCP客户端会通过MCP服务器执行对应的工具调用；</p>
+<p>（5）工具调用的结果会发送给LLM大模型；</p>
+<p>（6）最后将响应展示给用户。</p>
+<h2 id="MCP服务器主要作用"><a href="#MCP服务器主要作用" class="headerlink" title="MCP服务器主要作用"></a>MCP服务器主要作用</h2><p>下面是MCP服务器提供的主要作用，如下所示：</p>
+<p>（1）资源：类似文件的数据，可被客户端读取，如API响应或者文件内容；</p>
+<p>（2）工具：可以被LLM调用的函数，注意这些需要得到用户的准许；</p>
+<p>（3）提示：预先编写的模板，以帮助用户完成特定的任务。</p>
+<p>这些作用使得MCP服务器为Ai应用提供丰富的上下文信息和操作能力，<font style="color:rgb(63, 63, 63);">从而增强LLM的实用性和灵活性。</font></p>
+<h1 id="小结"><a href="#小结" class="headerlink" title="小结"></a><font style="color:rgb(63, 63, 63);">小结</font></h1><p>本篇我们学习了MCP以及其中的三个角色，包含客户端、服务端和资源端，对应的解释如下：</p>
+<p><font style="color:rgb(63, 63, 63);">（1）客户端：可理解为是Ai应用层，如聊天对话框。用户输入信息后，由客户端接口接收，再由客户端调用服务端调配资源处理；</font></p>
+<p><font style="color:rgb(63, 63, 63);">（2）服务端：可理解为注册中心，请注意所有的工具都是注册在服务端；</font></p>
+<p><font style="color:rgb(63, 63, 63);">（3）资源端：资源端就是大模型解析之后的用户需求的服务，即实际的处理逻辑。资源端可以和服务端部署在一起，也可以单独部署。</font></p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://envyzhan.asia">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://envyzhan.asia/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/">http://envyzhan.asia/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://envyzhan.asia" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springboot/">springboot</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">SpringBoot+MCP实现本地工具调用实战</div></div></a></div><div class="next-post pull-right"><a href="/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">如何在本地搭建LLM并使用</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/05/26/11-springboot-implements-timed-tasks/" title="SpringBoot实现定时任务"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-26</div><div class="title">SpringBoot实现定时任务</div></div></a></div><div><a href="/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/" title="SpringBoot实现JSON数据重复读取"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="title">SpringBoot实现JSON数据重复读取</div></div></a></div><div><a href="/2022/08/02/15-springboot-integrates-canal-to-realize-data-incremental-synchronization/" title="SpringBoot整合Canal实现数据增量同步"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-02</div><div class="title">SpringBoot整合Canal实现数据增量同步</div></div></a></div><div><a href="/2022/03/20/4-dynamic-switching-of-visual-multiple-data-sources/" title="可视化多数据源动态切换"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-20</div><div class="title">可视化多数据源动态切换</div></div></a></div><div><a href="/2022/03/24/5-an-annotation-cooperates-with-redis-to-realize-interface-current-limition/" title="一个注解配合Redis实现接口限流"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-03-24</div><div class="title">一个注解配合Redis实现接口限流</div></div></a></div><div><a href="/2019/09/25/springboot-21-project-build-and-development/" title="项目构建与部署"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2019-09-25</div><div class="title">项目构建与部署</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">263</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AFMCP"><span class="toc-number">2.</span> <span class="toc-text">什么是MCP</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MCP%E4%B8%8EFunction-Calling%E7%9A%84%E5%AF%B9%E6%AF%94"><span class="toc-number">3.</span> <span class="toc-text">MCP与Function Calling的对比</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%95%B0%E6%8D%AE%E5%AE%89%E5%85%A8"><span class="toc-number">4.</span> <span class="toc-text">数据安全</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#MCP%E7%9A%84%E6%A0%B8%E5%BF%83%E5%8E%9F%E7%90%86"><span class="toc-number">5.</span> <span class="toc-text">MCP的核心原理</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#MCP%E7%9A%84%E5%9F%BA%E6%9C%AC%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">5.1.</span> <span class="toc-text">MCP的基本工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MCP%E5%AE%A2%E6%88%B7%E7%AB%AF%E5%B7%A5%E4%BD%9C%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.</span> <span class="toc-text">MCP客户端工作流程</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#MCP%E6%9C%8D%E5%8A%A1%E5%99%A8%E4%B8%BB%E8%A6%81%E4%BD%9C%E7%94%A8"><span class="toc-number">5.3.</span> <span class="toc-text">MCP服务器主要作用</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%8F%E7%BB%93"><span class="toc-number">6.</span> <span class="toc-text">小结</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/" title="SpringBoot+MCP实现本地工具调用实战"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="SpringBoot+MCP实现本地工具调用实战"/></a><div class="content"><a class="title" href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/" title="SpringBoot+MCP实现本地工具调用实战">SpringBoot+MCP实现本地工具调用实战</a><time datetime="2025-04-06T10:03:01.000Z" title="发表于 2025-04-06 18:03:01">2025-04-06</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/" title="聊一聊最近很火的MCP协议"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊最近很火的MCP协议"/></a><div class="content"><a class="title" href="/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/" title="聊一聊最近很火的MCP协议">聊一聊最近很火的MCP协议</a><time datetime="2025-03-01T11:05:08.000Z" title="发表于 2025-03-01 19:05:08">2025-03-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/" title="如何在本地搭建LLM并使用"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="如何在本地搭建LLM并使用"/></a><div class="content"><a class="title" href="/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/" title="如何在本地搭建LLM并使用">如何在本地搭建LLM并使用</a><time datetime="2025-02-23T09:03:01.000Z" title="发表于 2025-02-23 17:03:01">2025-02-23</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/" title="聊一聊常用的3种实时技术"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="聊一聊常用的3种实时技术"/></a><div class="content"><a class="title" href="/2025/01/11/2025-1-let's-talk-about-three-commonly-used-real-time-technologies/" title="聊一聊常用的3种实时技术">聊一聊常用的3种实时技术</a><time datetime="2025-01-11T10:03:01.000Z" title="发表于 2025-01-11 18:03:01">2025-01-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/" title="MySQL同步ES的6种方式"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="MySQL同步ES的6种方式"/></a><div class="content"><a class="title" href="/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/" title="MySQL同步ES的6种方式">MySQL同步ES的6种方式</a><time datetime="2024-12-21T10:23:04.000Z" title="发表于 2024-12-21 18:23:04">2024-12-21</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2025  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: '6ea67b532b6c13e894ea346854c97efc',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>
