@@ -3,11 +3,11 @@
   <title>余思博客</title>
   
   
-  <link href="http://envyzhan.asia/atom.xml" rel="self"/>
+  <link href="http://aigoing.chat/atom.xml" rel="self"/>
   
-  <link href="http://envyzhan.asia/"/>
+  <link href="http://aigoing.chat/"/>
   <updated>2025-06-02T13:53:06.824Z</updated>
-  <id>http://envyzhan.asia/</id>
+  <id>http://aigoing.chat/</id>
   
   <author>
     <name>余思</name>
@@ -18,8 +18,8 @@
   
   <entry>
     <title>SpringBoot+MCP实现本地工具调用实战</title>
-    <link href="http://envyzhan.asia/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/"/>
-    <id>http://envyzhan.asia/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/</id>
+    <link href="http://aigoing.chat/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/"/>
+    <id>http://aigoing.chat/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/</id>
     <published>2025-04-06T10:03:01.000Z</published>
     <updated>2025-06-02T13:53:06.824Z</updated>
     
@@ -34,17 +34,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊最近很火的MCP协议</title>
-    <link href="http://envyzhan.asia/2025/03/01/2025-3-let&#39;s-talk-about-the-recently-popular-MCP-protocol/"/>
-    <id>http://envyzhan.asia/2025/03/01/2025-3-let&#39;s-talk-about-the-recently-popular-MCP-protocol/</id>
+    <link href="http://aigoing.chat/2025/03/01/2025-3-let&#39;s-talk-about-the-recently-popular-MCP-protocol/"/>
+    <id>http://aigoing.chat/2025/03/01/2025-3-let&#39;s-talk-about-the-recently-popular-MCP-protocol/</id>
     <published>2025-03-01T11:05:08.000Z</published>
     <updated>2025-06-02T13:50:06.832Z</updated>
     
@@ -58,17 +58,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>如何在本地搭建LLM并使用</title>
-    <link href="http://envyzhan.asia/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/"/>
-    <id>http://envyzhan.asia/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/</id>
+    <link href="http://aigoing.chat/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/"/>
+    <id>http://aigoing.chat/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/</id>
     <published>2025-02-23T09:03:01.000Z</published>
     <updated>2025-06-02T13:38:45.943Z</updated>
     
@@ -82,17 +82,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊常用的3种实时技术</title>
-    <link href="http://envyzhan.asia/2025/01/11/2025-1-let&#39;s-talk-about-three-commonly-used-real-time-technologies/"/>
-    <id>http://envyzhan.asia/2025/01/11/2025-1-let&#39;s-talk-about-three-commonly-used-real-time-technologies/</id>
+    <link href="http://aigoing.chat/2025/01/11/2025-1-let&#39;s-talk-about-three-commonly-used-real-time-technologies/"/>
+    <id>http://aigoing.chat/2025/01/11/2025-1-let&#39;s-talk-about-three-commonly-used-real-time-technologies/</id>
     <published>2025-01-11T10:03:01.000Z</published>
     <updated>2025-06-02T13:32:51.761Z</updated>
     
@@ -106,17 +106,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>MySQL同步ES的6种方式</title>
-    <link href="http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/"/>
-    <id>http://envyzhan.asia/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/</id>
+    <link href="http://aigoing.chat/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/"/>
+    <id>http://aigoing.chat/2024/12/21/2024-11-6-ways-to-synchronize-es-with-mysql/</id>
     <published>2024-12-21T10:23:04.000Z</published>
     <updated>2025-06-02T13:19:54.916Z</updated>
     
@@ -130,17 +130,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>SQL调优常用的10种方式</title>
-    <link href="http://envyzhan.asia/2024/11/09/2024-12-10-common-ways-to-optimize-sql/"/>
-    <id>http://envyzhan.asia/2024/11/09/2024-12-10-common-ways-to-optimize-sql/</id>
+    <link href="http://aigoing.chat/2024/11/09/2024-12-10-common-ways-to-optimize-sql/"/>
+    <id>http://aigoing.chat/2024/11/09/2024-12-10-common-ways-to-optimize-sql/</id>
     <published>2024-11-09T07:23:04.000Z</published>
     <updated>2025-06-02T13:19:38.034Z</updated>
     
@@ -155,17 +155,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>多租户架构设计与实践</title>
-    <link href="http://envyzhan.asia/2024/04/27/2024-6-mult-tenant-architecture-design-and-practice/"/>
-    <id>http://envyzhan.asia/2024/04/27/2024-6-mult-tenant-architecture-design-and-practice/</id>
+    <link href="http://aigoing.chat/2024/04/27/2024-6-mult-tenant-architecture-design-and-practice/"/>
+    <id>http://aigoing.chat/2024/04/27/2024-6-mult-tenant-architecture-design-and-practice/</id>
     <published>2024-04-27T11:55:30.000Z</published>
     <updated>2024-05-23T12:40:14.345Z</updated>
     
@@ -179,17 +179,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>详解MySQL中的JSON数据类型</title>
-    <link href="http://envyzhan.asia/2024/03/23/2024-3-detailed-explanation-of-json-data-types-in-mysql/"/>
-    <id>http://envyzhan.asia/2024/03/23/2024-3-detailed-explanation-of-json-data-types-in-mysql/</id>
+    <link href="http://aigoing.chat/2024/03/23/2024-3-detailed-explanation-of-json-data-types-in-mysql/"/>
+    <id>http://aigoing.chat/2024/03/23/2024-3-detailed-explanation-of-json-data-types-in-mysql/</id>
     <published>2024-03-23T10:55:30.000Z</published>
     <updated>2024-05-22T14:17:58.831Z</updated>
     
@@ -204,17 +204,17 @@
     
     
     
-    <category term="mysql" scheme="http://envyzhan.asia/categories/mysql/"/>
+    <category term="mysql" scheme="http://aigoing.chat/categories/mysql/"/>
     
     
-    <category term="mysql" scheme="http://envyzhan.asia/tags/mysql/"/>
+    <category term="mysql" scheme="http://aigoing.chat/tags/mysql/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊六种常用的属性配置读取方式</title>
-    <link href="http://envyzhan.asia/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/"/>
-    <id>http://envyzhan.asia/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/</id>
+    <link href="http://aigoing.chat/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/"/>
+    <id>http://aigoing.chat/2024/03/02/2024-2-six-common-configuration-methods-for-reading-properties/</id>
     <published>2024-03-02T02:55:30.000Z</published>
     <updated>2024-05-22T14:01:34.087Z</updated>
     
@@ -228,17 +228,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊九种常用的分布式ID生成方案</title>
-    <link href="http://envyzhan.asia/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/"/>
-    <id>http://envyzhan.asia/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/</id>
+    <link href="http://aigoing.chat/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/"/>
+    <id>http://aigoing.chat/2024/02/03/2024-1-nine-commonly-used-distributed-id-generation-schemes/</id>
     <published>2024-02-03T06:55:27.000Z</published>
     <updated>2024-05-22T14:13:22.559Z</updated>
     
@@ -253,17 +253,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>巧用分页列表缓存，快速响应用户请求</title>
-    <link href="http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/"/>
-    <id>http://envyzhan.asia/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/</id>
+    <link href="http://aigoing.chat/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/"/>
+    <id>http://aigoing.chat/2023/05/28/2023-104-cleverly-using-paginated-list-caching-to-quickly-respond-to-user-requests/</id>
     <published>2023-05-28T08:55:30.000Z</published>
     <updated>2023-06-09T13:52:42.881Z</updated>
     
@@ -277,17 +277,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>基于请求参数校验的接口幂等性实现方案</title>
-    <link href="http://envyzhan.asia/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/"/>
-    <id>http://envyzhan.asia/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/</id>
+    <link href="http://aigoing.chat/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/"/>
+    <id>http://aigoing.chat/2023/05/10/2023-103-implementation-of-interface-idempotency-verification-based-on-reqParam/</id>
     <published>2023-05-10T02:55:30.000Z</published>
     <updated>2023-06-09T13:50:03.923Z</updated>
     
@@ -301,17 +301,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>Redis各种数据类型巧用</title>
-    <link href="http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/"/>
-    <id>http://envyzhan.asia/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/</id>
+    <link href="http://aigoing.chat/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/"/>
+    <id>http://aigoing.chat/2023/04/20/2023-102-redis-skillfully-uses-various-data-types/</id>
     <published>2023-04-20T02:55:30.000Z</published>
     <updated>2023-06-09T13:17:06.537Z</updated>
     
@@ -325,17 +325,17 @@
     
     
     
-    <category term="redis" scheme="http://envyzhan.asia/categories/redis/"/>
+    <category term="redis" scheme="http://aigoing.chat/categories/redis/"/>
     
     
-    <category term="redis" scheme="http://envyzhan.asia/tags/redis/"/>
+    <category term="redis" scheme="http://aigoing.chat/tags/redis/"/>
     
   </entry>
   
   <entry>
     <title>聊一聊Redis中的布隆过滤器</title>
-    <link href="http://envyzhan.asia/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/"/>
-    <id>http://envyzhan.asia/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/</id>
+    <link href="http://aigoing.chat/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/"/>
+    <id>http://aigoing.chat/2023/04/06/2023-101-talk-about-the-bloom-filter-in-redis/</id>
     <published>2023-04-06T11:55:30.000Z</published>
     <updated>2023-06-09T13:12:18.905Z</updated>
     
@@ -349,17 +349,17 @@
     
     
     
-    <category term="redis" scheme="http://envyzhan.asia/categories/redis/"/>
+    <category term="redis" scheme="http://aigoing.chat/categories/redis/"/>
     
     
-    <category term="redis" scheme="http://envyzhan.asia/tags/redis/"/>
+    <category term="redis" scheme="http://aigoing.chat/tags/redis/"/>
     
   </entry>
   
   <entry>
     <title>功能开关在业务中的实践</title>
-    <link href="http://envyzhan.asia/2023/03/01/2023-100-practice-of-function-switch-in-business/"/>
-    <id>http://envyzhan.asia/2023/03/01/2023-100-practice-of-function-switch-in-business/</id>
+    <link href="http://aigoing.chat/2023/03/01/2023-100-practice-of-function-switch-in-business/"/>
+    <id>http://aigoing.chat/2023/03/01/2023-100-practice-of-function-switch-in-business/</id>
     <published>2023-03-01T09:55:30.000Z</published>
     <updated>2023-03-14T07:11:51.321Z</updated>
     
@@ -373,17 +373,17 @@
     
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/categories/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/categories/springboot/"/>
     
     
-    <category term="springboot" scheme="http://envyzhan.asia/tags/springboot/"/>
+    <category term="springboot" scheme="http://aigoing.chat/tags/springboot/"/>
     
   </entry>
   
   <entry>
     <title>使用Jenkins+Gitlab一键打包部署SpringBoot应用</title>
-    <link href="http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/"/>
-    <id>http://envyzhan.asia/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/</id>
+    <link href="http://aigoing.chat/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/"/>
+    <id>http://aigoing.chat/2023/02/26/2023-12-use-jenkins-gitlab-to-package-and-deploy-the-springboot-application/</id>
     <published>2023-02-26T14:55:30.000Z</published>
     <updated>2023-03-14T06:52:35.720Z</updated>
     
@@ -397,17 +397,17 @@
     
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/tags/SpringBoot/"/>
     
   </entry>
   
   <entry>
     <title>使用Docker Compose部署SpringBoot应用</title>
-    <link href="http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/"/>
-    <id>http://envyzhan.asia/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/</id>
+    <link href="http://aigoing.chat/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/"/>
+    <id>http://aigoing.chat/2023/02/24/2023-11-use-docker-compose-to-deploy-springboot-application/</id>
     <published>2023-02-24T02:55:30.000Z</published>
     <updated>2023-03-14T06:50:53.575Z</updated>
     
@@ -421,17 +421,17 @@
     
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/tags/SpringBoot/"/>
     
   </entry>
   
   <entry>
     <title>使用Dockerfile为SpringBoot应用构建Docker镜像</title>
-    <link href="http://envyzhan.asia/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/"/>
-    <id>http://envyzhan.asia/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/</id>
+    <link href="http://aigoing.chat/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/"/>
+    <id>http://aigoing.chat/2023/02/23/2023-10-use-dockerfil-to-build-docker-image-for-springboot-application/</id>
     <published>2023-02-23T10:15:33.000Z</published>
     <updated>2023-03-14T06:49:25.488Z</updated>
     
@@ -445,17 +445,17 @@
     
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/tags/SpringBoot/"/>
     
   </entry>
   
   <entry>
     <title>使用Maven插件为SpringBoot应用构建Docker镜像</title>
-    <link href="http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/"/>
-    <id>http://envyzhan.asia/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/</id>
+    <link href="http://aigoing.chat/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/"/>
+    <id>http://aigoing.chat/2023/02/20/2023-9-use-maven-plug-in-to-build-docker-image-for-springboot-application/</id>
     <published>2023-02-20T03:51:30.000Z</published>
     <updated>2023-03-14T06:47:18.708Z</updated>
     
@@ -469,17 +469,17 @@
     
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/tags/SpringBoot/"/>
     
   </entry>
   
   <entry>
     <title>整合RabbitMQ实现延迟消息</title>
-    <link href="http://envyzhan.asia/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/"/>
-    <id>http://envyzhan.asia/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/</id>
+    <link href="http://aigoing.chat/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/"/>
+    <id>http://aigoing.chat/2023/02/16/2023-8-integrate-rabbitmq-to-realize-delayed-messages/</id>
     <published>2023-02-16T02:51:12.000Z</published>
     <updated>2023-03-14T06:45:40.710Z</updated>
     
@@ -494,10 +494,10 @@
     
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/categories/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/categories/SpringBoot/"/>
     
     
-    <category term="SpringBoot" scheme="http://envyzhan.asia/tags/SpringBoot/"/>
+    <category term="SpringBoot" scheme="http://aigoing.chat/tags/SpringBoot/"/>
     
   </entry>
   
