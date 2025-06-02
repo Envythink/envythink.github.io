@@ -300,8 +300,8 @@ http://aigoing.chat/tags/redis/
 http://aigoing.chat/tags/dart/
 http://aigoing.chat/tags/cicd/
 http://aigoing.chat/tags/docker/
-http://aigoing.chat/tags/elasticsearch/
 http://aigoing.chat/tags/hadoop/
+http://aigoing.chat/tags/elasticsearch/
 http://aigoing.chat/tags/nginx/
 http://aigoing.chat/tags/OAuth2/
 http://aigoing.chat/tags/shiro/
@@ -318,8 +318,8 @@ http://aigoing.chat/categories/redis/
 http://aigoing.chat/categories/dart/
 http://aigoing.chat/categories/devops/
 http://aigoing.chat/categories/docker/
-http://aigoing.chat/categories/elasticsearch/
 http://aigoing.chat/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/
+http://aigoing.chat/categories/elasticsearch/
 http://aigoing.chat/categories/java/
 http://aigoing.chat/categories/nginx/
 http://aigoing.chat/categories/OAuth2/

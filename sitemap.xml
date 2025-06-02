@@ -2698,14 +2698,14 @@
   </url>
   
   <url>
-    <loc>http://aigoing.chat/tags/elasticsearch/</loc>
+    <loc>http://aigoing.chat/tags/hadoop/</loc>
     <lastmod>2025-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://aigoing.chat/tags/hadoop/</loc>
+    <loc>http://aigoing.chat/tags/elasticsearch/</loc>
     <lastmod>2025-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
@@ -2826,14 +2826,14 @@
   </url>
   
   <url>
-    <loc>http://aigoing.chat/categories/elasticsearch/</loc>
+    <loc>http://aigoing.chat/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
     <lastmod>2025-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
-    <loc>http://aigoing.chat/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
+    <loc>http://aigoing.chat/categories/elasticsearch/</loc>
     <lastmod>2025-06-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
