@@ -1,3 +1,4 @@
+http://aigoing.chat/2024/01/02/2024-0-what-is-architecture-and-architect/
 http://aigoing.chat/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/
 http://aigoing.chat/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/
 http://aigoing.chat/2025/02/23/2025-2-how-to-set-up-LLM-locally-and-use-it/
