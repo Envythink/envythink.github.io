@@ -1,3 +1,4 @@
+http://aigoing.chat/about/index.html
 http://aigoing.chat/2024/01/02/2024-0-what-is-architecture-and-architect/
 http://aigoing.chat/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/
 http://aigoing.chat/2025/03/01/2025-3-let's-talk-about-the-recently-popular-MCP-protocol/
@@ -51,7 +52,6 @@ http://aigoing.chat/2022/03/14/2-springboot-configuring-multiple-data-sources/
 http://aigoing.chat/categories/flutter/index.html
 http://aigoing.chat/categories/other/index.html
 http://aigoing.chat/2022/03/11/1-druid-database-connection-pool-experience/
-http://aigoing.chat/about/index.html
 http://aigoing.chat/2020/08/10/nginx-14-ssl-configuration-and-pan-domain-name-and-static-service/
 http://aigoing.chat/2020/08/08/nginx-13-nginx-running-state-and-nginx-web-ui/
 http://aigoing.chat/2020/08/05/nginx-12-file-access-control-and-structure-optimization-and-mobile-adaptation/
