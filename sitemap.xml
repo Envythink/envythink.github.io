@@ -2,9 +2,81 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
-    <loc>http://aichating.xyz/2025/05/04/2025-5-Introduction%20to%20Milvus%20and%20Its%20Installation/</loc>
+    <loc>http://aichating.xyz/2025/11/01/2025-19-Introduction%20to%20Milvus%20and%20Its%20Installation/</loc>
     
-    <lastmod>2025-11-09</lastmod>
+    <lastmod>2025-11-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/10/25/2025-18-lang-chain-4j-9-vector-store/</loc>
+    
+    <lastmod>2025-10-26</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/10/11/2025-17-lang-chain-4j-8-vector-model/</loc>
+    
+    <lastmod>2025-10-12</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/09/28/2025-16-lang-chain-4j-7-function-calling/</loc>
+    
+    <lastmod>2025-09-28</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/09/13/2025-15-lang-chain-4j-6-rag/</loc>
+    
+    <lastmod>2025-09-14</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/08/31/2025-14-lang-chain-4j-5-prompts/</loc>
+    
+    <lastmod>2025-08-31</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/08/10/2025-13-lang-chain-4j-4-chat-memory-persistence/</loc>
+    
+    <lastmod>2025-08-10</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/07/27/2025-12-lang-chain-4j-3-chat-memory/</loc>
+    
+    <lastmod>2025-07-27</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/07/19/2025-11-lang-chain-4j-2-model-integrate/</loc>
+    
+    <lastmod>2025-07-19</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -20,9 +92,27 @@
   </url>
   
   <url>
+    <loc>http://aichating.xyz/2025/07/05/2025-10-lang-chain-4j-1-qucik-start/</loc>
+    
+    <lastmod>2025-07-06</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://aichating.xyz/2024/01/02/2024-0-what-is-architecture-and-architect/</loc>
     
     <lastmod>2025-06-03</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/06/02/2025-9-spring-ai-5-chat-model-API/</loc>
+    
+    <lastmod>2025-06-02</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>
@@ -77,6 +167,42 @@
     <loc>http://aichating.xyz/2024/11/09/2024-12-10-common-ways-to-optimize-sql/</loc>
     
     <lastmod>2025-06-02</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/05/24/2025-8-spring-ai-4-advisors-API/</loc>
+    
+    <lastmod>2025-05-24</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/05/18/2025-7-spring-ai-3-chat-client-API/</loc>
+    
+    <lastmod>2025-05-18</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/05/10/2025-6-spring-ai-2-quick-start/</loc>
+    
+    <lastmod>2025-05-11</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
+    <loc>http://aichating.xyz/2025/05/04/2025-5-spring-ai-1-core-concepts/</loc>
+    
+    <lastmod>2025-05-04</lastmod>
     
     <changefreq>monthly</changefreq>
     <priority>0.6</priority>

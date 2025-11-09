@@ -1,0 +1,270 @@
+<!DOCTYPE html><html lang="zh-CN" data-theme="light"><head><meta charset="UTF-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"><title>SpringAi学习之核心概念 | 余思博客</title><meta name="keywords" content="springboot"><meta name="author" content="余思"><meta name="copyright" content="余思"><meta name="format-detection" content="telephone=no"><meta name="theme-color" content="#ffffff"><meta name="description" content="写在前面本篇开始我们进入Spring Ai的学习，建议多浏览 官方文档，加深印象，使用的Spring Ai版本为1.0.0. 模型(Models)人工智能模型是设计用来处理和生成信息的算法，通常模仿人类的认知功能。通过从大型数据集中学习模式和洞察力，这些模型可以做出预测，生成文本、图像或其他输出，增强各行各业的各种应用。 有许多不同类型的人工智能模型，每种都适合特定的用例。虽然 ChatGPT 及">
+<meta property="og:type" content="article">
+<meta property="og:title" content="SpringAi学习之核心概念">
+<meta property="og:url" content="http://aichating.xyz/2025/05/04/2025-5-spring-ai-1-core-concepts/index.html">
+<meta property="og:site_name" content="余思博客">
+<meta property="og:description" content="写在前面本篇开始我们进入Spring Ai的学习，建议多浏览 官方文档，加深印象，使用的Spring Ai版本为1.0.0. 模型(Models)人工智能模型是设计用来处理和生成信息的算法，通常模仿人类的认知功能。通过从大型数据集中学习模式和洞察力，这些模型可以做出预测，生成文本、图像或其他输出，增强各行各业的各种应用。 有许多不同类型的人工智能模型，每种都适合特定的用例。虽然 ChatGPT 及">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png">
+<meta property="article:published_time" content="2025-05-04T06:01:20.000Z">
+<meta property="article:modified_time" content="2025-05-04T14:31:22.000Z">
+<meta property="article:author" content="余思">
+<meta property="article:tag" content="springboot">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png"><link rel="shortcut icon" href="/img/favicon.ico"><link rel="canonical" href="http://aichating.xyz/2025/05/04/2025-5-spring-ai-1-core-concepts/"><link rel="preconnect" href="//cdn.jsdelivr.net"/><link rel="stylesheet" href="/css/index.css"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free/css/all.min.css" media="print" onload="this.media='all'"><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.min.css" media="print" onload="this.media='all'"><script>const GLOBAL_CONFIG = { 
+  root: '/',
+  algolia: undefined,
+  localSearch: undefined,
+  translate: undefined,
+  noticeOutdate: undefined,
+  highlight: {"plugin":"highlighjs","highlightCopy":true,"highlightLang":true,"highlightHeightLimit":false},
+  copy: {
+    success: '复制成功',
+    error: '复制错误',
+    noSupport: '浏览器不支持'
+  },
+  relativeDate: {
+    homepage: false,
+    post: false
+  },
+  runtime: '',
+  date_suffix: {
+    just: '刚刚',
+    min: '分钟前',
+    hour: '小时前',
+    day: '天前',
+    month: '个月前'
+  },
+  copyright: undefined,
+  lightbox: 'fancybox',
+  Snackbar: undefined,
+  source: {
+    justifiedGallery: {
+      js: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.js',
+      css: 'https://cdn.jsdelivr.net/npm/flickr-justified-gallery/dist/fjGallery.min.css'
+    }
+  },
+  isPhotoFigcaption: false,
+  islazyload: false,
+  isAnchor: false
+}</script><script id="config-diff">var GLOBAL_CONFIG_SITE = {
+  title: 'SpringAi学习之核心概念',
+  isPost: true,
+  isHome: false,
+  isHighlightShrink: false,
+  isToc: true,
+  postUpdate: '2025-05-04 22:31:22'
+}</script><noscript><style type="text/css">
+  #nav {
+    opacity: 1
+  }
+  .justified-gallery img {
+    opacity: 1
+  }
+
+  #recent-posts time,
+  #post-meta time {
+    display: inline !important
+  }
+</style></noscript><script>(win=>{
+    win.saveToLocal = {
+      set: function setWithExpiry(key, value, ttl) {
+        if (ttl === 0) return
+        const now = new Date()
+        const expiryDay = ttl * 86400000
+        const item = {
+          value: value,
+          expiry: now.getTime() + expiryDay,
+        }
+        localStorage.setItem(key, JSON.stringify(item))
+      },
+
+      get: function getWithExpiry(key) {
+        const itemStr = localStorage.getItem(key)
+
+        if (!itemStr) {
+          return undefined
+        }
+        const item = JSON.parse(itemStr)
+        const now = new Date()
+
+        if (now.getTime() > item.expiry) {
+          localStorage.removeItem(key)
+          return undefined
+        }
+        return item.value
+      }
+    }
+  
+    win.getScript = url => new Promise((resolve, reject) => {
+      const script = document.createElement('script')
+      script.src = url
+      script.async = true
+      script.onerror = reject
+      script.onload = script.onreadystatechange = function() {
+        const loadState = this.readyState
+        if (loadState && loadState !== 'loaded' && loadState !== 'complete') return
+        script.onload = script.onreadystatechange = null
+        resolve()
+      }
+      document.head.appendChild(script)
+    })
+  
+      win.activateDarkMode = function () {
+        document.documentElement.setAttribute('data-theme', 'dark')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#0d0d0d')
+        }
+      }
+      win.activateLightMode = function () {
+        document.documentElement.setAttribute('data-theme', 'light')
+        if (document.querySelector('meta[name="theme-color"]') !== null) {
+          document.querySelector('meta[name="theme-color"]').setAttribute('content', '#ffffff')
+        }
+      }
+      const t = saveToLocal.get('theme')
+    
+          if (t === 'dark') activateDarkMode()
+          else if (t === 'light') activateLightMode()
+        
+      const asideStatus = saveToLocal.get('aside-status')
+      if (asideStatus !== undefined) {
+        if (asideStatus === 'hide') {
+          document.documentElement.classList.add('hide-aside')
+        } else {
+          document.documentElement.classList.remove('hide-aside')
+        }
+      }
+    
+    const detectApple = () => {
+      if(/iPad|iPhone|iPod|Macintosh/.test(navigator.userAgent)){
+        document.documentElement.classList.add('apple')
+      }
+    }
+    detectApple()
+    })(window)</script><meta name="generator" content="Hexo 5.4.2"><link rel="alternate" href="/atom.xml" title="余思博客" type="application/atom+xml">
+</head><body><div id="sidebar"><div id="menu-mask"></div><div id="sidebar-menus"><div class="avatar-img is-center"><img src="/img/avatar.jpg" onerror="onerror=null;src='/img/friend_404.gif'" alt="avatar"/></div><div class="sidebar-site-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">279</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><hr/><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div></div></div><div class="post" id="body-wrap"><header class="post-bg" id="page-header" style="background-image: url('https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png')"><nav id="nav"><span id="blog_name"><a id="site-name" href="/">余思博客</a></span><div id="menus"><div class="menus_items"><div class="menus_item"><a class="site-page" href="/"><i class="fa-fw fa fa-home"></i><span> 首页</span></a></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 前端</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/html/"><i class="fa-fw fa fa-cog"></i><span> HTML/CSS</span></a></li><li><a class="site-page child" href="/categories/javascript/"><i class="fa-fw fa fa-cogs"></i><span> JavaScript</span></a></li><li><a class="site-page child" href="/categories/vuejs/"><i class="fa-fw fa fa-certificate"></i><span> Vue.js</span></a></li><li><a class="site-page child" href="/categories/flutter/"><i class="fa-fw fa fa-bullseye"></i><span> Flutter</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> Java</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/java/"><i class="fa-fw fa fa-book"></i><span> Java</span></a></li><li><a class="site-page child" href="/categories/ssm/"><i class="fa-fw fa fa-cube"></i><span> SSM</span></a></li><li><a class="site-page child" href="/categories/springboot/"><i class="fa-fw fa fa-cubes"></i><span> SpringBoot</span></a></li><li><a class="site-page child" href="/categories/springcloud/"><i class="fa-fw fa fa-cloud"></i><span> SpringCloud</span></a></li><li><a class="site-page child" href="/categories/springsecurity/"><i class="fa-fw fa fa-bullseye"></i><span> SpringSecurity</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 运维</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/pythonbase/"><i class="fa-fw fa fa-book"></i><span> Python</span></a></li><li><a class="site-page child" href="/categories/go/"><i class="fa-fw fa fa-google-plus"></i><span> Golang</span></a></li><li><a class="site-page child" href="/categories/devops/"><i class="fa-fw fa fa-road"></i><span> DevOps</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-list"></i><span> 中间件</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/mysql/"><i class="fa-fw fa fa-database"></i><span> MySQL</span></a></li><li><a class="site-page child" href="/categories/redis/"><i class="fa-fw fa fa-random"></i><span> Redis</span></a></li><li><a class="site-page child" href="/categories/other/"><i class="fa-fw fa fa-location-arrow"></i><span> 其他</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-bell"></i><span> 其他</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/datastructs/"><i class="fa-fw fa fa-plug"></i><span> 算法结构</span></a></li><li><a class="site-page child" href="/categories/tools/"><i class="fa-fw fa fa-hourglass"></i><span> 实用工具</span></a></li></ul></div><div class="menus_item"><a class="site-page group" href="javascript:void(0);"><i class="fa-fw fa fa-address-book"></i><span> 生活</span><i class="fas fa-chevron-down"></i></a><ul class="menus_item_child"><li><a class="site-page child" href="/categories/onenote/"><i class="fa-fw fa fa-laptop"></i><span> 个人随笔</span></a></li></ul></div><div class="menus_item"><a class="site-page" href="/comment/"><i class="fa-fw fa fa-comment"></i><span> 留言</span></a></div><div class="menus_item"><a class="site-page" href="/archives/"><i class="fa-fw fa fa-archive"></i><span> 时间轴</span></a></div><div class="menus_item"><a class="site-page" href="/categories/"><i class="fa-fw fa fa-folder-open"></i><span> 分类</span></a></div><div class="menus_item"><a class="site-page" href="/about/"><i class="fa-fw fa fa-heart"></i><span> 关于</span></a></div></div><div id="toggle-menu"><a class="site-page"><i class="fas fa-bars fa-fw"></i></a></div></div></nav><div id="post-info"><h1 class="post-title">SpringAi学习之核心概念</h1><div id="post-meta"><div class="meta-firstline"><span class="post-meta-date"><i class="far fa-calendar-alt fa-fw post-meta-icon"></i><span class="post-meta-label">发表于</span><time class="post-meta-date-created" datetime="2025-05-04T06:01:20.000Z" title="发表于 2025-05-04 14:01:20">2025-05-04</time><span class="post-meta-separator">|</span><i class="fas fa-history fa-fw post-meta-icon"></i><span class="post-meta-label">更新于</span><time class="post-meta-date-updated" datetime="2025-05-04T14:31:22.000Z" title="更新于 2025-05-04 22:31:22">2025-05-04</time></span><span class="post-meta-categories"><span class="post-meta-separator">|</span><i class="fas fa-inbox fa-fw post-meta-icon"></i><a class="post-meta-categories" href="/categories/springboot/">springboot</a></span></div><div class="meta-secondline"></div></div></div></header><main class="layout" id="content-inner"><div id="post"><article class="post-content" id="article-container"><h1 id="写在前面"><a href="#写在前面" class="headerlink" title="写在前面"></a>写在前面</h1><p>本篇开始我们进入Spring Ai的学习，建议多浏览 <a target="_blank" rel="noopener" href="https://docs.spring.io/spring-ai/reference/concepts.html">官方文档</a>，加深印象，使用的Spring Ai版本为1.0.0.</p>
+<h1 id="模型-Models"><a href="#模型-Models" class="headerlink" title="模型(Models)"></a>模型(Models)</h1><p>人工智能模型是设计用来处理和生成信息的算法，通常模仿人类的认知功能。通过从大型数据集中学习模式和洞察力，这些模型可以做出预测，生成文本、图像或其他输出，增强各行各业的各种应用。</p>
+<p>有许多不同类型的人工智能模型，每种都适合特定的用例。虽然 ChatGPT 及其生成式人工智能能力通过文本输入和输出吸引了用户，但许多模型和公司提供了多样化的输入和输出方式。在ChatGPT出现之前，很多人就对Midjourney和Stable Diffusion等文本到图像生成模型很感兴趣。</p>
+<p>下表根据输入和输出类型对几个模型进行了分类：</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762569546858-f5ab11e6-d7a7-4a1d-889a-c5479ff313ed.png"></p>
+<p>Spring AI目前支持处理语言、图像和音频作为输入和输出的模型。表中最后一行接受文本作为输入并输出数字，这通常被称为文本嵌入，代表了AI模型中使用的内部数据结构。Spring AI支持嵌入功能，以实现更高级的用例。</p>
+<p>像GPT这类模型的独特之处在于其预训练特性，正如GPT（即生成式预训练Transformer）中的“P”所表明的那样。这种预训练特性将人工智能转变为一种通用的开发工具，无需使用者具备深厚的机器学习或模型训练背景。</p>
+<h1 id="提示-Prompts"><a href="#提示-Prompts" class="headerlink" title="提示(Prompts)"></a>提示(Prompts)</h1><h2 id="提示词介绍"><a href="#提示词介绍" class="headerlink" title="提示词介绍"></a>提示词介绍</h2><p>提示词是基于语言的输入基础，用于引导人工智能模型生成特定输出。对于熟悉ChatGPT的人来说，提示词可能看起来仅仅是输入到对话框中并发送给应用程序接口的文本。然而，它所包含的远不止这些。在许多人工智能模型中，提示词的文本并非只是一个简单的字符串。</p>
+<p>ChatGPT的API在一个提示词中包含多个文本输入，每个文本输入都被分配了一个角色。例如，有系统角色，它告诉模型应该如何表现，并为交互设定上下文。还有用户角色，这通常是用户的输入。</p>
+<p>撰写有效的提示词既是一门艺术，也是一门科学。ChatGPT 旨在用于人类对话。这与使用 SQL 来“提问”大相径庭。人们必须像与另一个人交谈一样与人工智能模型交流。</p>
+<p>这种交互方式极为重要，以至于“提示词工程”这一术语已发展成为一门独立学科。目前已有越来越多的技术可提高提示词的有效性。花时间精心设计提示词能显著改善输出结果。</p>
+<p>分享提示词已经成为一种常见做法，学术界也在积极研究这一课题。要创建一个有效的提示词，其背后的逻辑可能与直觉相悖（比如与SQL形成对比），最近的一篇研究论文就说明了这一点。该论文发现，最有效的提示词之一是以“深吸一口气，一步一步来解决这个问题”这句话开头的。这应该能让你明白语言为何如此重要。我们目前还不完全清楚如何最有效地利用这类技术的早期版本（如ChatGPT 3.5），更不用说那些正在开发的新版本了。</p>
+<h2 id="提示词模板"><a href="#提示词模板" class="headerlink" title="提示词模板"></a>提示词模板</h2><p>创建有效的提示词需要确定请求的上下文，并将请求的部分内容替换为特定于用户输入的值。这个过程使用传统的基于文本的模板引擎来创建和管理提示。Spring AI 使用 OSS库StringTemplate来实现这一目的。</p>
+<p>例如，考虑一个简单的提示模板：</p>
+<blockquote>
+<p>告诉我一个关于 {content} 的 {adjective} 笑话。</p>
+</blockquote>
+<p>在Spring AI中，提示模板可以比作Spring MVC架构中的“视图”。会提供一个模型对象（通常是一个<code>java.util.Map</code>）来填充模板中的占位符。“渲染后的”字符串会成为提供给AI模型的提示内容。</p>
+<p><font style="color:rgb(25, 30, 30);"></font></p>
+<p>发送给模型的提示词在具体数据格式上存在很大差异。提示词最初只是简单的字符串，后来逐渐发展为包含多条信息，其中每条信息中的每个字符串都代表着模型的一个不同角色。</p>
+<h1 id="嵌入-Embeddings"><a href="#嵌入-Embeddings" class="headerlink" title="嵌入(Embeddings)"></a>嵌入(Embeddings)</h1><p>嵌入是文本、图像或视频的数值表示，能够捕捉输入之间的关系。</p>
+<p>嵌入的工作原理是将文本、图像和视频转换为浮点数数组，称为向量。这些向量旨在捕捉文本、图像和视频的含义。嵌入数组的长度称为向量的维度。</p>
+<p>通过计算两段文本的向量表示之间的数值距离，应用程序可以确定用于生成嵌入向量的对象之间的相似度。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762570291048-9c485764-403e-46d7-af00-74bea7088bfb.png"></p>
+<p>作为一名探索人工智能的Java开发者，没有必要去理解这些向量表示背后复杂的数学理论或具体实现。只需对它们在人工智能系统中的作用和功能有基本了解即可，尤其是在将人工智能功能集成到你的应用程序中时。</p>
+<p>嵌入在检索增强生成（RAG）模式等实际应用中尤为重要。它们能够将数据表示为语义空间中的点，这类似于欧几里得几何中的二维空间，但维度更高。这意味着，就像欧几里得几何中平面上的点会根据其坐标而有近有远一样，在语义空间中，点的接近程度反映了含义的相似性。关于相似主题的句子在这个多维空间中位置更接近，就像图表上彼此靠近的点一样。这种接近性有助于完成文本分类、语义搜索甚至产品推荐等任务，因为它使人工智能能够根据相关概念在这个扩展的语义图景中的“位置”来识别并归类这些概念。</p>
+<p>你可以将这个语义空间视为一个向量。</p>
+<h1 id="令牌-Tokens"><a href="#令牌-Tokens" class="headerlink" title="令牌(Tokens)"></a>令牌(Tokens)</h1><p>令牌是人工智能模型工作方式的基本组成部分。在输入时，模型将词语转换为令牌；在输出时，它们将令牌转换回词语。</p>
+<p>在英语中，一个标记大约相当于一个单词的75%。作为参考，莎士比亚的全部作品约有90万字，换算成标记约为120万个。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762570460166-fcc67280-fe08-4d92-b6b8-6fe7f285eb4f.png"></p>
+<p>或许更重要的是，令牌即金钱。在托管人工智能模型的背景下，您的费用由使用的令牌数量决定。输入和输出都会计入总令牌数。</p>
+<p>此外，模型受令牌限制的约束，这会限制单次API调用中处理的文本量。这个阈值通常被称为“上下文窗口”。模型不会处理任何超过此限制的文本。</p>
+<p>例如，ChatGPT3的令牌限制为4K，而GPT4提供多种选择，如8K、16K和32K。Anthropic的Claude AI模型具有10万令牌的限制，Meta最近的研究则推出了100万令牌限制的模型。</p>
+<p>要用GPT4总结莎士比亚的作品集，你需要制定软件工程策略来分割数据，并在模型的上下文窗口限制内呈现这些数据。Spring AI项目可以帮助你完成这项任务。</p>
+<h1 id="结构化输出-Structed-Output"><a href="#结构化输出-Structed-Output" class="headerlink" title="结构化输出(Structed Output)"></a>结构化输出(Structed Output)</h1><p>传统上，人工智能模型的输出是以<code>&lt;font style=&quot;color:rgb(25, 30, 30);&quot;&gt;java.lang.String&lt;/font&gt;</code>形式呈现的，即便你要求回复采用JSON格式。它或许是一个正确的JSON，但并非JSON数据结构，而仅仅是一个字符串。此外，在提示词中要求“输出JSON”也并非100%准确。</p>
+<p>这种复杂性催生了一个专门领域的出现，该领域涉及创建提示词以生成预期输出，随后将生成的简单字符串转换为可用于应用程序集成的数据结构。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762570633290-00c1a91a-8d0a-44d2-a898-47194ecd1171.png"></p>
+<p>结构化输出转换采用精心设计的提示词，通常需要与模型进行多次交互才能实现所需的格式。</p>
+<h1 id="将你的数据和API带给人工智能模型-Bringing-Your-Data-amp-APIs-to-the-AI-Model"><a href="#将你的数据和API带给人工智能模型-Bringing-Your-Data-amp-APIs-to-the-AI-Model" class="headerlink" title="将你的数据和API带给人工智能模型(Bringing Your Data&amp;APIs to the AI Model)"></a>将你的数据和API带给人工智能模型(Bringing Your Data&amp;APIs to the AI Model)</h1><p>如何让人工智能模型掌握它未经过训练的信息？</p>
+<p>请注意，GPT 3.5/4.0的数据集仅更新到2021年9月。因此，对于需要该日期之后知识的问题，模型会表示自己不知道答案。一个有趣的小知识是，这个数据集约为650GB。</p>
+<p><font style="color:rgb(25, 30, 30);"></font></p>
+<p>有三种技术可用于定制AI模型以整合您的数据：</p>
+<ul>
+<li><strong><font style="color:rgb(25, 30, 30);">微调</font></strong><font style="color:rgb(25, 30, 30);">：</font>这种传统的机器学习技术包括调整模型并改变其内部权重。然而，对于机器学习专家来说，这是一个具有挑战性的过程，并且对于像GPT这样的模型，由于其规模，微调极其耗费资源。此外，有些模型可能不提供此选项<font style="color:rgb(25, 30, 30);">。</font></li>
+<li><strong><font style="color:rgb(25, 30, 30);">提示词填充</font></strong><font style="color:rgb(25, 30, 30);">：</font>一种更实用的替代方案是将你的数据嵌入到提供给模型的提示词中。考虑到模型的令牌限制，需要采用一些技术在模型的上下文窗口内呈现相关数据。这种方法通俗地称为“填充提示词”。Spring AI库可帮助你基于“填充提示词”技术（也称为检索增强生成（RAG））实现解决方案。</li>
+</ul>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762570964780-33b87162-9b66-4fc0-90db-fa5d1bdba202.png"></p>
+<ul>
+<li>**<font style="color:rgb(25, 30, 30);">函数调用</font>**：这种技术允许注册自定义用户函数，将大型语言模型连接到外部系统的 API。Spring AI 大大简化了你需要编写的代码，以支持函数调用。</li>
+</ul>
+<h1 id="检索增强生成-Retrieval-Augmented-Generation"><a href="#检索增强生成-Retrieval-Augmented-Generation" class="headerlink" title="检索增强生成(Retrieval Augmented Generation)"></a>检索增强生成(Retrieval Augmented Generation)</h1><p>一种被称为检索增强生成（RAG）的技术应运而生，旨在解决将相关数据整合到提示词中以获得AI模型准确响应这一难题。</p>
+<p>这种方法采用批处理式编程模型，即作业从文档中读取非结构化数据，进行转换，然后写入向量数据库。从宏观层面来看，这是一个ETL（提取、转换和加载）管道。向量数据库用于RAG技术的检索部分。</p>
+<p>在将非结构化数据加载到向量数据库的过程中，最重要的转换之一是将原始文档分割成更小的片段。将原始文档分割成更小片段的过程包含两个重要步骤：</p>
+<ol>
+<li>将文档分割成多个部分，同时保留内容的语义边界。例如，对于包含段落和表格的文档，应避免在段落或表格中间分割文档。对于代码，应避免在方法实现的中间分割代码。</li>
+<li>将文档的各部分进一步拆分成大小仅为AI模型令牌限制很小比例的部分。</li>
+</ol>
+<p>RAG的下一阶段是处理用户输入。当AI模型需要回答用户的问题时，该问题以及所有“相似”的文档片段会被放入发送给AI模型的提示词中。这就是使用向量数据库的原因，它非常擅长找到相似的内容。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762571204658-fe105cbe-90d5-464c-824b-95343c4e94d9.png"></p>
+<ul>
+<li>ETL 管道提供了有关编排从数据源提取数据并将其存储在结构化向量存储中的流程的更多信息，确保数据在传递给 AI 模型时处于最适合检索的格式。</li>
+<li>ChatClient - RAG 解释了如何使用 QuestionAnswerAdvisor 在你的应用程序中启用 RAG 功能。</li>
+</ul>
+<h1 id="函数调用-Function-Calling"><a href="#函数调用-Function-Calling" class="headerlink" title="函数调用(Function Calling)"></a>函数调用(Function Calling)</h1><p>大型语言模型（LLMs）在训练后会被冻结，这导致知识陈旧，而且它们无法访问或修改外部数据。</p>
+<p>函数调用机制解决了这些不足。它允许你注册自己的函数，将大型语言模型连接到外部系统的 API。这些系统可以代表 LLMs 提供实时数据并执行数据处理操作。</p>
+<p>Spring AI 极大地简化了支持工具调用所需编写的代码。它会为你处理工具调用的对话。你可以将工具作为带有<code>&lt;font style=&quot;color:rgb(25, 30, 30);&quot;&gt;@Tool&lt;/font&gt;</code>注解的方法提供，并在提示选项中提供该方法，以便模型可以使用它。此外，你可以在单个提示中定义和引用多个工具。</p>
+<p><img src="https://cdn.nlark.com/yuque/0/2025/png/12555354/1762571416432-cd82a329-1e1b-4061-b324-7a5a47c8a85b.png"></p>
+<ol>
+<li>当我们希望让模型能够使用某个工具时，我们会在聊天请求中包含该工具的定义。每个工具定义都由名称、描述和输入参数的模式组成。</li>
+<li>当模型决定调用工具时，它会发送一个包含工具名称和根据已定义模式建模的输入参数的响应。</li>
+<li>该应用程序负责使用工具名称来识别工具，并利用提供的输入参数执行该工具。</li>
+<li>工具调用的结果由应用程序处理。</li>
+<li>应用程序将工具调用结果发送回模型。</li>
+<li>该模型将工具调用结果作为额外上下文来生成最终响应。</li>
+</ol>
+<p>遵循函数调用文档，以获取如何将此功能与不同人工智能模型一起使用的更多信息。</p>
+<h1 id="评估人工智能响应-Evaluating-AI-responses"><a href="#评估人工智能响应-Evaluating-AI-responses" class="headerlink" title="评估人工智能响应(Evaluating AI responses)"></a>评估人工智能响应(Evaluating AI responses)</h1><p>有效评估人工智能系统针对用户请求所生成的输出，对于确保最终应用的准确性和实用性而言至关重要。一些新兴技术使预训练模型本身能够用于此目的。</p>
+<p>这一评估过程包括分析生成的响应是否与用户意图及查询语境相符。评估人工智能生成响应质量时，会用到相关性、连贯性和事实准确性等指标。</p>
+<p>一种方法是向模型呈现用户的请求和AI模型的响应，询问该响应是否与所提供的数据一致。</p>
+<p>此外，利用向量数据库中存储的信息作为补充数据可以增强评估过程，有助于确定响应的相关性。</p>
+<p>Spring AI项目提供了一个<code>&lt;font style=&quot;color:rgb(25, 30, 30);&quot;&gt;Evaluator&lt;/font&gt;</code>API，目前可用于获取评估模型响应的基本策略。有关更多信息，请参阅评估测试文档。</p>
+</article><div class="post-copyright"><div class="post-copyright__author"><span class="post-copyright-meta">文章作者: </span><span class="post-copyright-info"><a href="http://aichating.xyz">余思</a></span></div><div class="post-copyright__type"><span class="post-copyright-meta">文章链接: </span><span class="post-copyright-info"><a href="http://aichating.xyz/2025/05/04/2025-5-spring-ai-1-core-concepts/">http://aichating.xyz/2025/05/04/2025-5-spring-ai-1-core-concepts/</a></span></div><div class="post-copyright__notice"><span class="post-copyright-meta">版权声明: </span><span class="post-copyright-info">本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" target="_blank">CC BY-NC-SA 4.0</a> 许可协议。转载请注明来自 <a href="http://aichating.xyz" target="_blank">余思博客</a>！</span></div></div><div class="tag_share"><div class="post-meta__tag-list"><a class="post-meta__tags" href="/tags/springboot/">springboot</a></div><div class="post_share"><div class="social-share" data-image="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" data-sites="facebook,twitter,wechat,weibo,qq"></div><link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/css/share.min.css" media="print" onload="this.media='all'"><script src="https://cdn.jsdelivr.net/npm/butterfly-extsrc/sharejs/dist/js/social-share.min.js" defer></script></div></div><nav class="pagination-post" id="pagination"><div class="prev-post pull-left"><a href="/2025/05/10/2025-6-spring-ai-2-quick-start/"><img class="prev-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of previous post"><div class="pagination-info"><div class="label">上一篇</div><div class="prev_info">SpringAi学习之快速入门</div></div></a></div><div class="next-post pull-right"><a href="/2025/04/06/2025-4-practical-implementation-of-local-tool-call-using-springboot-MCP/"><img class="next-cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="onerror=null;src='/img/404.jpg'" alt="cover of next post"><div class="pagination-info"><div class="label">下一篇</div><div class="next_info">SpringBoot+MCP实现本地工具调用实战</div></div></a></div></nav><div class="relatedPosts"><div class="headline"><i class="fas fa-thumbs-up fa-fw"></i><span>相关推荐</span></div><div class="relatedPosts-list"><div><a href="/2022/05/26/11-springboot-implements-timed-tasks/" title="SpringBoot实现定时任务"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-26</div><div class="title">SpringBoot实现定时任务</div></div></a></div><div><a href="/2022/06/06/13-spring-boot-implements-graphic-verification-code/" title="SpringBoot实现图形验证码"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-06</div><div class="title">SpringBoot实现图形验证码</div></div></a></div><div><a href="/2022/05/18/10-use-springboot-and-vue-to-achieve-a-code-generator/" title="SpringBoot+Vue实现一个代码生成器"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-05-18</div><div class="title">SpringBoot+Vue实现一个代码生成器</div></div></a></div><div><a href="/2022/06/01/12-springboot-realizes-the-repeated-reading-of-json-data/" title="SpringBoot实现JSON数据重复读取"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-01</div><div class="title">SpringBoot实现JSON数据重复读取</div></div></a></div><div><a href="/2022/06/18/14-springboot-easily-implements-interface-encryptioon-and-decryption/" title="SpringBoot轻松实现接口加解密"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-06-18</div><div class="title">SpringBoot轻松实现接口加解密</div></div></a></div><div><a href="/2022/08/10/16-how-to-record-your-log-gracefully/" title="如何优雅的记录你的日志"><img class="cover" src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" alt="cover"><div class="content is-center"><div class="date"><i class="far fa-calendar-alt fa-fw"></i> 2022-08-10</div><div class="title">如何优雅的记录你的日志</div></div></a></div></div></div><hr/><div id="post-comment"><div class="comment-head"><div class="comment-headline"><i class="fas fa-comments fa-fw"></i><span> 评论</span></div></div><div class="comment-wrap"><div><div id="gitalk-container"></div></div></div></div></div><div class="aside-content" id="aside-content"><div class="card-widget card-info"><div class="is-center"><div class="avatar-img"><img src="/img/avatar.jpg" onerror="this.onerror=null;this.src='/img/friend_404.gif'" alt="avatar"/></div><div class="author-info__name">余思</div><div class="author-info__description">记录成长路上的点滴</div></div><div class="card-info-data site-data is-center"><a href="/archives/"><div class="headline">文章</div><div class="length-num">279</div></a><a href="/tags/"><div class="headline">标签</div><div class="length-num">20</div></a><a href="/categories/"><div class="headline">分类</div><div class="length-num">19</div></a></div><div class="card-info-social-icons is-center"><a class="social-icon" href="mailto:envyzhan@aliyun.com" target="_blank" title=""><i class="fa fa-envelope"></i></a><a class="social-icon" href="/atom.xml" target="_blank" title=""><i class="fa fa-rss"></i></a></div></div><div class="card-widget card-announcement"><div class="item-headline"><i class="fas fa-bullhorn fa-shake"></i><span>公告</span></div><div class="announcement_content">欢迎访问余思博客，一个技术博主的成长试验田！</div></div><div class="sticky_layout"><div class="card-widget" id="card-toc"><div class="item-headline"><i class="fas fa-stream"></i><span>目录</span><span class="toc-percentage"></span></div><div class="toc-content"><ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%86%99%E5%9C%A8%E5%89%8D%E9%9D%A2"><span class="toc-number">1.</span> <span class="toc-text">写在前面</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A8%A1%E5%9E%8B-Models"><span class="toc-number">2.</span> <span class="toc-text">模型(Models)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA-Prompts"><span class="toc-number">3.</span> <span class="toc-text">提示(Prompts)</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA%E8%AF%8D%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.1.</span> <span class="toc-text">提示词介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8F%90%E7%A4%BA%E8%AF%8D%E6%A8%A1%E6%9D%BF"><span class="toc-number">3.2.</span> <span class="toc-text">提示词模板</span></a></li></ol></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B5%8C%E5%85%A5-Embeddings"><span class="toc-number">4.</span> <span class="toc-text">嵌入(Embeddings)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E4%BB%A4%E7%89%8C-Tokens"><span class="toc-number">5.</span> <span class="toc-text">令牌(Tokens)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E7%BB%93%E6%9E%84%E5%8C%96%E8%BE%93%E5%87%BA-Structed-Output"><span class="toc-number">6.</span> <span class="toc-text">结构化输出(Structed Output)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%B0%86%E4%BD%A0%E7%9A%84%E6%95%B0%E6%8D%AE%E5%92%8CAPI%E5%B8%A6%E7%BB%99%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E6%A8%A1%E5%9E%8B-Bringing-Your-Data-amp-APIs-to-the-AI-Model"><span class="toc-number">7.</span> <span class="toc-text">将你的数据和API带给人工智能模型(Bringing Your Data&amp;APIs to the AI Model)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E6%A3%80%E7%B4%A2%E5%A2%9E%E5%BC%BA%E7%94%9F%E6%88%90-Retrieval-Augmented-Generation"><span class="toc-number">8.</span> <span class="toc-text">检索增强生成(Retrieval Augmented Generation)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E5%87%BD%E6%95%B0%E8%B0%83%E7%94%A8-Function-Calling"><span class="toc-number">9.</span> <span class="toc-text">函数调用(Function Calling)</span></a></li><li class="toc-item toc-level-1"><a class="toc-link" href="#%E8%AF%84%E4%BC%B0%E4%BA%BA%E5%B7%A5%E6%99%BA%E8%83%BD%E5%93%8D%E5%BA%94-Evaluating-AI-responses"><span class="toc-number">10.</span> <span class="toc-text">评估人工智能响应(Evaluating AI responses)</span></a></li></ol></div></div><div class="card-widget card-recent-post"><div class="item-headline"><i class="fas fa-history"></i><span>最新文章</span></div><div class="aside-list"><div class="aside-list-item"><a class="thumbnail" href="/2025/11/01/2025-19-Introduction%20to%20Milvus%20and%20Its%20Installation/" title="Milvus简介及安装"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="Milvus简介及安装"/></a><div class="content"><a class="title" href="/2025/11/01/2025-19-Introduction%20to%20Milvus%20and%20Its%20Installation/" title="Milvus简介及安装">Milvus简介及安装</a><time datetime="2025-11-01T06:01:20.000Z" title="发表于 2025-11-01 14:01:20">2025-11-01</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/10/25/2025-18-lang-chain-4j-9-vector-store/" title="LangChain4j之向量存储"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LangChain4j之向量存储"/></a><div class="content"><a class="title" href="/2025/10/25/2025-18-lang-chain-4j-9-vector-store/" title="LangChain4j之向量存储">LangChain4j之向量存储</a><time datetime="2025-10-25T10:01:20.000Z" title="发表于 2025-10-25 18:01:20">2025-10-25</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/10/11/2025-17-lang-chain-4j-8-vector-model/" title="LangChain4j之向量模型"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LangChain4j之向量模型"/></a><div class="content"><a class="title" href="/2025/10/11/2025-17-lang-chain-4j-8-vector-model/" title="LangChain4j之向量模型">LangChain4j之向量模型</a><time datetime="2025-10-11T06:01:20.000Z" title="发表于 2025-10-11 14:01:20">2025-10-11</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/09/28/2025-16-lang-chain-4j-7-function-calling/" title="LangChain4j之函数调用(Function Calling)"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LangChain4j之函数调用(Function Calling)"/></a><div class="content"><a class="title" href="/2025/09/28/2025-16-lang-chain-4j-7-function-calling/" title="LangChain4j之函数调用(Function Calling)">LangChain4j之函数调用(Function Calling)</a><time datetime="2025-09-28T06:01:20.000Z" title="发表于 2025-09-28 14:01:20">2025-09-28</time></div></div><div class="aside-list-item"><a class="thumbnail" href="/2025/09/13/2025-15-lang-chain-4j-6-rag/" title="LangChain4j之检索生成增强(RAG)"><img src="https://cdn.jsdelivr.net/gh/jerryc127/butterfly_cdn@2.1.0/top_img/default.png" onerror="this.onerror=null;this.src='/img/404.jpg'" alt="LangChain4j之检索生成增强(RAG)"/></a><div class="content"><a class="title" href="/2025/09/13/2025-15-lang-chain-4j-6-rag/" title="LangChain4j之检索生成增强(RAG)">LangChain4j之检索生成增强(RAG)</a><time datetime="2025-09-13T10:01:20.000Z" title="发表于 2025-09-13 18:01:20">2025-09-13</time></div></div></div></div></div></div></main><footer id="footer"><div id="footer-wrap"><div class="copyright">&copy;2017 - 2025  余思博客,记录成长</div></div></footer></div><div id="rightside"><div id="rightside-config-hide"><button id="readmode" type="button" title="阅读模式"><i class="fas fa-book-open"></i></button><button id="darkmode" type="button" title="浅色和深色模式转换"><i class="fas fa-adjust"></i></button><button id="hide-aside-btn" type="button" title="单栏和双栏切换"><i class="fas fa-arrows-alt-h"></i></button></div><div id="rightside-config-show"><button id="rightside_config" type="button" title="设置"><i class="fas fa-cog fa-spin"></i></button><button class="close" id="mobile-toc-button" type="button" title="目录"><i class="fas fa-list-ul"></i></button><a id="to_comment" href="#post-comment" title="直达评论"><i class="fas fa-comments"></i></a><button id="go-up" type="button" title="回到顶部"><i class="fas fa-arrow-up"></i></button></div></div><div><script src="/js/utils.js"></script><script src="/js/main.js"></script><script src="https://cdn.jsdelivr.net/npm/@fancyapps/ui/dist/fancybox.umd.min.js"></script><div class="js-pjax"><script>function addGitalkSource () {
+  const ele = document.createElement('link')
+  ele.rel = 'stylesheet'
+  ele.href= 'https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.css'
+  document.getElementsByTagName('head')[0].appendChild(ele)
+}
+
+function loadGitalk () {
+  function initGitalk () {
+    var gitalk = new Gitalk(Object.assign({
+      clientID: '9996b44b488f2fc52124',
+      clientSecret: '6bec0f8e9c032eeae6211a5d4cffa3c97e2d4a64',
+      repo: 'blogcomment',
+      owner: 'Envythink',
+      admin: ['Envythink'],
+      id: '64fcf0174e5df0e1e8aeab72d2641b3a',
+      updateCountCallback: commentCount
+    },))
+
+    gitalk.render('gitalk-container')
+  }
+
+  if (typeof Gitalk === 'function') initGitalk()
+  else {
+    addGitalkSource()
+    getScript('https://cdn.jsdelivr.net/npm/gitalk/dist/gitalk.min.js').then(initGitalk)
+  }
+}
+
+function commentCount(n){
+  let isCommentCount = document.querySelector('#post-meta .gitalk-comment-count')
+  if (isCommentCount) {
+    isCommentCount.innerHTML= n
+  }
+}
+
+if ('Gitalk' === 'Gitalk' || !false) {
+  if (false) btf.loadComment(document.getElementById('gitalk-container'), loadGitalk)
+  else loadGitalk()
+} else {
+  function loadOtherComment () {
+    loadGitalk()
+  }
+}</script></div></div></body></html>
