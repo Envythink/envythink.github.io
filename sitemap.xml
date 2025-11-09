@@ -2,6 +2,15 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   
   <url>
+    <loc>http://aigoing.chat/2025/05/04/2025-5-Introduction%20to%20Milvus%20and%20Its%20Installation/</loc>
+    
+    <lastmod>2025-11-09</lastmod>
+    
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  
+  <url>
     <loc>http://aigoing.chat/about/index.html</loc>
     
     <lastmod>2025-07-09</lastmod>
@@ -2623,7 +2632,7 @@
 
   <url>
     <loc>http://aigoing.chat/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -2631,140 +2640,140 @@
   
   <url>
     <loc>http://aigoing.chat/tags/mysql/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/springboot/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/mybatis/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/spring/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/springmvc/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/Kubernetes/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/SpringBoot/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/redis/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/dart/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/cicd/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/docker/</loc>
-    <lastmod>2025-07-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://aigoing.chat/tags/hadoop/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/elasticsearch/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://aigoing.chat/tags/hadoop/</loc>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/nginx/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/OAuth2/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/shiro/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/springcloud-alibaba/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/springcloud/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/springsecurity/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/tags/maven-tools/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
@@ -2773,133 +2782,133 @@
   
   <url>
     <loc>http://aigoing.chat/categories/mysql/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/springboot/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/ssm/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/Kubernetes/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/SpringBoot/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/redis/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/dart/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/devops/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/docker/</loc>
-    <lastmod>2025-07-09</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.2</priority>
-  </url>
-  
-  <url>
-    <loc>http://aigoing.chat/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/elasticsearch/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.2</priority>
+  </url>
+  
+  <url>
+    <loc>http://aigoing.chat/categories/%E5%A4%A7%E6%95%B0%E6%8D%AE/</loc>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/java/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/nginx/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/OAuth2/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/pythonbase/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/shiro/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/springcloud/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/springsecurity/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
   
   <url>
     <loc>http://aigoing.chat/categories/tools/</loc>
-    <lastmod>2025-07-09</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.2</priority>
   </url>
